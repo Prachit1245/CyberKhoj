@@ -83,6 +83,9 @@ export default function History() {
   const navigate = useNavigate();
   const [records, setRecords] = useState<AnalysisRecord[]>(() => getHistory());
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const applySearch = useDebouncedCallback((val: string) => setDebouncedSearch(val), 200);
+  const handleSearch = (val: string) => { setSearch(val); applySearch(val); };
   const [filter, setFilter] = useState("all");
   const [sort, setSort] = useState("newest");
   const undoRef = useRef<{ record: AnalysisRecord; timer: ReturnType<typeof setTimeout> } | null>(null);
