@@ -1,10 +1,8 @@
 const STORAGE_KEY = "hackmind_gemini_key";
 const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models";
 const MODEL_CANDIDATES = [
-  "gemini-2.5-flash-lite",
-  "gemini-2.5-flash",
-  "gemini-2.0-flash",
   "gemini-2.0-flash-lite",
+  "gemini-2.0-flash",
 ] as const;
 
 const IS_DEV = import.meta.env.DEV;
