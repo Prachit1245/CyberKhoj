@@ -16,10 +16,12 @@ import {
   Database,
   ToggleLeft,
   ToggleRight,
+  Smartphone,
 } from "lucide-react";
 import { toast } from "@/components/Toast";
 import { getApiKey, saveApiKey, removeApiKey, hasApiKey } from "@/lib/gemini";
 import { resetTour, isTourCompleted } from "@/components/OnboardingTour";
+import { usePWAInstall } from "@/hooks/usePWAInstall";
 
 /* ─── Preferences stored in localStorage ─── */
 const PREFS_KEY = "hackmind_prefs";
@@ -157,6 +159,7 @@ const SettingsPage = () => {
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<"ok" | "fail" | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const { canInstall, isInstalled, install } = usePWAInstall();
 
   /* Prefs state */
   const [prefs, setPrefs] = useState<Prefs>(loadPrefs);
@@ -506,6 +509,37 @@ const SettingsPage = () => {
             <RefreshCw size={13} />
             Restart Onboarding Tour
           </button>
+        </div>
+      </Section>
+
+      {/* ─── Install App Section ─── */}
+      <Section icon={<Smartphone size={16} />} title="Install App">
+        <div className="space-y-3">
+          {isInstalled ? (
+            <p className="text-sm text-primary font-mono flex items-center gap-2">
+              <Check size={14} /> HackMind is installed on this device
+            </p>
+          ) : canInstall ? (
+            <>
+              <p className="text-sm text-muted-foreground font-mono">
+                Install HackMind as a standalone app for offline access and a native experience.
+              </p>
+              <button
+                onClick={async () => {
+                  const ok = await install();
+                  if (ok) toast.success("HackMind installed!");
+                }}
+                className="flex items-center gap-2 rounded-md bg-primary px-4 py-2.5 text-xs font-heading font-bold text-primary-foreground hover:brightness-110 transition-all glow-primary"
+              >
+                <Download size={13} />
+                Add to Home Screen
+              </button>
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground font-mono">
+              Open HackMind in Chrome or Safari on mobile to install it as an app. On desktop, look for the install icon in your browser's address bar.
+            </p>
+          )}
         </div>
       </Section>
 
