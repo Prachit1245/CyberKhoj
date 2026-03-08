@@ -39,6 +39,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/history": "History",
   "/payloads": "Payload Library",
   "/cheatsheets": "Cheat Sheets",
+  "/findings": "Findings",
   "/settings": "Settings",
 };
 
