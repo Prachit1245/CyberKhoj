@@ -1,9 +1,10 @@
 import { useState, useMemo } from "react";
 import { isBeginnerMode } from "@/lib/beginnerMode";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, RefreshCw, FileJson, FileText, Trash2, ChevronRight, Calendar, Target, Layers, Clock, Hash } from "lucide-react";
+import { ArrowLeft, RefreshCw, FileJson, FileText, Trash2, ChevronRight, Calendar, Target, Layers, Clock, Hash, Share2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { compressForShare } from "@/lib/shareResults";
 import {
   AlertDialog,
   AlertDialogAction,
