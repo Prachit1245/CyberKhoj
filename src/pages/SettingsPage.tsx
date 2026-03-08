@@ -536,7 +536,7 @@ const SettingsPage = () => {
           ) : canInstall ? (
             <>
               <p className="text-sm text-muted-foreground font-mono">
-                Install HackMind as a standalone app for offline access and a native experience.
+                Install CyberKhoj as a standalone app for offline access and a native experience.
               </p>
               <button
                 onClick={async () => {
