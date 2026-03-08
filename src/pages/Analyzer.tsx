@@ -14,7 +14,26 @@ const PAGE_TABS = ["URL Analyzer", "HTTP Request", "JWT Decoder"] as const;
 type Depth = (typeof DEPTHS)[number];
 type AnalysisType = (typeof TYPES)[number];
 
-const buildPrompt = (target: string, depth: Depth, type: AnalysisType): string => {
+interface TargetTemplate {
+  label: string;
+  example: string;
+  context: string;
+}
+
+const TARGET_TEMPLATES: TargetTemplate[] = [
+  { label: "REST API Endpoint", example: "https://api.example.com/v2/users/1337/profile?include=billing", context: "This is a REST API endpoint. Focus especially on IDOR via numeric/sequential IDs, broken object-level authorization, mass assignment, parameter tampering, rate limiting bypass, and API versioning exploits." },
+  { label: "Login Page", example: "https://example.com/auth/login", context: "This is a login/authentication endpoint. Focus especially on credential stuffing, brute force protection bypass, username enumeration via error messages/timing, SQL injection in login fields, authentication bypass, default credentials, and session fixation after login." },
+  { label: "File Upload", example: "https://example.com/api/upload?type=avatar&user_id=42", context: "This is a file upload endpoint. Focus especially on unrestricted file type uploads (web shells), path traversal in filename, content-type validation bypass, file size DoS, EXIF data injection, SVG XSS, polyglot files, and storage bucket misconfiguration." },
+  { label: "Admin Panel", example: "https://example.com/admin/dashboard", context: "This is an admin panel. Focus especially on authentication bypass, privilege escalation from regular user, forced browsing to admin routes, CSRF on admin actions, insecure direct object references, default admin credentials, and missing role-based access controls." },
+  { label: "Payment Flow", example: "https://example.com/api/checkout?item_id=99&qty=1&price=4999", context: "This is a payment/checkout flow. Focus especially on price manipulation, quantity tampering, currency confusion, race conditions on payment processing, coupon/discount abuse, order total modification, payment callback forgery, and business logic flaws in cart calculations." },
+  { label: "Search Function", example: "https://example.com/search?q=test&page=1&sort=relevance", context: "This is a search endpoint. Focus especially on reflected XSS via search parameters, SQL injection in search queries, LDAP injection, server-side template injection (SSTI), search filter bypass, information disclosure via error messages, and denial of service via expensive queries." },
+  { label: "Password Reset", example: "https://example.com/auth/reset-password?token=abc123&email=user@test.com", context: "This is a password reset flow. Focus especially on token prediction/brute force, host header injection for link manipulation, token reuse, race conditions, user enumeration, email parameter injection, and password reset poisoning via manipulated reset links." },
+  { label: "OAuth Endpoint", example: "https://example.com/oauth/callback?code=AUTH_CODE&state=xyz&redirect_uri=https://app.example.com", context: "This is an OAuth/SSO endpoint. Focus especially on open redirect via redirect_uri manipulation, CSRF via missing/weak state parameter, authorization code replay, scope escalation, token leakage in referrer headers, and client_id/secret exposure." },
+  { label: "GraphQL API", example: "https://example.com/graphql", context: "This is a GraphQL API endpoint. Focus especially on introspection query disclosure, nested query DoS (batching attacks), authorization bypass on mutations, field-level access control issues, SQL injection via variables, and information disclosure through verbose error messages." },
+  { label: "WebSocket", example: "wss://example.com/ws/chat?token=eyJhbG...", context: "This is a WebSocket endpoint. Focus especially on missing origin validation, authentication bypass after initial handshake, cross-site WebSocket hijacking (CSWSH), injection via WebSocket messages, lack of rate limiting, and insecure token transmission in connection URL." },
+];
+
+const buildPrompt = (target: string, depth: Depth, type: AnalysisType, templateContext?: string): string => {
   const depthInstruction =
     depth === "Quick"
       ? "Provide a brief, concise analysis with the top 5 most critical attack paths."
