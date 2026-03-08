@@ -32,7 +32,7 @@ const FinalCTA = () => {
         </h2>
 
         <p className="text-sm md:text-base font-mono text-muted-foreground max-w-lg mx-auto">
-          Paste your free Gemini API key below, or skip to explore first.
+          Paste your free Groq API key below, or skip to explore first.
           Zero signup. Zero cost. Full power.
         </p>
 
