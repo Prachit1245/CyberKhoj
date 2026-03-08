@@ -84,6 +84,7 @@ export default function History() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [sort, setSort] = useState("newest");
+  const undoRef = useRef<{ record: AnalysisRecord; timer: ReturnType<typeof setTimeout> } | null>(null);
 
   const refresh = useCallback(() => setRecords(getHistory()), []);
 
