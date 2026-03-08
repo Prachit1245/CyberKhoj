@@ -195,9 +195,13 @@ input[type="number"] {
 }
 
 /* ── Selection highlight ── */
-::selection {
-  background: hsl(110 100% 55% / 0.3);
-  color: hsl(0 0% 95%);
+::-selection {
+  background: hsla(110, 100%, 55%, 0.3);
+  color: hsl(0, 0%, 95%);
+}
+::-moz-selection {
+  background: hsla(110, 100%, 55%, 0.3);
+  color: hsl(0, 0%, 95%);
 }
 ::-moz-selection {
   background: hsl(110 100% 55% / 0.3);
