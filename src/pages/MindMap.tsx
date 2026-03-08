@@ -736,7 +736,12 @@ function MindMapCanvas() {
                   </div>
                 </Panel>
 
-                {/* Empty state */}
+                {/* Empty state / Loading state */}
+                {loading && (
+                  <Panel position="top-center">
+                    <SkeletonMindMap />
+                  </Panel>
+                )}
                 {!hasData && !loading && (
                   <Panel position="top-center">
                     <div className="mt-[30vh] text-center space-y-4">
