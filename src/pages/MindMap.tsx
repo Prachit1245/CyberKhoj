@@ -555,7 +555,9 @@ function MindMapCanvas() {
     <div className="flex flex-col h-[calc(100vh-4rem)]">
       {/* Control Bar */}
       <div className="flex flex-wrap items-center gap-2 p-3 border-b border-border/20 bg-background/80 backdrop-blur-sm">
+        <label htmlFor="mindmap-domain" className="sr-only">Target domain</label>
         <input
+          id="mindmap-domain"
           value={domain}
           onChange={(e) => setDomain(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && !loading && generate()}
