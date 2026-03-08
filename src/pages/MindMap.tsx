@@ -20,6 +20,7 @@ import { callGemini } from "@/lib/gemini";
 import { buildMindMapPrompt, parseMindMapNodes, type MindMapNode } from "@/lib/prompts";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { addToHistory } from "@/lib/store";
 import MindMapNodeComponent from "@/components/mindmap/MindMapNode";
 import MindMapSidePanel from "@/components/mindmap/MindMapSidePanel";
 import type { MindMapNodeData } from "@/components/mindmap/types";
