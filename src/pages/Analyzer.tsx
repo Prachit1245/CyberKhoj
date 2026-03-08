@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Trash2, ArrowRight, Loader2, WifiOff, GraduationCap } from "lucide-react";
+import { extractDomain } from "@/lib/targetNotes";
+import TargetNotesPanel from "@/components/TargetNotesPanel";
 import useOnline from "@/hooks/useOnline";
 import { callGemini, GeminiError, type GeminiErrorCode } from "@/lib/gemini";
 import GeminiErrorDisplay from "@/components/GeminiErrorDisplay";
@@ -437,8 +439,14 @@ const Analyzer = () => {
         <TargetIntelligenceCard intel={targetIntel} />
       )}
 
-      {/* Results */}
+      {/* Notes Panel + Results */}
       <div className="space-y-3">
+        {/* Notes toggle (appears when target exists) */}
+        {target.trim() && (
+          <div className="flex justify-end">
+            <TargetNotesPanel domain={extractDomain(target)} />
+          </div>
+        )}
         {/* Result tabs */}
         <div className="flex border-b border-border/50">
           {RESULT_TABS.map((tab) => (

@@ -1,10 +1,12 @@
 import { useState, useMemo } from "react";
 import { isBeginnerMode } from "@/lib/beginnerMode";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, RefreshCw, FileJson, FileText, Trash2, ChevronRight, Calendar, Target, Layers, Clock, Hash, Share2, AlertTriangle } from "lucide-react";
+import { ArrowLeft, RefreshCw, FileJson, FileText, Trash2, ChevronRight, Calendar, Target, Hash, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { compressForShare } from "@/lib/shareResults";
+import { extractDomain, getNote, exportNoteMarkdown } from "@/lib/targetNotes";
+import TargetNotesPanel from "@/components/TargetNotesPanel";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -55,7 +57,10 @@ function parseResultData(record: AnalysisRecord): { paths: AttackPath[]; isMindM
   }
 }
 
-function exportMarkdown(record: AnalysisRecord, paths: AttackPath[]): string {
+function exportMarkdown(record: AnalysisRecord, paths: AttackPath[], includeNotes: boolean): string {
+  const domain = extractDomain(record.target);
+  const notesMd = includeNotes ? exportNoteMarkdown(domain) : "";
+
   const lines: string[] = [
     `# Security Analysis: ${record.target}`,
     ``,
@@ -66,6 +71,13 @@ function exportMarkdown(record: AnalysisRecord, paths: AttackPath[]): string {
     `---`,
     ``,
   ];
+
+  if (notesMd) {
+    lines.push(notesMd);
+    lines.push(`---`);
+    lines.push(``);
+  }
+
   for (const p of paths) {
     lines.push(`## [${p.severity.toUpperCase()}] ${p.title}`);
     lines.push(`**Category:** ${p.category}`);
@@ -145,7 +157,7 @@ export default function HistoryDetail() {
   };
 
   const handleExportMd = () => {
-    const md = exportMarkdown(record, attackPaths);
+    const md = exportMarkdown(record, attackPaths, true);
     const date = new Date(record.date).toISOString().slice(0, 10);
     downloadFile(md, `hackmind-${record.target.replace(/[^a-z0-9]/gi, "-")}-${date}.md`, "text/markdown");
     toast.success("Markdown exported");
@@ -259,6 +271,9 @@ export default function HistoryDetail() {
             </AlertDialogContent>
           </AlertDialog>
         </div>
+
+        {/* Notes Panel */}
+        <TargetNotesPanel domain={extractDomain(record.target)} />
       </div>
 
       {/* Results */}
