@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import {
   ReactFlow,
   Background,
@@ -18,7 +18,7 @@ import Dagre from "@dagrejs/dagre";
 import {
   ZoomIn, ZoomOut, Maximize, Image, FileJson, ClipboardList, Save, Network,
   TreePine, Zap, StickyNote, CheckCircle, Copy, Search, WifiOff, Plus,
-  ChevronsDownUp, ChevronsUpDown,
+  ChevronsDownUp, ChevronsUpDown, List,
 } from "lucide-react";
 import html2canvas from "html2canvas";
 import { callGemini, GeminiError } from "@/lib/gemini";
@@ -524,11 +524,40 @@ function MindMapCanvas() {
   const btn =
     "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono border border-border/30 bg-card/80 text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors cursor-pointer backdrop-blur-sm";
 
+  const [showTextView, setShowTextView] = useState(false);
+
+  // Build text list for screen reader alternative
+  const textListContent = useMemo(() => {
+    if (!rawNodesRef.current.length) return [];
+    const items: { label: string; severity?: string; type: string; depth: number; description?: string }[] = [];
+    const buildList = (parentId: string | undefined, depth: number) => {
+      const children = rawNodesRef.current.filter((n) => n.parentId === parentId);
+      for (const child of children) {
+        items.push({
+          label: child.label,
+          severity: child.severity,
+          type: child.type,
+          depth,
+          description: child.description,
+        });
+        buildList(child.id, depth + 1);
+      }
+    };
+    const root = rawNodesRef.current.find((n) => n.type === "root");
+    if (root) {
+      items.push({ label: root.label, type: "root", depth: 0 });
+      buildList(root.id, 1);
+    }
+    return items;
+  }, [nodes]); // re-derive when nodes change
+
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)]">
       {/* Control Bar */}
       <div className="flex flex-wrap items-center gap-2 p-3 border-b border-border/20 bg-background/80 backdrop-blur-sm">
+        <label htmlFor="mindmap-domain" className="sr-only">Target domain</label>
         <input
+          id="mindmap-domain"
           value={domain}
           onChange={(e) => setDomain(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && !loading && generate()}
@@ -538,6 +567,7 @@ function MindMapCanvas() {
         <button
           onClick={generate}
           disabled={loading || !online}
+          aria-label={loading ? "Generating mind map" : "Generate mind map"}
           title={!online ? "Requires internet for AI analysis" : undefined}
           className="h-9 px-4 rounded-lg font-mono font-bold text-xs bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
         >
@@ -602,11 +632,60 @@ function MindMapCanvas() {
         <button onClick={copyAsText} className={btn} disabled={!hasData}>
           <ClipboardList className="h-3.5 w-3.5" /> Text
         </button>
-        <button onClick={saveToHistory} className={btn} disabled={!hasData}>
+        <button onClick={saveToHistory} className={btn} disabled={!hasData} aria-label="Save to history">
           <Save className="h-3.5 w-3.5" /> Save
         </button>
+        {hasData && (
+          <button
+            onClick={() => setShowTextView(!showTextView)}
+            className={`${btn} ${showTextView ? "!text-primary !border-primary/40" : ""}`}
+            aria-label="Toggle accessible text list view"
+          >
+            <List className="h-3.5 w-3.5" /> {showTextView ? "Graph" : "Text List"}
+          </button>
+        )}
       </div>
 
+      {/* Text List View (Screen Reader Friendly) */}
+      {showTextView && hasData ? (
+        <div className="flex-1 overflow-y-auto p-4 md:p-6" role="region" aria-label="Mind map as text list">
+          <h2 className="font-heading text-lg font-bold text-foreground mb-4">Attack Surface — Text View</h2>
+          <p className="text-xs font-mono text-muted-foreground mb-4">Accessible alternative to the visual mind map.</p>
+          <ul className="space-y-1" role="tree">
+            {textListContent.map((item, i) => {
+              const sevColors: Record<string, string> = {
+                critical: "text-[hsl(0,72%,51%)]",
+                high: "text-[hsl(25,95%,53%)]",
+                medium: "text-[hsl(48,96%,53%)]",
+                low: "text-[hsl(217,91%,60%)]",
+              };
+              const sevLabel = item.severity ? ` [${item.severity.toUpperCase()}]` : "";
+              const typeIcon = item.type === "root" ? "🎯" : item.type === "category" ? "📂" : "⚡";
+              return (
+                <li
+                  key={i}
+                  role="treeitem"
+                  aria-level={item.depth + 1}
+                  className="font-mono text-sm"
+                  style={{ paddingLeft: `${item.depth * 1.5}rem` }}
+                >
+                  <span className="text-muted-foreground mr-1">{typeIcon}</span>
+                  <span className="text-foreground">{item.label}</span>
+                  {item.severity && (
+                    <span className={`ml-1.5 text-xs font-bold ${sevColors[item.severity] || "text-muted-foreground"}`}>
+                      {sevLabel}
+                    </span>
+                  )}
+                  {item.description && (
+                    <span className="block text-xs text-muted-foreground ml-6">↳ {item.description}</span>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ) : (
+      <>
       {/* Canvas */}
       <div className="flex-1 relative" ref={canvasRef}>
         <ContextMenu>
@@ -735,6 +814,8 @@ function MindMapCanvas() {
           />
         )}
       </div>
+      </>
+      )}
     </div>
   );
 }

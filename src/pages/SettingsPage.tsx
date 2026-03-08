@@ -17,6 +17,7 @@ import {
   ToggleLeft,
   ToggleRight,
   Smartphone,
+  Accessibility,
 } from "lucide-react";
 import { toast } from "@/components/Toast";
 import { getApiKey, saveApiKey, removeApiKey, hasApiKey } from "@/lib/gemini";
@@ -33,6 +34,7 @@ interface Prefs {
   animations: boolean;
   typingSound: boolean;
   beginnerMode: boolean;
+  reduceMotion: boolean;
 }
 
 const DEFAULT_PREFS: Prefs = {
@@ -42,6 +44,7 @@ const DEFAULT_PREFS: Prefs = {
   animations: true,
   typingSound: false,
   beginnerMode: false,
+  reduceMotion: false,
 };
 
 const loadPrefs = (): Prefs => {
@@ -73,11 +76,13 @@ const Toggle = ({
 }) => (
   <div className="flex items-center justify-between gap-4 py-3">
     <div>
-      <p className="text-sm font-mono text-foreground">{label}</p>
+      <p className="text-sm font-mono text-foreground" id={`toggle-${label.replace(/\s+/g, "-").toLowerCase()}`}>{label}</p>
       <p className="text-xs text-muted-foreground">{description}</p>
     </div>
     <button
       onClick={onToggle}
+      aria-pressed={enabled}
+      aria-labelledby={`toggle-${label.replace(/\s+/g, "-").toLowerCase()}`}
       className={`shrink-0 transition-colors ${enabled ? "text-primary" : "text-muted-foreground"}`}
     >
       {enabled ? <ToggleRight size={28} /> : <ToggleLeft size={28} />}
@@ -126,10 +131,14 @@ const ConfirmDialog = ({
         if (e.target === e.currentTarget) onCancel();
       }}
     >
-      <div className="w-full max-w-sm rounded-xl border border-destructive/30 bg-card p-6 space-y-4 animate-scale-in">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="confirm-title"
+        className="w-full max-w-sm rounded-xl border border-destructive/30 bg-card p-6 space-y-4 animate-scale-in">
         <div className="flex items-center gap-2">
           <AlertTriangle size={18} className="text-destructive" />
-          <h3 className="font-heading font-bold text-foreground">{title}</h3>
+          <h3 id="confirm-title" className="font-heading font-bold text-foreground">{title}</h3>
         </div>
         <p className="text-sm text-muted-foreground">{message}</p>
         <div className="flex gap-3">
@@ -406,7 +415,9 @@ const SettingsPage = () => {
             {/* Replace key form */}
             {replacing && (
               <div className="space-y-2 p-3 rounded-lg border border-border/50 bg-muted/20">
+                <label htmlFor="replace-key-input" className="sr-only">New API Key</label>
                 <input
+                  id="replace-key-input"
                   type="password"
                   value={newKey}
                   onChange={(e) => setNewKey(e.target.value)}
@@ -609,6 +620,32 @@ const SettingsPage = () => {
             label="Beginner Mode"
             description="Show simplified explanations and glossary tooltips for technical terms."
           />
+        </div>
+      </Section>
+
+      {/* ─── Accessibility Section ─── */}
+      <Section icon={<Accessibility size={16} />} title="Accessibility">
+        <div className="divide-y divide-border/30">
+          <Toggle
+            enabled={prefs.reduceMotion}
+            onToggle={() => {
+              const next = !prefs.reduceMotion;
+              updatePref("reduceMotion", next);
+              // Apply immediately
+              if (next) {
+                document.documentElement.classList.add("reduce-motion");
+              } else {
+                document.documentElement.classList.remove("reduce-motion");
+              }
+            }}
+            label="Reduce Motion"
+            description="Disable all animations and transitions for accessibility or performance."
+          />
+          <div className="py-3">
+            <p className="text-xs text-muted-foreground font-mono">
+              All interactive elements have keyboard focus indicators. Color information is always accompanied by icons or text labels. Screen readers can use the skip-to-content link and all form fields have labels.
+            </p>
+          </div>
         </div>
       </Section>
 

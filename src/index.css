@@ -89,6 +89,52 @@
   }
 }
 
+/* ── Accessibility: focus ring ── */
+*:focus-visible {
+  outline: 2px solid #39ff14;
+  outline-offset: 2px;
+}
+
+/* ── Accessibility: skip-to-content ── */
+.skip-to-content {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 10000;
+  padding: 0.75rem 1.5rem;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 700;
+  border-radius: 0 0 0.5rem 0;
+  text-decoration: none;
+}
+.skip-to-content:focus {
+  left: 0;
+  outline: 2px solid #39ff14;
+  outline-offset: 2px;
+}
+
+/* ── Reduce motion ── */
+.reduce-motion,
+.reduce-motion * {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root:not(.force-motion),
+  :root:not(.force-motion) * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* ── Scanline overlay ── */
 body::after {
   content: "";

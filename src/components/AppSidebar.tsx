@@ -234,6 +234,7 @@ const AppSidebar = () => {
           )}
           <button
             onClick={() => setCollapsed(!collapsed)}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             className="text-muted-foreground hover:text-foreground transition-colors p-1"
           >
             {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
@@ -241,7 +242,7 @@ const AppSidebar = () => {
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 overflow-y-auto py-3 space-y-0.5 px-2">
+        <nav className="flex-1 overflow-y-auto py-3 space-y-0.5 px-2" aria-label="Main navigation">
           {NAV_ITEMS.map((item) => {
             const isActive = location.pathname === item.to;
             const isOfflineOk = OFFLINE_OK.has(item.to);
@@ -303,7 +304,7 @@ const AppSidebar = () => {
         </header>
 
         {/* Content — extra bottom padding on mobile for tab bar */}
-        <main className="flex-1 overflow-y-auto">
+        <main id="main-content" className="flex-1 overflow-y-auto" role="main">
           <div className="p-4 md:p-6 pb-24 md:pb-6 route-animate" key={location.pathname}>
             <Outlet />
           </div>
@@ -314,6 +315,7 @@ const AppSidebar = () => {
       <nav
         className="md:hidden fixed bottom-0 left-0 right-0 z-[80] border-t border-border/50 flex items-stretch safe-area-pb"
         style={{ background: "#0d0d0d" }}
+        aria-label="Mobile navigation"
       >
         {BOTTOM_TABS.map((tab) => {
           const isActive = location.pathname === tab.to;
