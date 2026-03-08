@@ -432,6 +432,11 @@ const Analyzer = () => {
         </button>
       </div>
 
+      {/* Target Intelligence — instant, no API */}
+      {targetIntel && (
+        <TargetIntelligenceCard intel={targetIntel} />
+      )}
+
       {/* Results */}
       <div className="space-y-3">
         {/* Result tabs */}
