@@ -116,7 +116,11 @@ Format as numbered list with markdown.`;
       setPaths(parseQuickPaths(response));
       incrementStat("totalAnalyses");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Analysis failed.");
+      if (e instanceof GeminiError) {
+        setError(`${e.message}`);
+      } else {
+        setError(e instanceof Error ? e.message : "Analysis failed.");
+      }
     } finally {
       setLoading(false);
     }
