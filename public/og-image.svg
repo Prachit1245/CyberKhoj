@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+  <defs>
+    <!-- Matrix rain gradient -->
+    <linearGradient id="matrixFade" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#22c55e;stop-opacity:0.15"/>
+      <stop offset="50%" style="stop-color:#22c55e;stop-opacity:0.05"/>
+      <stop offset="100%" style="stop-color:#22c55e;stop-opacity:0"/>
+    </linearGradient>
+    
+    <!-- Text glow -->
+    <filter id="textGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Subtle radial glow -->
+    <radialGradient id="centerGlow" cx="50%" cy="45%" r="50%" fx="50%" fy="45%">
+      <stop offset="0%" style="stop-color:#22c55e;stop-opacity:0.1"/>
+      <stop offset="70%" style="stop-color:#22c55e;stop-opacity:0"/>
+    </radialGradient>
+  </defs>
+  
+  <!-- Dark background -->
+  <rect width="1200" height="630" fill="#0a0a0a"/>
+  
+  <!-- Center glow -->
+  <rect width="1200" height="630" fill="url(#centerGlow)"/>
+  
+  <!-- Matrix rain columns (subtle) -->
+  <g fill="url(#matrixFade)" font-family="monospace" font-size="14" opacity="0.6">
+    <text x="50" y="80">01001000</text>
+    <text x="50" y="140">10110101</text>
+    <text x="50" y="200">00101010</text>
+    <text x="50" y="260">11001100</text>
+    
+    <text x="150" y="40">11010010</text>
+    <text x="150" y="100">01101001</text>
+    <text x="150" y="160">10010110</text>
+    <text x="150" y="220">01011010</text>
+    <text x="150" y="280">10101001</text>
+    
+    <text x="250" y="60">00110011</text>
+    <text x="250" y="120">10101010</text>
+    <text x="250" y="180">01010101</text>
+    <text x="250" y="240">11001011</text>
+    
+    <text x="900" y="350">01001000</text>
+    <text x="900" y="410">10110101</text>
+    <text x="900" y="470">00101010</text>
+    <text x="900" y="530">11001100</text>
+    <text x="900" y="590">01010101</text>
+    
+    <text x="1000" y="380">11010010</text>
+    <text x="1000" y="440">01101001</text>
+    <text x="1000" y="500">10010110</text>
+    <text x="1000" y="560">01011010</text>
+    
+    <text x="1100" y="400">00110011</text>
+    <text x="1100" y="460">10101010</text>
+    <text x="1100" y="520">01010101</text>
+    <text x="1100" y="580">11001011</text>
+  </g>
+  
+  <!-- Icon -->
+  <g transform="translate(540, 180)">
+    <rect x="0" y="0" width="120" height="120" rx="20" fill="#0a0a0a" stroke="#22c55e" stroke-width="3" opacity="0.8"/>
+    <rect x="38" y="28" width="44" height="64" rx="4" fill="#22c55e" filter="url(#textGlow)"/>
+  </g>
+  
+  <!-- HackMind text -->
+  <text x="600" y="370" text-anchor="middle" font-family="Syne, sans-serif" font-size="72" font-weight="800" fill="#22c55e" filter="url(#textGlow)">
+    HackMind
+  </text>
+  
+  <!-- Tagline -->
+  <text x="600" y="430" text-anchor="middle" font-family="Share Tech Mono, monospace" font-size="24" fill="#a1a1aa" letter-spacing="0.1em">
+    Think Like A Hacker
+  </text>
+  
+  <!-- Decorative line -->
+  <line x1="400" y1="470" x2="800" y2="470" stroke="#22c55e" stroke-width="2" opacity="0.3"/>
+  
+  <!-- Features -->
+  <g font-family="Share Tech Mono, monospace" font-size="14" fill="#71717a">
+    <text x="600" y="510" text-anchor="middle">Free Forever • AI-Powered • 1000 Analyses/Day</text>
+  </g>
+  
+  <!-- Corner accents -->
+  <path d="M40 40 L40 80 M40 40 L80 40" stroke="#22c55e" stroke-width="3" opacity="0.5"/>
+  <path d="M1160 40 L1160 80 M1160 40 L1120 40" stroke="#22c55e" stroke-width="3" opacity="0.5"/>
+  <path d="M40 590 L40 550 M40 590 L80 590" stroke="#22c55e" stroke-width="3" opacity="0.5"/>
+  <path d="M1160 590 L1160 550 M1160 590 L1120 590" stroke="#22c55e" stroke-width="3" opacity="0.5"/>
+</svg>
