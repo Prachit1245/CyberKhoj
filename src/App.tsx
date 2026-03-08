@@ -16,10 +16,13 @@ const App = () => (
       <Sonner />
       <ApiKeyGate>
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Navbar />
+          <div className="pt-14">
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </div>
         </BrowserRouter>
       </ApiKeyGate>
     </TooltipProvider>
