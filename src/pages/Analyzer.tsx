@@ -483,6 +483,16 @@ const Analyzer = () => {
           ))}
         </div>
 
+        {/* Fallback banner */}
+        {isFallback && result && (
+          <div className="flex items-center gap-3 rounded-lg border border-secondary/30 bg-secondary/5 px-4 py-3">
+            <WifiOff size={16} className="text-secondary shrink-0" />
+            <p className="text-xs font-mono text-secondary">
+              Using offline analysis mode — AI unavailable. Results are rule-based pattern matches.
+            </p>
+          </div>
+        )}
+
         {/* Result content */}
         <div className="rounded-xl border border-border bg-card p-5 min-h-[200px]">
           {loading ? (
