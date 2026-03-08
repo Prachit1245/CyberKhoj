@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Terminal, Key, Menu, X, Github } from "lucide-react";
+import { Key, Menu, X, Github } from "lucide-react";
 import { hasApiKey, getApiKey, saveApiKey, removeApiKey } from "@/lib/gemini";
+import HackMindLogo from "@/components/HackMindLogo";
 
 const MODEL_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent";
@@ -92,11 +93,7 @@ const Navbar = () => {
         <div className="container flex h-14 items-center justify-between">
           {/* Logo */}
           <NavLink to="/" className="flex items-center gap-2 group">
-            <Terminal size={20} className="text-primary" />
-            <span className="font-heading text-lg font-bold text-primary text-glow-primary">
-              HackMind
-            </span>
-            <span className="blinking-cursor text-primary text-sm">▌</span>
+            <HackMindLogo size="sm" showText={true} />
           </NavLink>
 
           {/* Desktop nav */}
