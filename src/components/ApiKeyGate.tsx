@@ -63,7 +63,7 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
         </div>
 
         <p className="text-muted-foreground font-mono text-sm">
-          You need a free Gemini API key to use this app.
+          You need a free Groq API key to use this app.
           <br />
           It takes 30 seconds.
           <span className="blinking-cursor ml-0.5 text-primary">▌</span>
