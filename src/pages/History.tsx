@@ -143,11 +143,6 @@ export default function History() {
     toast.success("All history cleared");
   };
 
-  // Detail view
-  if (selectedId) {
-    const record = records.find((r) => r.id === selectedId);
-    if (record) return <ResultDetail record={record} onBack={() => setSelectedId(null)} />;
-  }
 
   const chipBase =
     "px-3 py-1 rounded-full text-[11px] font-mono border cursor-pointer transition-colors";

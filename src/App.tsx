@@ -48,6 +48,7 @@ const App = () => (
               <Route path="/attack" element={<AttackMode />} />
               <Route path="/mindmap" element={<MindMap />} />
               <Route path="/history" element={<History />} />
+              <Route path="/history/:id" element={<HistoryDetail />} />
               <Route path="/payloads" element={<Payloads />} />
               <Route path="/cheatsheets" element={<CheatSheets />} />
               <Route path="/settings" element={<SettingsPage />} />
