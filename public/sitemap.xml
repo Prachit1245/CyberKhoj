@@ -1,52 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://hackmind.app/</loc>
+    <loc>https://cyberkhoj.app/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://hackmind.app/analyzer</loc>
+    <loc>https://cyberkhoj.app/analyzer</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://hackmind.app/attack</loc>
+    <loc>https://cyberkhoj.app/attack</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://hackmind.app/mindmap</loc>
+    <loc>https://cyberkhoj.app/mindmap</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://hackmind.app/payloads</loc>
+    <loc>https://cyberkhoj.app/payloads</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://hackmind.app/cheatsheets</loc>
+    <loc>https://cyberkhoj.app/cheatsheets</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://hackmind.app/owasp</loc>
+    <loc>https://cyberkhoj.app/owasp</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://hackmind.app/terms</loc>
+    <loc>https://cyberkhoj.app/terms</loc>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>
   </url>
   <url>
-    <loc>https://hackmind.app/privacy</loc>
+    <loc>https://cyberkhoj.app/privacy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>
   </url>
   <url>
-    <loc>https://hackmind.app/ethics</loc>
+    <loc>https://cyberkhoj.app/ethics</loc>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>
   </url>

@@ -40,7 +40,7 @@ const PWAInstallPrompt = () => {
           <div className="flex items-center gap-2">
             <Download size={18} className="text-primary shrink-0" />
             <div>
-              <p className="text-sm font-heading font-bold text-foreground">Install HackMind</p>
+              <p className="text-sm font-heading font-bold text-foreground">Install CyberKhoj</p>
               <p className="text-xs font-mono text-muted-foreground">
                 Add to home screen for offline access
               </p>

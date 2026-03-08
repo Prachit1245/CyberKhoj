@@ -59,13 +59,13 @@ export default function Changelog() {
             <span className="w-3 h-3 rounded-full bg-[hsl(48,96%,53%)]" />
             <span className="w-3 h-3 rounded-full bg-[hsl(110,100%,55%)]" />
           </div>
-          <span className="text-[10px] font-mono text-muted-foreground ml-2">hackmind-changelog.log</span>
+          <span className="text-[10px] font-mono text-muted-foreground ml-2">cyberkhoj-changelog.log</span>
         </div>
 
         {/* Log content */}
         <div className="p-4 space-y-0.5 max-h-[70vh] overflow-y-auto font-mono text-sm leading-relaxed">
           {/* Boot sequence */}
-          <p className="text-muted-foreground">$ cat /var/log/hackmind/changelog.log</p>
+          <p className="text-muted-foreground">$ cat /var/log/cyberkhoj/changelog.log</p>
           <p className="text-muted-foreground mb-4">---</p>
 
           {formattedLog.map((line, i) => {

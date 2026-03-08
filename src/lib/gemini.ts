@@ -194,7 +194,7 @@ const fetchGemini = async (prompt: string, key: string, signal?: AbortSignal): P
         if (hasRetryLeft) {
           const delayMs = BASE_DELAY_MS * Math.pow(2, attempt);
           if (IS_DEV) {
-            console.warn(`[HackMind] 429 on ${model} attempt ${attempt + 1}, retrying in ${delayMs}ms…`);
+            console.warn(`[CyberKhoj] 429 on ${model} attempt ${attempt + 1}, retrying in ${delayMs}ms…`);
           }
           await sleep(delayMs);
           continue;
@@ -203,7 +203,7 @@ const fetchGemini = async (prompt: string, key: string, signal?: AbortSignal): P
         const hasFallbackModel = modelIndex < MODEL_CANDIDATES.length - 1;
         if (hasFallbackModel) {
           if (IS_DEV) {
-            console.warn(`[HackMind] ${model} stayed rate-limited, switching model…`);
+            console.warn(`[CyberKhoj] ${model} stayed rate-limited, switching model…`);
           }
           await sleep(MODEL_SWITCH_DELAY_MS);
           break;
@@ -263,7 +263,7 @@ export const callGemini = async (prompt: string, expectJson = false): Promise<st
   activeController = controller;
 
   if (IS_DEV) {
-    console.group("[HackMind] Gemini Request");
+    console.group("[CyberKhoj] Gemini Request");
     console.log("Prompt length:", prompt.length);
     console.log("Expect JSON:", expectJson);
     console.log("Prompt (first 500 chars):", prompt.slice(0, 500));
@@ -281,7 +281,7 @@ export const callGemini = async (prompt: string, expectJson = false): Promise<st
     text = await fetchGemini(prompt, key, controller.signal);
 
     if (IS_DEV) {
-      console.group("[HackMind] Gemini Response");
+      console.group("[CyberKhoj] Gemini Response");
       console.log("Response length:", text.length);
       console.log("Response (first 500 chars):", text.slice(0, 500));
       console.groupEnd();

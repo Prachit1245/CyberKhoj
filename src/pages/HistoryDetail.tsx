@@ -159,13 +159,13 @@ export default function HistoryDetail() {
   const handleExportMd = () => {
     const md = exportMarkdown(record, attackPaths, true);
     const date = new Date(record.date).toISOString().slice(0, 10);
-    downloadFile(md, `hackmind-${record.target.replace(/[^a-z0-9]/gi, "-")}-${date}.md`, "text/markdown");
+    downloadFile(md, `cyberkhoj-${record.target.replace(/[^a-z0-9]/gi, "-")}-${date}.md`, "text/markdown");
     toast.success("Markdown exported");
   };
 
   const handleExportJson = () => {
     const date = new Date(record.date).toISOString().slice(0, 10);
-    downloadFile(record.result, `hackmind-${record.target.replace(/[^a-z0-9]/gi, "-")}-${date}.json`, "application/json");
+    downloadFile(record.result, `cyberkhoj-${record.target.replace(/[^a-z0-9]/gi, "-")}-${date}.json`, "application/json");
     toast.success("JSON exported");
   };
 
@@ -200,7 +200,7 @@ export default function HistoryDetail() {
     <div className="space-y-5">
       {/* Print Header — hidden on screen, shown in print */}
       <div className="print-header hidden">
-        <h1>HackMind Security Analysis Report</h1>
+        <h1>CyberKhoj Security Analysis Report</h1>
         <p>{record.target} — {new Date(record.date).toLocaleDateString()} {new Date(record.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</p>
       </div>
       {/* Breadcrumb */}

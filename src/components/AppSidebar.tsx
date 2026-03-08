@@ -260,7 +260,7 @@ const AppSidebar = () => {
     return () => window.removeEventListener("keydown", handler);
   }, [navigate]);
 
-  const pageTitle = PAGE_TITLES[location.pathname] || "HackMind";
+  const pageTitle = PAGE_TITLES[location.pathname] || "CyberKhoj";
 
   return (
     <div className="flex flex-col md:flex-row h-screen overflow-hidden">

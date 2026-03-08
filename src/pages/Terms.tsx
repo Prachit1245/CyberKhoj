@@ -9,12 +9,12 @@ const Terms = () => (
     </div>
 
     {[
-      { title: "1. Authorized Testing Only", body: "HackMind is designed exclusively for authorized security testing. You may only use this tool against systems you own or have explicit, written permission to test. Unauthorized access to computer systems is illegal in virtually every jurisdiction." },
-      { title: "2. Your Responsibility", body: "You are solely responsible for how you use HackMind and any outputs it generates. The attack paths, payloads, and recommendations provided are for educational and authorized testing purposes only. We do not condone or support any illegal activity." },
-      { title: "3. No Warranty", body: "HackMind is provided \"as is\" without warranty of any kind, express or implied. We make no guarantees about the accuracy, completeness, or reliability of any analysis results. Always verify findings manually before reporting." },
-      { title: "4. No Liability", body: "Under no circumstances shall HackMind or its creators be liable for any direct, indirect, incidental, or consequential damages arising from your use of this tool. This includes but is not limited to damages from unauthorized testing, false positives, or missed vulnerabilities." },
+      { title: "1. Authorized Testing Only", body: "CyberKhoj is designed exclusively for authorized security testing. You may only use this tool against systems you own or have explicit, written permission to test. Unauthorized access to computer systems is illegal in virtually every jurisdiction." },
+      { title: "2. Your Responsibility", body: "You are solely responsible for how you use CyberKhoj and any outputs it generates. The attack paths, payloads, and recommendations provided are for educational and authorized testing purposes only. We do not condone or support any illegal activity." },
+      { title: "3. No Warranty", body: "CyberKhoj is provided \"as is\" without warranty of any kind, express or implied. We make no guarantees about the accuracy, completeness, or reliability of any analysis results. Always verify findings manually before reporting." },
+      { title: "4. No Liability", body: "Under no circumstances shall CyberKhoj or its creators be liable for any direct, indirect, incidental, or consequential damages arising from your use of this tool. This includes but is not limited to damages from unauthorized testing, false positives, or missed vulnerabilities." },
       { title: "5. Local-Only Processing", body: "All processing happens in your browser. We do not operate servers that process, store, or transmit your analysis data. Your API key and results remain entirely under your control." },
-      { title: "6. Third-Party APIs", body: "HackMind uses Google's Gemini API for analysis. Your use of this API is subject to Google's own terms of service. We are not responsible for any changes, outages, or policy updates from third-party providers." },
+      { title: "6. Third-Party APIs", body: "CyberKhoj uses Google's Gemini API for analysis. Your use of this API is subject to Google's own terms of service. We are not responsible for any changes, outages, or policy updates from third-party providers." },
     ].map((s) => (
       <div key={s.title} className="space-y-2">
         <h2 className="text-base font-heading font-bold text-foreground">{s.title}</h2>

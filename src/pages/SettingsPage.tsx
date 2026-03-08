@@ -301,7 +301,7 @@ const SettingsPage = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `hackmind-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `cyberkhoj-backup-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
     toast.success("Backup exported successfully");
@@ -467,7 +467,7 @@ const SettingsPage = () => {
                   setConfirm({
                     title: "Remove API Key",
                     message:
-                      "This will remove your saved API key. You'll need to re-enter it to use HackMind.",
+                      "This will remove your saved API key. You'll need to re-enter it to use CyberKhoj.",
                     action: handleRemoveKey,
                   })
                 }
@@ -491,7 +491,7 @@ const SettingsPage = () => {
         ) : (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground font-mono">
-              No API key set. You'll need one to use HackMind.
+              No API key set. You'll need one to use CyberKhoj.
             </p>
             <a
               href="https://aistudio.google.com/apikey"
@@ -531,17 +531,17 @@ const SettingsPage = () => {
         <div className="space-y-3">
           {isInstalled ? (
             <p className="text-sm text-primary font-mono flex items-center gap-2">
-              <Check size={14} /> HackMind is installed on this device
+              <Check size={14} /> CyberKhoj is installed on this device
             </p>
           ) : canInstall ? (
             <>
               <p className="text-sm text-muted-foreground font-mono">
-                Install HackMind as a standalone app for offline access and a native experience.
+                Install CyberKhoj as a standalone app for offline access and a native experience.
               </p>
               <button
                 onClick={async () => {
                   const ok = await install();
-                  if (ok) toast.success("HackMind installed!");
+                  if (ok) toast.success("CyberKhoj installed!");
                 }}
                 className="flex items-center gap-2 rounded-md bg-primary px-4 py-2.5 text-xs font-heading font-bold text-primary-foreground hover:brightness-110 transition-all glow-primary"
               >
@@ -551,7 +551,7 @@ const SettingsPage = () => {
             </>
           ) : (
             <p className="text-sm text-muted-foreground font-mono">
-              Open HackMind in Chrome or Safari on mobile to install it as an app. On desktop, look for the install icon in your browser's address bar.
+              Open CyberKhoj in Chrome or Safari on mobile to install it as an app. On desktop, look for the install icon in your browser's address bar.
             </p>
           )}
         </div>

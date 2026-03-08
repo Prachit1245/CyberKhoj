@@ -3,20 +3,20 @@ import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 interface Row {
   feature: string;
-  hackmind: "yes" | "no" | "partial" | string;
+  cyberkhoj: "yes" | "no" | "partial" | string;
   paid: "yes" | "no" | "partial" | string;
 }
 
 const ROWS: Row[] = [
-  { feature: "Price", hackmind: "$0 forever", paid: "$50–$200/mo" },
-  { feature: "Privacy", hackmind: "100% local browser", paid: "Cloud — your data on their servers" },
-  { feature: "Account Required", hackmind: "no", paid: "yes" },
-  { feature: "AI Attack Paths", hackmind: "yes", paid: "partial" },
-  { feature: "OWASP Mapping", hackmind: "yes", paid: "yes" },
-  { feature: "Payload Library", hackmind: "yes", paid: "partial" },
-  { feature: "Mind Map Visualization", hackmind: "yes", paid: "no" },
-  { feature: "Daily Limit", hackmind: "1,000 analyses", paid: "50–500 scans" },
-  { feature: "Offline Capable (PWA)", hackmind: "yes", paid: "no" },
+  { feature: "Price", cyberkhoj: "$0 forever", paid: "$50–$200/mo" },
+  { feature: "Privacy", cyberkhoj: "100% local browser", paid: "Cloud — your data on their servers" },
+  { feature: "Account Required", cyberkhoj: "no", paid: "yes" },
+  { feature: "AI Attack Paths", cyberkhoj: "yes", paid: "partial" },
+  { feature: "OWASP Mapping", cyberkhoj: "yes", paid: "yes" },
+  { feature: "Payload Library", cyberkhoj: "yes", paid: "partial" },
+  { feature: "Mind Map Visualization", cyberkhoj: "yes", paid: "no" },
+  { feature: "Daily Limit", cyberkhoj: "1,000 analyses", paid: "50–500 scans" },
+  { feature: "Offline Capable (PWA)", cyberkhoj: "yes", paid: "no" },
 ];
 
 function CellIcon({ value }: { value: string }) {
@@ -38,7 +38,7 @@ const ComparisonTable = () => {
       >
         <div className="text-center space-y-3">
           <h2 className="text-2xl md:text-4xl font-heading font-extrabold text-foreground">
-            HackMind vs{" "}
+            CyberKhoj vs{" "}
             <span className="text-muted-foreground line-through decoration-destructive">Paid Tools</span>
           </h2>
           <p className="text-sm md:text-base text-muted-foreground font-mono max-w-lg mx-auto">
@@ -52,7 +52,7 @@ const ComparisonTable = () => {
               <tr className="border-b border-border bg-card">
                 <th className="px-4 py-3 text-xs font-mono uppercase tracking-widest text-muted-foreground">Feature</th>
                 <th className="px-4 py-3 text-center text-xs font-mono uppercase tracking-widest text-primary">
-                  HackMind
+                  CyberKhoj
                 </th>
                 <th className="px-4 py-3 text-center text-xs font-mono uppercase tracking-widest text-muted-foreground">
                   Paid Tools
@@ -70,7 +70,7 @@ const ComparisonTable = () => {
                 >
                   <td className="px-4 py-3 text-sm font-mono text-foreground">{row.feature}</td>
                   <td className="px-4 py-3 text-center text-sm font-mono text-foreground">
-                    <CellIcon value={row.hackmind} />
+                    <CellIcon value={row.cyberkhoj} />
                   </td>
                   <td className="px-4 py-3 text-center text-sm font-mono text-muted-foreground">
                     <CellIcon value={row.paid} />

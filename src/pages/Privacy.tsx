@@ -4,7 +4,7 @@ import { Lock, HardDrive, Eye, Server } from "lucide-react";
 const POINTS = [
   { icon: HardDrive, title: "Your data stays in your browser", desc: "Every analysis result, every finding, every bookmark — stored in localStorage on your device. We literally cannot access it." },
   { icon: Lock, title: "Your API key is yours alone", desc: "Your Gemini API key is saved in your browser's localStorage. It is sent directly from your browser to Google's API. We never see it, touch it, or proxy it." },
-  { icon: Server, title: "We have no servers", desc: "HackMind is a static site. There is no backend collecting telemetry, no database storing your targets, no analytics tracking your behavior. Zero." },
+  { icon: Server, title: "We have no servers", desc: "CyberKhoj is a static site. There is no backend collecting telemetry, no database storing your targets, no analytics tracking your behavior. Zero." },
   { icon: Eye, title: "No tracking. No ads. No cookies.", desc: "No Google Analytics. No Facebook Pixel. No cookie banners because there are no cookies. No fingerprinting. Nothing." },
 ];
 

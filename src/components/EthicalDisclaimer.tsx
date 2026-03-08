@@ -24,7 +24,7 @@ export default function EthicalDisclaimer({ compact = false }: { compact?: boole
       <div className="space-y-1">
         <p className="text-sm font-heading font-bold text-foreground">Responsible Use Only</p>
         <p className="text-xs font-mono text-muted-foreground leading-relaxed">
-          HackMind is designed for authorized security testing, bug bounty hunting, and educational purposes.
+          CyberKhoj is designed for authorized security testing, bug bounty hunting, and educational purposes.
           Only test systems you own or have explicit written permission to test.
           Unauthorized access to computer systems is illegal under the CFAA, Computer Misuse Act, and equivalent laws worldwide.
         </p>

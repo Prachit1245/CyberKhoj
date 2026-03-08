@@ -4,7 +4,7 @@ import { toast } from "@/components/Toast";
 
 function pathsToMarkdown(paths: AttackPath[], input?: string): string {
   const lines: string[] = [];
-  lines.push(`# HackMind Analysis Report`);
+  lines.push(`# CyberKhoj Analysis Report`);
   if (input) lines.push(`\n**Target:** \`${input}\`\n`);
   lines.push(`**Date:** ${new Date().toISOString().slice(0, 10)}`);
   lines.push(`**Total Paths:** ${paths.length}\n`);
@@ -77,12 +77,12 @@ export default function ExportBar({ paths, input }: Props) {
   };
 
   const dlMd = () => {
-    downloadFile(pathsToMarkdown(paths, input), `hackmind-${domain}-${date}.md`, "text/markdown");
+    downloadFile(pathsToMarkdown(paths, input), `cyberkhoj-${domain}-${date}.md`, "text/markdown");
     toast.success("Markdown downloaded ✓");
   };
 
   const dlJson = () => {
-    downloadFile(JSON.stringify(paths, null, 2), `hackmind-${domain}-${date}.json`, "application/json");
+    downloadFile(JSON.stringify(paths, null, 2), `cyberkhoj-${domain}-${date}.json`, "application/json");
     toast.success("JSON downloaded ✓");
   };
 

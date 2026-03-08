@@ -10,7 +10,7 @@ const TYPES: { key: FeedbackType; label: string; icon: typeof Bug }[] = [
   { key: "general", label: "General", icon: MessageCircle },
 ];
 
-const GITHUB_ISSUES_URL = "https://github.com/hackmind-app/hackmind/issues";
+const GITHUB_ISSUES_URL = "https://github.com/cyberkhoj-app/cyberkhoj/issues";
 
 export default function FeedbackTab() {
   const [open, setOpen] = useState(false);
@@ -22,7 +22,7 @@ export default function FeedbackTab() {
   const handleCopy = () => {
     const stars = "★".repeat(rating) + "☆".repeat(5 - rating);
     const formatted = [
-      "── HackMind Feedback ──",
+      "── CyberKhoj Feedback ──",
       `Rating: ${stars} (${rating}/5)`,
       `Type: ${type.charAt(0).toUpperCase() + type.slice(1)}`,
       `Date: ${new Date().toISOString()}`,

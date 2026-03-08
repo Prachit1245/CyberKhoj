@@ -185,7 +185,7 @@ const LandingDemo = () => {
             See It In Action
           </h2>
           <p className="text-sm md:text-base text-muted-foreground font-mono max-w-lg mx-auto">
-            No API key needed. Watch HackMind analyze a real-world e-commerce API endpoint and uncover 8 attack vectors.
+            No API key needed. Watch CyberKhoj analyze a real-world e-commerce API endpoint and uncover 8 attack vectors.
           </p>
         </div>
 

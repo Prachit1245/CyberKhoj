@@ -45,7 +45,7 @@ export default function SharedView() {
           onClick={() => navigate("/")}
           className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-heading font-bold text-primary-foreground hover:brightness-110 transition-all"
         >
-          Go to HackMind
+          Go to CyberKhoj
         </button>
       </div>
     );
@@ -58,7 +58,7 @@ export default function SharedView() {
       {/* Header */}
       <div className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground">
         <button onClick={() => navigate("/")} className="hover:text-foreground cursor-pointer flex items-center gap-1">
-          <ArrowLeft className="h-3 w-3" /> HackMind
+          <ArrowLeft className="h-3 w-3" /> CyberKhoj
         </button>
       </div>
 

@@ -409,7 +409,7 @@ const Dashboard = () => {
       {/* Welcome */}
       <div>
         <h2 className="font-heading text-2xl md:text-3xl font-extrabold text-foreground">
-          Welcome to <span className="text-primary text-glow-primary">HackMind</span>
+          Welcome to <span className="text-primary text-glow-primary">CyberKhoj</span>
         </h2>
         <p className="text-sm font-mono text-muted-foreground mt-1">
           Your AI-powered hacking toolkit. All data stays in your browser.

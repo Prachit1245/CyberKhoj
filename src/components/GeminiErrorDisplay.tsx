@@ -20,7 +20,7 @@ interface GeminiErrorDisplayProps {
 /* ─── Rate Limit Terminal Animation ─── */
 const RateLimitTerminal = () => {
   const lines = [
-    "$ hackmind --analyze",
+    "$ cyberkhoj --analyze",
     "> Connecting to Gemini API...",
     "> ERROR 429: Quota/Rate limit reached",
     "> Auto-retried 3x with backoff.",
