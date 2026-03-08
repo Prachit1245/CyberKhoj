@@ -3,6 +3,7 @@ import { ArrowRight, Loader2, ChevronDown, ChevronRight, Download, AlertTriangle
 import { Badge } from "@/components/ui/badge";
 import { callGemini } from "@/lib/gemini";
 import { addToHistory, incrementStat } from "@/lib/store";
+import { checkAnalysisAchievements, checkBatchAnalysis } from "@/lib/achievements";
 import { parseTarget, contextToPromptBlock } from "@/lib/parseTarget";
 import { getUsageCount, DAILY_LIMIT } from "@/lib/usage";
 
