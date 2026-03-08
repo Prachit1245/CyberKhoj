@@ -13,6 +13,7 @@ import {
   ChevronRight,
   Bug,
   ShieldAlert,
+  Layers,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { hasApiKey } from "@/lib/gemini";
@@ -29,6 +30,7 @@ const NAV_ITEMS = [
   { to: "/payloads", label: "Payload Library", icon: Code2 },
   { to: "/cheatsheets", label: "Cheat Sheets", icon: BookOpen },
   { to: "/owasp", label: "OWASP Top 10", icon: ShieldAlert },
+  { to: "/vuln-categories", label: "Vuln Categories", icon: Layers },
   { to: "/findings", label: "Findings", icon: Bug },
   { to: "/settings", label: "Settings", icon: Settings },
 ];
@@ -42,6 +44,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/payloads": "Payload Library",
   "/cheatsheets": "Cheat Sheets",
   "/owasp": "OWASP Top 10",
+  "/vuln-categories": "Vuln Categories",
   "/findings": "Findings",
   "/settings": "Settings",
 };

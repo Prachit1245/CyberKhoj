@@ -18,6 +18,7 @@ import CheatSheets from "./pages/CheatSheets";
 import SettingsPage from "./pages/SettingsPage";
 import Findings from "./pages/Findings";
 import OwaspPage from "./pages/OwaspPage";
+import VulnCategories from "./pages/VulnCategories";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -56,6 +57,7 @@ const App = () => (
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/findings" element={<Findings />} />
               <Route path="/owasp" element={<OwaspPage />} />
+              <Route path="/vuln-categories" element={<VulnCategories />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
