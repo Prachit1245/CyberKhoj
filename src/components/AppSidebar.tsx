@@ -293,7 +293,7 @@ const AppSidebar = () => {
         {/* Top bar */}
         <header className="h-12 md:h-14 flex items-center px-4 md:px-6 border-b border-border/50 shrink-0 gap-3">
           {/* Mobile logo */}
-          <span className="md:hidden font-heading text-sm font-bold text-primary text-glow-primary mr-1">HM</span>
+          <span className="md:hidden font-heading text-sm font-bold text-primary text-glow-primary logo-cursor mr-1">HM</span>
           <h1 className="font-heading text-base md:text-lg font-bold text-foreground">{pageTitle}</h1>
           {!online && (
             <span className="flex items-center gap-1.5 rounded-full border border-destructive/40 bg-destructive/10 px-2 py-0.5 text-[10px] font-mono text-destructive animate-fade-in">
