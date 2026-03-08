@@ -38,7 +38,50 @@ const PAGE_TITLES: Record<string, string> = {
   "/settings": "Settings",
 };
 
-const AppSidebar = () => {
+const SidebarUsage = ({ collapsed, keySet }: { collapsed: boolean; keySet: boolean }) => {
+  const [count, setCount] = useState(getUsageCount());
+
+  useEffect(() => {
+    const interval = setInterval(() => setCount(getUsageCount()), 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const pct = Math.min((count / DAILY_LIMIT) * 100, 100);
+  const barColor = count >= 800 ? "bg-destructive" : count >= 500 ? "bg-yellow-500" : "bg-primary";
+
+  if (collapsed) {
+    return (
+      <div className="flex flex-col items-center gap-1">
+        <Key size={14} className={keySet ? "text-primary" : "text-destructive"} />
+        <span className="text-[10px] font-mono text-muted-foreground">{count}</span>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="flex items-center gap-2 text-xs font-mono">
+        <Key size={13} className={keySet ? "text-primary" : "text-destructive"} />
+        <span className={keySet ? "text-primary" : "text-destructive"}>
+          {keySet ? "API Key ✓" : "No Key"}
+        </span>
+      </div>
+      <div className="space-y-1.5">
+        <p className="text-[11px] font-mono text-muted-foreground">
+          Today: <span className="text-foreground">{count}</span> / {DAILY_LIMIT} analyses
+        </p>
+        <div className="h-1 w-full rounded-full bg-muted overflow-hidden">
+          <div
+            className={`h-full rounded-full transition-all duration-500 ${barColor}`}
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+      </div>
+    </>
+  );
+};
+
+
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const keySet = hasApiKey();
