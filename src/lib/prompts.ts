@@ -145,7 +145,7 @@ const extractJsonArray = (text: string): unknown[] | null => {
 
 export const parseAnalysisResponse = (raw: string): AttackPath[] => {
   if (!raw || !raw.trim()) {
-    console.error("[parseAnalysisResponse] Empty response from Gemini");
+    console.error("[parseAnalysisResponse] Empty response from AI");
     return [sanitizePath({ title: "Analysis returned empty response", severity: "Info", description: "The AI returned an empty response. Try again or adjust your target." }, 0)];
   }
 

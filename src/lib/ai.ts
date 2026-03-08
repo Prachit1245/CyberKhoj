@@ -118,7 +118,7 @@ async function callAIRaw(prompt: string, apiKey: string, signal?: AbortSignal): 
       throw new GeminiError("FORBIDDEN", "API key is restricted.", 403);
     }
     if (response.status === 429) {
-      throw new GeminiError("RATE_LIMIT", "Rate limit reached. Please wait a moment and try again.", 429);
+      throw new GeminiError("RATE_LIMIT", "Daily limit reached. Groq gives 1000 free requests per day. Resets at midnight.", 429);
     }
     throw new GeminiError("API_ERROR", `Groq API error (${response.status}): ${errText.slice(0, 200)}`, response.status);
   }

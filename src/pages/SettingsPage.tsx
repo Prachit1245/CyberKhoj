@@ -330,7 +330,7 @@ const SettingsPage = () => {
           hackmind_prefs: "preferences",
           hackmind_stats: "stats",
           hackmind_usage: "usage data",
-          hackmind_gemini_key: "API key",
+          cyberkhoj_groq_key: "API key",
         };
 
         Object.entries(data).forEach(([key, value]) => {

@@ -6,7 +6,7 @@ const STEPS = [
     num: "01",
     icon: Key,
     title: "Get Free Key",
-    desc: "Grab a Gemini API key from Google AI Studio. It's free and takes 30 seconds.",
+    desc: "Get your free Groq API key at console.groq.com in 30 seconds. No credit card. Works worldwide including Nepal.",
   },
   {
     num: "02",

@@ -279,7 +279,7 @@ const LandingDemo = () => {
               8 attack vectors found in seconds
             </div>
             <a
-              href="https://aistudio.google.com/apikey"
+              href="https://console.groq.com"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-lg bg-primary px-8 py-4 font-heading text-base font-bold text-primary-foreground hover:brightness-110 transition-all glow-primary"

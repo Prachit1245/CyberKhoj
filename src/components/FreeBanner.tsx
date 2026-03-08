@@ -9,7 +9,7 @@ const FreeBanner = () => {
           100% Free. Forever.
         </h2>
         <p className="text-sm md:text-base font-mono text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-          No subscription. No credit card. No hidden costs. Your free Gemini API key gives you 1000 analyses every single day. We make zero money from you — CyberKhoj is a gift to the bug bounty community.
+          No subscription. No credit card. No hidden costs. Your free Groq API key gives you 1000 analyses every single day. We make zero money from you — CyberKhoj is a gift to the bug bounty community.
         </p>
       </div>
     </section>

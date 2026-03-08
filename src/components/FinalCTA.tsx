@@ -8,7 +8,7 @@ const FinalCTA = () => {
 
   const handleGo = () => {
     if (apiKey.trim()) {
-      localStorage.setItem("gemini_api_key", apiKey.trim());
+      localStorage.setItem("cyberkhoj_groq_key", apiKey.trim());
     }
     navigate("/analyzer");
   };
