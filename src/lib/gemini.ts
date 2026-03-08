@@ -49,6 +49,7 @@ export class GeminiError extends Error {
 
 /* ─── Active request tracking for deduplication ─── */
 let activeController: AbortController | null = null;
+let lastRequestAt = 0;
 
 /** Abort any in-flight Gemini request */
 export const abortGeminiRequest = (): void => {
