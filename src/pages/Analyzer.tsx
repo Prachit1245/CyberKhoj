@@ -164,6 +164,7 @@ const Analyzer = () => {
       {pageTab === "JWT Decoder" ? (
         <JwtAnalyzer />
       ) : (
+      <>
       {/* Input area */}
       <div className="space-y-2">
         <label className="text-sm font-mono text-muted-foreground uppercase tracking-widest">
