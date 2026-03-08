@@ -243,7 +243,7 @@ const SettingsPage = () => {
 
   /* ── Data Management ── */
   const storageKeys = [
-    "hackmind_gemini_key",
+    "cyberkhoj_groq_key",
     "hackmind_history",
     "hackmind_findings",
     "hackmind_owasp_coverage",
