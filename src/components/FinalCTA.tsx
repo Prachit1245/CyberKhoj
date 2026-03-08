@@ -48,8 +48,8 @@ const FinalCTA = () => {
               type="password"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
-              placeholder="Paste Gemini API key (optional)"
-              aria-label="Gemini API key"
+              placeholder="Paste Groq API key (optional)"
+              aria-label="Groq API key"
               className="w-full rounded-lg border border-border bg-card pl-10 pr-4 py-3.5 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               onKeyDown={(e) => e.key === "Enter" && handleGo()}
             />
