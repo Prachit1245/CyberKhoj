@@ -1,4 +1,5 @@
 import { NavLink, useLocation, Outlet } from "react-router-dom";
+import HackMindLogo from "@/components/HackMindLogo";
 import {
   LayoutDashboard,
   Link2,
