@@ -196,7 +196,7 @@ Format as numbered list with markdown.`;
             </div>
 
             {/* Body */}
-            <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+            <div className="p-5 space-y-4 flex-1 overflow-y-auto">
               {/* Input row */}
               <div className="flex gap-2">
                 <input
