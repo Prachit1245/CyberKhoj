@@ -7,6 +7,7 @@ import ApiKeyGate from "@/components/ApiKeyGate";
 import Navbar from "@/components/Navbar";
 import AppSidebar from "@/components/AppSidebar";
 import OnboardingTour from "./components/OnboardingTour";
+import WhatsNewModal from "./components/WhatsNewModal";
 import DailyLimitOverlay from "@/components/DailyLimitOverlay";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import { SkeletonDashboard, SkeletonAnalyzer, SkeletonPage } from "@/components/Skeletons";
