@@ -193,6 +193,8 @@ const AttackPathCard = memo(({ path, onChange }: Props) => {
       </div>
     </div>
   );
-};
+});
+
+AttackPathCard.displayName = "AttackPathCard";
 
 export default AttackPathCard;
