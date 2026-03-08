@@ -159,6 +159,7 @@ const SettingsPage = () => {
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<"ok" | "fail" | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const { canInstall, isInstalled, install } = usePWAInstall();
 
   /* Prefs state */
   const [prefs, setPrefs] = useState<Prefs>(loadPrefs);
