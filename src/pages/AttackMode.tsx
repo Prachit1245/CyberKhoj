@@ -6,6 +6,110 @@ import { buildAttackModePrompt, parseAttackIdeas, type AttackIdea } from "@/lib/
 import { toast } from "@/components/Toast";
 import { useDebouncedCallback } from "@/hooks/useDebounce";
 
+/* ── Virtualized ideas grid: renders only visible rows ── */
+const VISIBLE_BATCH = 30; // show 30 at a time, load more on scroll
+
+function VirtualizedIdeasGrid({
+  ideas,
+  checklistMode,
+  checked,
+  toggleCheck,
+  catColor,
+  diffDot,
+}: {
+  ideas: AttackIdea[];
+  checklistMode: boolean;
+  checked: Set<number>;
+  toggleCheck: (id: number) => void;
+  catColor: (cat: string) => string;
+  diffDot: (d: string) => string;
+}) {
+  const [visibleLimit, setVisibleLimit] = useState(VISIBLE_BATCH);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  // Reset visible limit when ideas change
+  useEffect(() => { setVisibleLimit(VISIBLE_BATCH); }, [ideas.length]);
+
+  // Intersection observer for infinite scroll
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVisibleLimit((prev) => Math.min(prev + VISIBLE_BATCH, ideas.length));
+        }
+      },
+      { rootMargin: "200px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [ideas.length]);
+
+  const visible = ideas.slice(0, visibleLimit);
+
+  return (
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+        {visible.map((idea) => {
+          const isChecked = checked.has(idea.id);
+          return (
+            <div
+              key={idea.id}
+              onClick={checklistMode ? () => toggleCheck(idea.id) : undefined}
+              className={`p-3 rounded-lg border transition-colors ${
+                checklistMode ? "cursor-pointer" : ""
+              } ${
+                isChecked && checklistMode
+                  ? "border-primary/30 bg-primary/5 opacity-60"
+                  : "border-border/20 bg-card/30 hover:border-primary/20"
+              }`}
+            >
+              <div className="flex items-start gap-2">
+                {checklistMode ? (
+                  <span className={`shrink-0 mt-0.5 flex items-center justify-center h-5 w-5 rounded border transition-colors ${
+                    isChecked ? "bg-primary border-primary text-primary-foreground" : "border-muted-foreground/30"
+                  }`}>
+                    {isChecked && <span className="text-[10px]">✓</span>}
+                  </span>
+                ) : (
+                  <span className="shrink-0 flex items-center justify-center h-6 w-9 rounded bg-muted/30 text-[10px] font-mono text-muted-foreground font-bold">
+                    #{String(idea.id).padStart(3, "0")}
+                  </span>
+                )}
+                <span className={`shrink-0 mt-2 h-2 w-2 rounded-full ${diffDot(idea.difficulty)}`} title={idea.difficulty} />
+                <div className="min-w-0 flex-1 space-y-1.5">
+                  <p className={`font-mono text-xs leading-relaxed ${isChecked && checklistMode ? "line-through text-muted-foreground" : "text-foreground"}`}>
+                    {idea.idea}
+                  </p>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${catColor(idea.category)}`}>
+                      {idea.category}
+                    </span>
+                    <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${
+                      idea.priority === "high" ? "text-red-400 border-red-400/30" :
+                      idea.priority === "medium" ? "text-orange-400 border-orange-400/30" :
+                      "text-muted-foreground border-border/30"
+                    }`}>{idea.priority}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      {/* Sentinel for infinite scroll */}
+      {visibleLimit < ideas.length && (
+        <div ref={sentinelRef} className="flex items-center justify-center py-4">
+          <span className="text-xs font-mono text-muted-foreground animate-pulse">
+            Loading more… ({visibleLimit}/{ideas.length})
+          </span>
+        </div>
+      )}
+    </>
+  );
+}
+
 const TEMPLATES = [
   { label: "E-commerce Site", icon: ShoppingCart, context: "e-commerce web application with cart, checkout, payments" },
   { label: "Login Page", icon: LogIn, context: "authentication page with login, signup, password reset" },
