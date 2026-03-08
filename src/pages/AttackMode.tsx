@@ -15,38 +15,36 @@ const TEMPLATES = [
 const AttackMode = () => {
   const [domain, setDomain] = useState("");
   const [templateContext, setTemplateContext] = useState("");
-  const [ideas, setIdeas] = useState<AttackIdea[]>([]);
+  const [allIdeas, setAllIdeas] = useState<AttackIdea[]>([]);
+  const [visibleCount, setVisibleCount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [counter, setCounter] = useState(0);
-  const counterRef = useRef<ReturnType<typeof setInterval>>();
+  const streamRef = useRef<ReturnType<typeof setInterval>>();
 
-  useEffect(() => () => { if (counterRef.current) clearInterval(counterRef.current); }, []);
+  useEffect(() => () => { if (streamRef.current) clearInterval(streamRef.current); }, []);
 
   const generate = async () => {
     if (!domain.trim()) { toast.error("Enter a target domain"); return; }
     setLoading(true);
-    setIdeas([]);
-    setCounter(0);
-
-    // Animate counter
-    let c = 0;
-    counterRef.current = setInterval(() => {
-      c += 1 + Math.floor(Math.random() * 2);
-      if (c > 97) c = 97;
-      setCounter(c);
-    }, 180);
+    setAllIdeas([]);
+    setVisibleCount(0);
+    if (streamRef.current) clearInterval(streamRef.current);
 
     try {
       const raw = await callGemini(buildAttackModePrompt(domain, templateContext || undefined));
-      if (counterRef.current) clearInterval(counterRef.current);
-
       const parsed = parseAttackIdeas(raw);
-      setIdeas(parsed);
-      setCounter(parsed.length);
-      toast.success(`Generated ${parsed.length} attack ideas ✓`);
+      setAllIdeas(parsed);
+
+      // Simulate streaming reveal
+      let shown = 0;
+      streamRef.current = setInterval(() => {
+        shown += 1;
+        setVisibleCount(shown);
+        if (shown >= parsed.length) {
+          if (streamRef.current) clearInterval(streamRef.current);
+          toast.success(`Generated ${parsed.length} attack ideas ✓`);
+        }
+      }, 50);
     } catch (err: any) {
-      if (counterRef.current) clearInterval(counterRef.current);
-      setCounter(0);
       toast.error(err.message || "Failed to generate ideas");
     } finally {
       setLoading(false);
@@ -71,8 +69,16 @@ const AttackMode = () => {
     return "text-primary border-primary/30";
   };
 
+  const diffDot = (d: string) =>
+    d === "advanced" ? "bg-red-500" : d === "intermediate" ? "bg-yellow-500" : "bg-emerald-500";
+
+  const total = allIdeas.length;
+  const visible = allIdeas.slice(0, visibleCount);
+  const progress = total > 0 ? (visibleCount / total) * 100 : 0;
+  const streaming = visibleCount > 0 && visibleCount < total;
+
   return (
-    <div className="space-y-6 max-w-5xl">
+    <div className="space-y-6 max-w-6xl">
       {/* Header */}
       <div className="flex items-center gap-3">
         <span className="relative flex h-3 w-3">
@@ -122,60 +128,70 @@ const AttackMode = () => {
         />
         <button
           onClick={generate}
-          disabled={loading}
+          disabled={loading || streaming}
           className="h-12 px-6 rounded-lg font-heading font-bold text-sm text-white transition-all disabled:opacity-50 cursor-pointer"
-          style={{
-            background: "linear-gradient(135deg, hsl(0 80% 50%), hsl(25 95% 53%))",
-          }}
+          style={{ background: "linear-gradient(135deg, hsl(0 80% 50%), hsl(25 95% 53%))" }}
         >
           <span className="flex items-center gap-2">
             <Zap className="h-4 w-4" />
-            {loading ? "GENERATING..." : "GENERATE 100 ATTACK IDEAS"}
+            {loading ? "GENERATING..." : streaming ? "STREAMING..." : "GENERATE 100 ATTACK IDEAS"}
           </span>
         </button>
       </div>
 
-      {/* Counter */}
-      {(loading || ideas.length > 0) && (
-        <div className="text-center">
-          <span className="text-5xl font-heading font-bold tabular-nums" style={{
-            background: "linear-gradient(135deg, hsl(0 80% 50%), hsl(25 95% 53%))",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-          }}>
-            {counter}
-          </span>
-          <span className="text-muted-foreground font-mono text-sm ml-2">/ 100 ideas</span>
+      {/* Progress + Counter */}
+      {(loading || visibleCount > 0) && (
+        <div className="space-y-2">
+          {/* Progress bar */}
+          <div className="h-1 w-full rounded-full overflow-hidden" style={{ background: "hsl(0 0% 15%)" }}>
+            <div
+              className="h-full rounded-full transition-all duration-100"
+              style={{
+                width: `${loading && visibleCount === 0 ? 30 : progress}%`,
+                background: "linear-gradient(90deg, hsl(0 80% 50%), hsl(25 95% 53%))",
+              }}
+            />
+          </div>
+          <div className="text-center">
+            <span className="text-5xl font-heading font-bold tabular-nums" style={{
+              background: "linear-gradient(135deg, hsl(0 80% 50%), hsl(25 95% 53%))",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}>
+              {visibleCount}
+            </span>
+            <span className="text-muted-foreground font-mono text-sm ml-2">/ {total || 100} ideas</span>
+          </div>
         </div>
       )}
 
       {/* Ideas Grid */}
-      {ideas.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-          {ideas.map((idea) => (
+      {visible.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+          {visible.map((idea) => (
             <div
               key={idea.id}
-              className="flex gap-3 p-3 rounded-lg border border-border/20 bg-card/30 hover:border-primary/20 transition-colors animate-fade-in"
+              className="p-3 rounded-lg border border-border/20 bg-card/30 hover:border-primary/20 transition-colors animate-fade-in"
             >
-              <span className="text-xs font-mono text-muted-foreground/50 mt-0.5 shrink-0 w-6 text-right">
-                {idea.id}.
-              </span>
-              <div className="min-w-0 space-y-1">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-mono text-sm text-foreground font-medium">{idea.idea}</span>
-                  <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${catColor(idea.category)}`}>
-                    {idea.category}
-                  </span>
-                  <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${
-                    idea.difficulty === "advanced" ? "text-red-400 border-red-400/30" :
-                    idea.difficulty === "intermediate" ? "text-yellow-400 border-yellow-400/30" :
-                    "text-primary border-primary/30"
-                  }`}>{idea.difficulty}</span>
-                  <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${
-                    idea.priority === "high" ? "text-red-400 border-red-400/30" :
-                    idea.priority === "medium" ? "text-orange-400 border-orange-400/30" :
-                    "text-muted-foreground border-border/30"
-                  }`}>{idea.priority}</span>
+              <div className="flex items-start gap-2">
+                {/* Number badge */}
+                <span className="shrink-0 flex items-center justify-center h-6 w-9 rounded bg-muted/30 text-[10px] font-mono text-muted-foreground font-bold">
+                  #{String(idea.id).padStart(3, "0")}
+                </span>
+                {/* Difficulty dot */}
+                <span className={`shrink-0 mt-2 h-2 w-2 rounded-full ${diffDot(idea.difficulty)}`} title={idea.difficulty} />
+                <div className="min-w-0 flex-1 space-y-1.5">
+                  <p className="font-mono text-xs text-foreground leading-relaxed">{idea.idea}</p>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${catColor(idea.category)}`}>
+                      {idea.category}
+                    </span>
+                    <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${
+                      idea.priority === "high" ? "text-red-400 border-red-400/30" :
+                      idea.priority === "medium" ? "text-orange-400 border-orange-400/30" :
+                      "text-muted-foreground border-border/30"
+                    }`}>{idea.priority}</span>
+                  </div>
                 </div>
               </div>
             </div>
