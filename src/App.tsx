@@ -13,6 +13,7 @@ import FeedbackTab from "@/components/FeedbackTab";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import AchievementOverlay from "@/components/AchievementOverlay";
 import LevelUpOverlay from "@/components/LevelUpOverlay";
+import PrivateBrowsingBanner from "@/components/PrivateBrowsingBanner";
 import { SkeletonDashboard, SkeletonAnalyzer, SkeletonPage } from "@/components/Skeletons";
 
 /* ── Lazy-loaded pages ── */
@@ -51,6 +52,7 @@ const App = () => (
     <TooltipProvider>
       <BrowserRouter>
         <a href="#main-content" className="skip-to-content">Skip to content</a>
+        <PrivateBrowsingBanner />
         <PWAInstallPrompt />
         <WhatsNewModal />
         <FeedbackTab />
