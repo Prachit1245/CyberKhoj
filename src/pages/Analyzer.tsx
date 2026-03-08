@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Trash2, ArrowRight, Loader2 } from "lucide-react";
 import { callGemini } from "@/lib/gemini";
 import { addToHistory, incrementStat } from "@/lib/store";
+import { parseTarget, contextToPromptBlock } from "@/lib/parseTarget";
 
 const DEPTHS = ["Quick", "Standard", "Deep"] as const;
 const TYPES = ["URL", "HTTP Request", "JWT Token", "GraphQL"] as const;
@@ -18,10 +19,15 @@ const buildPrompt = (target: string, depth: Depth, type: AnalysisType): string =
         ? "Provide an exhaustive, extremely detailed analysis with every possible attack vector, edge case, and bypass technique. Include at least 15-20 attack paths."
         : "Provide a thorough analysis with 8-12 attack paths covering major vulnerability categories.";
 
+  const ctx = parseTarget(target);
+  const contextBlock = contextToPromptBlock(ctx);
+
   return `You are an elite bug bounty hunter and penetration tester. Analyze the following ${type} target for security vulnerabilities.
 
 Target:
 ${target}
+
+${contextBlock}
 
 ${depthInstruction}
 
