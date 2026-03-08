@@ -45,6 +45,24 @@ const AttackMode = () => {
 
   useEffect(() => () => { if (streamRef.current) clearInterval(streamRef.current); }, []);
 
+  // Keyboard shortcut: Ctrl+Enter = generate
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        document.dispatchEvent(new CustomEvent("hackmind:run-attack"));
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
+  useEffect(() => {
+    const run = () => { if (!loading) generate(); };
+    document.addEventListener("hackmind:run-attack", run);
+    return () => document.removeEventListener("hackmind:run-attack", run);
+  });
+
   // Load saved checklist when domain changes and ideas exist
   useEffect(() => {
     if (domain && allIdeas.length > 0) {
