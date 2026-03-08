@@ -290,6 +290,7 @@ const Analyzer = () => {
           )}
         </div>
       </div>
+      </>
       )}
     </div>
   );
