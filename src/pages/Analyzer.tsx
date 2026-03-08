@@ -158,7 +158,7 @@ const Analyzer = () => {
     startTypingSound();
 
     try {
-      const prompt = buildPrompt(trimmed, depth, analysisType, selectedTemplate?.context);
+      const prompt = buildPrompt(trimmed, depth, analysisType, selectedTemplate?.context, beginner);
       const response = await callGemini(prompt);
       setResult(response);
 
