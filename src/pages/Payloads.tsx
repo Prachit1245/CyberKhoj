@@ -48,6 +48,27 @@ function PayloadCard({ payload, isFav, onToggleFav }: { payload: Payload; isFav:
         </pre>
         <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
+            onClick={() => {
+              const { added } = toggleBookmark({
+                type: "payload",
+                title: payload.description,
+                description: payload.code.slice(0, 100),
+                sourceContext: payload.category || "Payload Library",
+                severity: payload.severity,
+                code: payload.code,
+              });
+              setBookmarked(added);
+              toast[added ? "success" : "info"](added ? "Payload bookmarked ✓" : "Bookmark removed");
+            }}
+            className={`p-1.5 rounded-md border transition-colors cursor-pointer ${
+              bookmarked
+                ? "bg-primary/15 border-primary/30 text-primary"
+                : "bg-muted/60 border-border/30 text-muted-foreground hover:text-primary"
+            }`}
+          >
+            {bookmarked ? <BookmarkCheck className="h-3.5 w-3.5" /> : <Bookmark className="h-3.5 w-3.5" />}
+          </button>
+          <button
             onClick={onToggleFav}
             className={`p-1.5 rounded-md border transition-colors cursor-pointer ${
               isFav
