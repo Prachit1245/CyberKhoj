@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { isBeginnerMode } from "@/lib/beginnerMode";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, RefreshCw, FileJson, FileText, Trash2, ChevronRight, Calendar, Target, Layers, Clock, Hash } from "lucide-react";
 import { Button } from "@/components/ui/button";
