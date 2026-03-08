@@ -65,6 +65,7 @@ const Index = () => {
       <HowItWorks />
       <Features />
       <FreeBanner />
+      <Footer />
     </div>
   );
 };
