@@ -3,6 +3,18 @@ import type { AttackPath, AnalysisDepth } from "@/types";
 
 export type { AttackPath, AnalysisDepth };
 
+/* ─── Shared negative constraints ─── */
+const NEGATIVE_CONSTRAINTS = `
+STRICT RULES:
+- Do NOT repeat attack paths. Every path must be unique.
+- Do NOT give generic security advice. Every path must be specific to the provided target's URL, parameters, headers, and technology.
+- Do NOT include introductions, conclusions, or explanatory text outside the JSON.
+- Do NOT wrap the response in markdown code fences.
+- Start your response with [ or {.`;
+
+const JSON_INSTRUCTION = `Return ONLY valid JSON with no markdown formatting, no code blocks, no explanation text. Start your response with [ or {.`;
+
+/* ─── Depth config ─── */
 const DEPTH_CONFIG: Record<AnalysisDepth, { count: number; instruction: string }> = {
   quick: {
     count: 10,
@@ -14,7 +26,7 @@ const DEPTH_CONFIG: Record<AnalysisDepth, { count: number; instruction: string }
   },
   deep: {
     count: 50,
-    instruction: "Return exactly 50 attack paths. Be exhaustive: cover every possible attack vector, bypass technique, business logic flaw, race condition, and chained exploit. Leave nothing out.",
+    instruction: "Return exactly 50 attack paths. Be exhaustive: cover every possible attack vector, bypass technique, business logic flaw, race condition, and chained exploit.",
   },
 };
 
@@ -26,7 +38,11 @@ export const buildAnalysisPrompt = (
   const cfg = DEPTH_CONFIG[depth];
   const contextBlock = contextToPromptBlock(context);
 
-  const system = `You are an elite bug bounty hunter and penetration tester with deep expertise in web application security. Analyze the given target and generate specific, actionable attack paths. Return ONLY valid JSON — no markdown, no code fences, no explanation outside the JSON array.`;
+  const system = `You are an elite bug bounty hunter and penetration tester with deep expertise in web application security. Analyze the given target and generate specific, actionable attack paths.
+
+${JSON_INSTRUCTION}
+
+${NEGATIVE_CONSTRAINTS}`;
 
   const user = `Analyze this target for security vulnerabilities and generate ${cfg.count} attack paths.
 
@@ -48,8 +64,8 @@ ${cfg.instruction}
     "title": "IDOR via user ID parameter",
     "category": "IDOR",
     "severity": "Critical",
-    "description": "The id parameter appears to be a sequential numeric identifier...",
-    "payloadExample": "GET /api/user?id=46",
+    "description": "The id parameter appears to be a sequential numeric identifier that can be manipulated to access other users' data without authorization checks.",
+    "payloadExample": "GET /api/user?id=46\\nGET /api/user?id=1",
     "steps": [
       "Capture the original request in Burp Suite",
       "Change id=45 to id=46",
@@ -61,7 +77,8 @@ ${cfg.instruction}
   }
 ]
 
-Return ONLY the JSON array. No additional text.`;
+Severity MUST be one of: "Critical", "High", "Medium", "Low".
+${JSON_INSTRUCTION}`;
 
   return { system, user };
 };
@@ -90,21 +107,19 @@ const sanitizePath = (item: Record<string, unknown>, index: number): AttackPath 
 });
 
 const extractJsonArray = (text: string): unknown[] | null => {
-  // 1. Strip markdown code fences
   let cleaned = text.trim();
   cleaned = cleaned.replace(/^```(?:json)?\s*/im, "").replace(/\s*```\s*$/m, "");
 
-  // 2. Try direct parse
+  // Try direct parse
   try {
     const parsed = JSON.parse(cleaned);
     if (Array.isArray(parsed)) return parsed;
-    // Handle wrapped objects
     for (const key of ["paths", "attack_paths", "results", "attackPaths", "data"]) {
       if (parsed[key] && Array.isArray(parsed[key])) return parsed[key];
     }
   } catch { /* continue */ }
 
-  // 3. Extract first JSON array from text
+  // Extract first JSON array from text
   const match = cleaned.match(/\[[\s\S]*\]/);
   if (match) {
     try {
@@ -133,15 +148,12 @@ export const parseAnalysisResponse = (raw: string): AttackPath[] => {
     }, 0)];
   }
 
-  const results = arr.map((item, i) => {
+  return arr.map((item, i) => {
     if (typeof item !== "object" || item === null) {
-      console.warn(`[parseAnalysisResponse] Item ${i} is not an object, skipping`);
       return sanitizePath({ title: `Invalid item ${i + 1}` }, i);
     }
     return sanitizePath(item as Record<string, unknown>, i);
   });
-
-  return results;
 };
 
 /* ── Attack Mode prompt ── */
@@ -172,16 +184,31 @@ Cover ALL of these categories comprehensively:
 - Information disclosure
 - Advanced techniques (deserialization, prototype pollution, cache poisoning, HTTP smuggling)
 
-Each idea must be specific and immediately actionable — not generic advice.
+${NEGATIVE_CONSTRAINTS}
 
-Return ONLY a JSON array of exactly 100 objects with this schema:
-{ "id": number, "idea": string, "category": string, "difficulty": "beginner"|"intermediate"|"advanced", "priority": "high"|"medium"|"low" }
+Each idea must be specific and immediately actionable for "${domain}" — not generic advice that could apply to any website.
 
-No markdown fences, no explanation, just the raw JSON array.`;
+Return ONLY a JSON array of exactly 100 objects with this exact schema:
+[
+  {
+    "id": 1,
+    "idea": "Test /api/v1/users/{id} endpoint for IDOR by iterating numeric IDs",
+    "category": "IDOR",
+    "difficulty": "beginner",
+    "priority": "high"
+  }
+]
+
+Difficulty must be one of: "beginner", "intermediate", "advanced".
+Priority must be one of: "high", "medium", "low".
+
+${JSON_INSTRUCTION}`;
 };
 
 export const parseAttackIdeas = (raw: string): AttackIdea[] => {
-  const match = raw.match(/\[[\s\S]*\]/);
+  // Strip markdown fences
+  let cleaned = raw.trim().replace(/^```(?:json)?\s*/im, "").replace(/\s*```\s*$/m, "");
+  const match = cleaned.match(/\[[\s\S]*\]/);
   if (!match) throw new Error("Could not parse attack ideas from AI response");
   const parsed = JSON.parse(match[0]) as AttackIdea[];
   return parsed.map((item, i) => ({
@@ -207,6 +234,8 @@ export interface MindMapNode {
 
 export const buildMindMapPrompt = (domain: string): string => {
   return `You are a senior penetration tester. Generate a security attack surface mind map for "${domain}".
+
+${NEGATIVE_CONSTRAINTS}
 
 Return ONLY a JSON object with this exact schema:
 {
@@ -236,19 +265,23 @@ Return ONLY a JSON object with this exact schema:
       "parentId": "cat-auth",
       "severity": "high",
       "description": "Test for rate limiting on login endpoint",
-      "attackIdeas": ["Try credential stuffing", "Test lockout policy"]
+      "attackIdeas": ["Try credential stuffing with leaked databases", "Test account lockout policy bypass"]
     }
   ]
 }
 
+All attack ideas must be specific to "${domain}", not generic.
 Categories MUST include: Authentication, API, Admin, FileUpload, UserProfile, Search, Payment, Integrations.
 Each category must have 4-6 specific attack child nodes with severity ratings and 2-3 attackIdeas each.
+Type must be one of: "root", "category", "attack".
+Severity for attack nodes must be one of: "critical", "high", "medium", "low".
 
-No markdown fences, no explanation, just the raw JSON object.`;
+${JSON_INSTRUCTION}`;
 };
 
 export const parseMindMapNodes = (raw: string): MindMapNode[] => {
-  const match = raw.match(/\{[\s\S]*\}/);
+  let cleaned = raw.trim().replace(/^```(?:json)?\s*/im, "").replace(/\s*```\s*$/m, "");
+  const match = cleaned.match(/\{[\s\S]*\}/);
   if (!match) throw new Error("Could not parse mind map from AI response");
   const parsed = JSON.parse(match[0]);
   const nodes: MindMapNode[] = parsed.nodes || [];

@@ -54,14 +54,19 @@ Target: ${url}
 
 ${contextBlock}
 
+STRICT RULES:
+- Do NOT repeat attack paths. Every path must be unique.
+- Do NOT give generic advice. Every path must be specific to this exact URL and its parameters.
+- Every payload must use the actual URL and parameter names shown above.
+
 Provide a thorough analysis with 8-12 attack paths covering major vulnerability categories.
 
 For each attack path, provide:
 1. **Attack Vector Name**
 2. **Severity** (Critical / High / Medium / Low / Info)
-3. **Description**
+3. **Description** — specific to this target
 4. **Steps to Test**
-5. **Example Payload**
+5. **Example Payload** — using the actual URL and parameters
 6. **Potential Impact**
 
 Format with markdown headers and bullet points.`;

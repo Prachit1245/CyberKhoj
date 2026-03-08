@@ -255,7 +255,7 @@ function MindMapCanvas() {
     setCheckedIdeas({});
     setNodeMetadata({});
     try {
-      const raw = await callGemini(buildMindMapPrompt(domain));
+      const raw = await callGemini(buildMindMapPrompt(domain), true);
       const parsed = parseMindMapNodes(raw);
       rawNodesRef.current = parsed;
       setHasData(true);

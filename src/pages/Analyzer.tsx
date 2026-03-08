@@ -41,10 +41,10 @@ const TARGET_TEMPLATES: TargetTemplate[] = [
 const buildPrompt = (target: string, depth: Depth, type: AnalysisType, templateContext?: string): string => {
   const depthInstruction =
     depth === "Quick"
-      ? "Provide a brief, concise analysis with the top 5 most critical attack paths."
+      ? "Return exactly 5 attack paths focusing on the most critical vulnerabilities."
       : depth === "Deep"
-        ? "Provide an exhaustive, extremely detailed analysis with every possible attack vector, edge case, and bypass technique. Include at least 15-20 attack paths."
-        : "Provide a thorough analysis with 8-12 attack paths covering major vulnerability categories.";
+        ? "Return at least 15-20 attack paths. Be exhaustive: every possible attack vector, edge case, and bypass technique."
+        : "Return 8-12 attack paths covering major vulnerability categories.";
 
   const ctx = parseTarget(target);
   const contextBlock = contextToPromptBlock(ctx);
@@ -59,12 +59,17 @@ ${contextBlock}
 ${templateContext ? `## Target Type Context\n${templateContext}\n` : ""}
 ${depthInstruction}
 
+STRICT RULES:
+- Do NOT repeat attack paths. Every path must be unique.
+- Do NOT give generic security advice. Every path must be specific to THIS target's URL, parameters, and technology.
+- Every payload must be tailored to the actual target URL and parameters shown above.
+
 For each attack path, provide:
 1. **Attack Vector Name** (e.g., "IDOR via user ID parameter")
 2. **Severity** (Critical / High / Medium / Low / Info)
-3. **Description** — What the vulnerability is
+3. **Description** — What the vulnerability is, specific to this target
 4. **Steps to Test** — Exact steps a bug bounty hunter would take
-5. **Example Payload** — A ready-to-use test payload if applicable
+5. **Example Payload** — A ready-to-use test payload using the actual target URL/parameters
 6. **Potential Impact** — What an attacker could achieve
 
 Also provide:
