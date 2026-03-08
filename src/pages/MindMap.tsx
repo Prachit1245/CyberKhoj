@@ -811,6 +811,8 @@ function MindMapCanvas() {
           />
         )}
       </div>
+      </>
+      )}
     </div>
   );
 }
