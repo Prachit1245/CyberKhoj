@@ -155,9 +155,9 @@ const Analyzer = () => {
       incrementStat("totalAnalyses");
       incrementStat("attackPaths", pathCount);
       checkAnalysisAchievements();
-      if (depth === "deep") checkDeepAnalysis();
+      if (depth === "Deep") checkDeepAnalysis();
       if (/critical/i.test(response)) checkCriticalFound();
-      if (analysisType === "JWT") checkJwtAnalysis();
+      if (analysisType === "JWT Token") checkJwtAnalysis();
 
       // Extract domain for stats
       try {
