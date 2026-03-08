@@ -48,6 +48,7 @@ const App = () => (
     <TooltipProvider>
       <BrowserRouter>
         <PWAInstallPrompt />
+        <WhatsNewModal />
         <Routes>
           {/* Public routes — no API key needed */}
           <Route
