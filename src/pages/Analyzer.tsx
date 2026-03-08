@@ -357,9 +357,11 @@ const Analyzer = () => {
             setResult("");
             setError("");
           }}
+          title="Ctrl+L"
           className="flex items-center gap-2 rounded-lg border border-border px-5 py-3 font-heading text-sm font-bold text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all"
         >
           <Trash2 size={16} /> Clear
+          <kbd className="hidden sm:inline-flex ml-1 px-1.5 py-0.5 rounded border border-border text-[10px] font-mono opacity-50">⌘L</kbd>
         </button>
       </div>
 
