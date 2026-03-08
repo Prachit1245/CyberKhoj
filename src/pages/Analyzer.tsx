@@ -74,6 +74,7 @@ Format your response clearly with markdown headers and bullet points.`;
 };
 
 const Analyzer = () => {
+  const online = useOnline();
   const [pageTab, setPageTab] = useState<(typeof PAGE_TABS)[number]>("URL Analyzer");
   const [target, setTarget] = useState("");
   const [depth, setDepth] = useState<Depth>("Standard");
