@@ -59,6 +59,7 @@ const Index = () => {
 
       <HowItWorks />
       <Features />
+      <FreeBanner />
     </div>
   );
 };
