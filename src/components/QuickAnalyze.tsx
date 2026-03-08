@@ -49,6 +49,7 @@ const parseQuickPaths = (raw: string): QuickPath[] => {
 };
 
 const QuickAnalyze = () => {
+  const online = useOnline();
   const [open, setOpen] = useState(false);
   const [target, setTarget] = useState("");
   const [loading, setLoading] = useState(false);
