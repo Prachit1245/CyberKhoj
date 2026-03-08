@@ -22,10 +22,11 @@ const RateLimitTerminal = () => {
   const lines = [
     "$ hackmind --analyze",
     "> Connecting to Gemini API...",
-    "> ERROR 429: Too Many Requests",
-    "> Request burst limit reached.",
-    "> Wait 10-30 seconds, then retry.",
-    "> If it persists, check quota in AI Studio.",
+    "> ERROR 429: Rate limit reached",
+    "> Auto-retried 3x with backoff.",
+    "> Gemini free tier: ~15 req/min.",
+    "> Fix: Wait 1-2 min, then retry.",
+    "> Or: Check quota at aistudio.google.com",
     "> _",
   ];
 
