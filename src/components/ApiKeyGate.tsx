@@ -1,4 +1,5 @@
 import { useState, useEffect, type ReactNode } from "react";
+import { Play, X } from "lucide-react";
 import { hasApiKey, saveApiKey } from "@/lib/gemini";
 import { toast } from "@/components/Toast";
 import EthicalDisclaimer from "@/components/EthicalDisclaimer";
@@ -13,6 +14,7 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [successAnim, setSuccessAnim] = useState(false);
+  const [showDemo, setShowDemo] = useState(false);
 
   useEffect(() => {
     setUnlocked(hasApiKey());
@@ -106,6 +108,12 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
             >
               Get Free API Key →
             </a>
+            <button
+              onClick={() => setShowDemo(true)}
+              className="flex items-center justify-center gap-2 w-full rounded-lg border border-primary/30 bg-primary/5 px-5 py-2.5 font-mono text-sm text-primary transition-all hover:bg-primary/10"
+            >
+              <Play size={14} /> Watch Demo
+            </button>
           </div>
 
           {/* Step 2 */}
@@ -173,6 +181,35 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
           50% { opacity: 0; }
         }
       `}</style>
+
+      {/* Demo Video Modal */}
+      {showDemo && (
+        <div
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-background/90 backdrop-blur-sm px-4"
+          onClick={(e) => { if (e.target === e.currentTarget) setShowDemo(false); }}
+        >
+          <div className="w-full max-w-2xl rounded-xl border border-primary/30 bg-card p-4 animate-scale-in">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-heading font-bold text-foreground text-sm">
+                <Play size={14} className="inline mr-1.5 text-primary" />
+                How to Get Your Free API Key
+              </h3>
+              <button onClick={() => setShowDemo(false)} className="text-muted-foreground hover:text-foreground transition-colors">
+                <X size={18} />
+              </button>
+            </div>
+            <video
+              src="/demo-get-key.mkv"
+              controls
+              autoPlay
+              className="w-full rounded-lg border border-border"
+              style={{ maxHeight: "70vh" }}
+            >
+              Your browser does not support this video format.
+            </video>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
