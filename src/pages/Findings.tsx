@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
-import { Plus, Download, Trash2, ChevronDown, ChevronUp, X, DollarSign, Target, Shield, Bug } from "lucide-react";
+import { Plus, Download, Trash2, ChevronDown, ChevronUp, X, DollarSign, Target, Shield, Bug, FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import ReportWriterModal from "@/components/ReportWriterModal";
 import {
   type Finding, type FindingSeverity, type FindingStatus, type FindingPlatform, type VulnType,
   VULN_TYPES, getFindings, addFinding, deleteFinding, exportFindingsMarkdown,
@@ -49,6 +50,8 @@ const Findings = () => {
   const [sortKey, setSortKey] = useState<SortKey>("createdAt");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const [reportFinding, setReportFinding] = useState<Finding | null>(null);
 
   const refresh = () => setFindings(getFindings());
 
@@ -293,12 +296,20 @@ const Findings = () => {
                       </div>
                     )}
 
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleDelete(f.id); }}
-                      className="flex items-center gap-1.5 text-xs font-mono text-destructive hover:text-destructive/80 transition-colors"
-                    >
-                      <Trash2 size={12} /> Delete Finding
-                    </button>
+                    <div className="flex items-center gap-4">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setReportFinding(f); }}
+                        className="flex items-center gap-1.5 text-xs font-mono text-primary hover:text-primary/80 transition-colors"
+                      >
+                        <FileText size={12} /> Write Report
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleDelete(f.id); }}
+                        className="flex items-center gap-1.5 text-xs font-mono text-destructive hover:text-destructive/80 transition-colors"
+                      >
+                        <Trash2 size={12} /> Delete Finding
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -313,6 +324,11 @@ const Findings = () => {
             <p className="text-xs font-mono text-muted-foreground/30 mt-1">Click "New Finding" to log your first confirmed vulnerability.</p>
           </div>
         )
+      )}
+
+      {/* Report Writer Modal */}
+      {reportFinding && (
+        <ReportWriterModal finding={reportFinding} onClose={() => setReportFinding(null)} />
       )}
     </div>
   );
