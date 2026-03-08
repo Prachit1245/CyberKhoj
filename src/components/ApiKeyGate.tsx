@@ -36,14 +36,23 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
       if (!res.ok) {
         const body = await res.text();
         console.error("API key validation failed:", res.status, body);
-        if (res.status === 400) {
-          setError("API key works but request failed. Try again.");
-        } else if (res.status === 403) {
-          setError("API key is restricted or the Gemini API is not enabled for your project. Visit aistudio.google.com/apikey to check.");
-        } else {
-          setError(`Validation failed (${res.status}). Make sure you copied the key correctly.`);
+
+        if (res.status === 429) {
+          // Key is valid but quota is exhausted; let user proceed so app can show quota errors contextually.
+          saveApiKey(trimmed);
+          setSuccessAnim(true);
+          toast.warning("API key saved, but your Gemini quota is currently exhausted (429).");
+          setTimeout(() => setUnlocked(true), 600);
+          return;
         }
-        setLoading(false);
+
+        if (res.status === 400) {
+          setError("Request failed while validating key. Please try again.");
+        } else if (res.status === 403) {
+          setError("API key is restricted or Gemini API is not enabled for this project.");
+        } else {
+          setError(`Validation failed (${res.status}). Please verify your key and try again.`);
+        }
         return;
       }
 
