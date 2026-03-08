@@ -102,6 +102,7 @@ const AppSidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const keySet = hasApiKey();
+  const online = useOnline();
 
   const pageTitle = PAGE_TITLES[location.pathname] || "HackMind";
 
