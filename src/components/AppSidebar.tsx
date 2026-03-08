@@ -96,23 +96,7 @@ const AppSidebar = () => {
 
         {/* Bottom status */}
         <div className="border-t border-border/50 p-3 space-y-2">
-          {!collapsed ? (
-            <>
-              <div className="flex items-center gap-2 text-xs font-mono">
-                <Key size={13} className={keySet ? "text-primary" : "text-destructive"} />
-                <span className={keySet ? "text-primary" : "text-destructive"}>
-                  {keySet ? "API Key ✓" : "No Key"}
-                </span>
-              </div>
-              <div className="text-xs font-mono text-muted-foreground">
-                <span className="text-foreground">0</span> / 1000 today
-              </div>
-            </>
-          ) : (
-            <div className="flex justify-center">
-              <Key size={14} className={keySet ? "text-primary" : "text-destructive"} />
-            </div>
-          )}
+        <SidebarUsage collapsed={collapsed} keySet={keySet} />
         </div>
       </aside>
 
