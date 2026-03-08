@@ -275,7 +275,7 @@ const AttackMode = () => {
       )}
 
       {/* Checklist toolbar */}
-      {visible.length > 0 && (
+      {revealed.length > 0 && (
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => setChecklistMode(!checklistMode)}
