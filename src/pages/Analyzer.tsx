@@ -82,6 +82,23 @@ const Analyzer = () => {
   const [resultTab, setResultTab] = useState<(typeof RESULT_TABS)[number]>("Attack Paths");
   const [selectedTemplate, setSelectedTemplate] = useState<TargetTemplate | null>(null);
 
+  // Check for prefill from OWASP page
+  useEffect(() => {
+    const raw = sessionStorage.getItem("hackmind_prefill");
+    if (raw) {
+      try {
+        const { target: t, templateContext } = JSON.parse(raw);
+        if (t) setTarget(t);
+        if (templateContext) {
+          const match = TARGET_TEMPLATES.find((tmpl) => tmpl.context === templateContext);
+          if (match) setSelectedTemplate(match);
+          else setSelectedTemplate({ label: "OWASP", example: t || "", context: templateContext });
+        }
+      } catch { /* ignore */ }
+      sessionStorage.removeItem("hackmind_prefill");
+    }
+  }, []);
+
   const handleAnalyze = async () => {
     const trimmed = target.trim();
     if (!trimmed) {
