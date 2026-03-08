@@ -116,9 +116,12 @@ const sanitizePath = (item: Record<string, unknown>, index: number): AttackPath 
   userNotes: "",
 });
 
+/** Strip all markdown code fences from Gemini responses */
+const stripAllFences = (text: string): string =>
+  text.replace(/```(?:json)?\s*/gi, "").trim();
+
 const extractJsonArray = (text: string): unknown[] | null => {
-  let cleaned = text.trim();
-  cleaned = cleaned.replace(/^```(?:json)?\s*/im, "").replace(/\s*```\s*$/m, "");
+  const cleaned = stripAllFences(text);
 
   // Try direct parse
   try {
