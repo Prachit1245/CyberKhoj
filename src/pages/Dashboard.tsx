@@ -140,43 +140,138 @@ function saveGoal(goal: MonthlyGoal) {
   localStorage.setItem(GOALS_KEY, JSON.stringify(goal));
 }
 
-/* ── Sparkline SVG ── */
-function Sparkline({ data }: { data: { label: string; count: number }[] }) {
-  const max = Math.max(...data.map((d) => d.count), 1);
-  const w = 280;
-  const h = 60;
-  const padding = 4;
-  const stepX = (w - padding * 2) / (data.length - 1);
+/* ── Severity Donut Chart ── */
+const SEV_COLORS: Record<string, string> = {
+  critical: "hsl(0 80% 50%)",
+  high: "hsl(25 95% 53%)",
+  medium: "hsl(45 93% 47%)",
+  low: "hsl(210 80% 55%)",
+};
+const SEV_ORDER = ["critical", "high", "medium", "low"] as const;
 
-  const points = data.map((d, i) => ({
-    x: padding + i * stepX,
-    y: h - padding - ((d.count / max) * (h - padding * 2)),
-  }));
+function severityFromHistory(history: AnalysisRecord[]): Record<string, number> {
+  const counts: Record<string, number> = { critical: 0, high: 0, medium: 0, low: 0 };
+  for (const h of history) {
+    const text = (h.result || "").toLowerCase();
+    for (const sev of SEV_ORDER) {
+      const re = new RegExp(`"severity"\\s*:\\s*"${sev}"`, "gi");
+      const m1 = text.match(re);
+      if (m1) counts[sev] += m1.length;
+      const re2 = new RegExp(`\\*\\*severity\\*\\*.*?${sev}|severity:\\s*${sev}`, "gi");
+      const m2 = text.match(re2);
+      if (m2) counts[sev] += m2.length;
+    }
+  }
+  return counts;
+}
 
-  const linePath = points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
-  const areaPath = `${linePath} L ${points[points.length - 1].x} ${h} L ${points[0].x} ${h} Z`;
+function DonutChart({ data }: { data: Record<string, number> }) {
+  const [mounted, setMounted] = useState(false);
+  const [hover, setHover] = useState<string | null>(null);
+
+  useEffect(() => { const t = setTimeout(() => setMounted(true), 50); return () => clearTimeout(t); }, []);
+
+  const total = Object.values(data).reduce((a, b) => a + b, 0);
+  if (total === 0) {
+    return <p className="text-xs font-mono text-muted-foreground/40 italic py-8 text-center">Run analyses to see severity distribution</p>;
+  }
+
+  const cx = 100, cy = 100, r = 70, strokeW = 28;
+  const circumference = 2 * Math.PI * r;
+  let accumulated = 0;
+
+  const segments = SEV_ORDER
+    .filter((s) => data[s] > 0)
+    .map((sev) => {
+      const frac = data[sev] / total;
+      const offset = accumulated;
+      accumulated += frac;
+      return { sev, frac, offset, count: data[sev] };
+    });
 
   return (
-    <div className="space-y-2">
-      <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-16" preserveAspectRatio="none">
-        <defs>
-          <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="hsl(110 100% 55%)" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="hsl(110 100% 55%)" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        <path d={areaPath} fill="url(#sparkGrad)" />
-        <path d={linePath} fill="none" stroke="hsl(110 100% 55%)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        {points.map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r="3" fill="hsl(110 100% 55%)" opacity={i === points.length - 1 ? 1 : 0.5} />
+    <div className="flex flex-col items-center">
+      <svg viewBox="0 0 200 200" className="w-48 h-48">
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke="hsl(var(--muted))" strokeWidth={strokeW} opacity={0.3} />
+        {segments.map((seg) => (
+          <circle
+            key={seg.sev}
+            cx={cx} cy={cy} r={r}
+            fill="none"
+            stroke={SEV_COLORS[seg.sev]}
+            strokeWidth={hover === seg.sev ? strokeW + 6 : strokeW}
+            strokeDasharray={`${seg.frac * circumference} ${circumference}`}
+            strokeDashoffset={mounted ? -seg.offset * circumference : circumference}
+            transform={`rotate(-90 ${cx} ${cy})`}
+            strokeLinecap="butt"
+            className="transition-all duration-700 cursor-pointer"
+            onMouseEnter={() => setHover(seg.sev)}
+            onMouseLeave={() => setHover(null)}
+          >
+            <title>{`${seg.sev.charAt(0).toUpperCase() + seg.sev.slice(1)}: ${seg.count}`}</title>
+          </circle>
         ))}
+        <text x={cx} y={cy - 8} textAnchor="middle" className="fill-foreground font-heading" style={{ fontSize: 28, fontWeight: 700 }}>{total}</text>
+        <text x={cx} y={cy + 14} textAnchor="middle" className="fill-muted-foreground font-mono" style={{ fontSize: 10 }}>
+          {hover ? `${hover.charAt(0).toUpperCase() + hover.slice(1)}: ${data[hover]}` : "total paths"}
+        </text>
       </svg>
-      <div className="flex justify-between text-[9px] font-mono text-muted-foreground/60 px-1">
-        {data.map((d, i) => (
-          <span key={i}>{d.label}</span>
+      <div className="flex gap-3 mt-2">
+        {segments.map((seg) => (
+          <div key={seg.sev} className="flex items-center gap-1 text-[10px] font-mono text-muted-foreground">
+            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: SEV_COLORS[seg.sev] }} />
+            {seg.sev.charAt(0).toUpperCase() + seg.sev.slice(1)}
+          </div>
         ))}
       </div>
     </div>
+  );
+}
+
+/* ── 7-Day Bar Chart ── */
+function WeekBarChart({ data }: { data: { label: string; count: number }[] }) {
+  const [mounted, setMounted] = useState(false);
+  const [hoverIdx, setHoverIdx] = useState<number | null>(null);
+
+  useEffect(() => { const t = setTimeout(() => setMounted(true), 50); return () => clearTimeout(t); }, []);
+
+  const max = Math.max(...data.map((d) => d.count), 1);
+  const barW = 28, gap = 10, h = 120, padTop = 20, padBot = 22;
+  const chartH = h - padTop - padBot;
+  const w = data.length * (barW + gap) - gap + 20;
+  const todayIdx = data.length - 1;
+
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} className="w-full" style={{ maxHeight: 140 }}>
+      {data.map((d, i) => {
+        const x = 10 + i * (barW + gap);
+        const barH = mounted ? (d.count / max) * chartH : 0;
+        const y = padTop + chartH - barH;
+        const isToday = i === todayIdx;
+        const isHovered = hoverIdx === i;
+
+        return (
+          <g key={i} onMouseEnter={() => setHoverIdx(i)} onMouseLeave={() => setHoverIdx(null)} className="cursor-pointer">
+            <rect x={x} y={padTop} width={barW} height={chartH} rx={4} fill="hsl(var(--muted))" opacity={0.2} />
+            <rect
+              x={x} y={y} width={barW} height={barH} rx={4}
+              fill={isToday ? "hsl(var(--primary))" : "hsl(110 100% 55% / 0.5)"}
+              className="transition-all duration-700"
+              style={{ transitionDelay: `${i * 60}ms` }}
+            />
+            {isHovered && d.count > 0 && (
+              <>
+                <rect x={x - 6} y={y - 22} width={barW + 12} height={18} rx={4} fill="hsl(var(--popover))" stroke="hsl(var(--border))" strokeWidth={1} />
+                <text x={x + barW / 2} y={y - 10} textAnchor="middle" className="fill-foreground font-mono" style={{ fontSize: 10, fontWeight: 700 }}>{d.count}</text>
+              </>
+            )}
+            <text x={x + barW / 2} y={h - 4} textAnchor="middle" className="fill-muted-foreground font-mono" style={{ fontSize: 9, fontWeight: isToday ? 700 : 400 }}>
+              {d.label}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
   );
 }
 
@@ -207,27 +302,61 @@ function CircularProgress({ value, max, size = 120 }: { value: number; max: numb
   );
 }
 
-/* ── Bar Chart (horizontal) ── */
+/* ── Horizontal Bar Chart (Top 5 Vuln Categories) ── */
 function VulnBarChart({ data }: { data: { cat: string; count: number }[] }) {
-  const max = Math.max(...data.map((d) => d.count), 1);
-  if (data.length === 0) {
+  const [mounted, setMounted] = useState(false);
+  const [hoverIdx, setHoverIdx] = useState<number | null>(null);
+
+  useEffect(() => { const t = setTimeout(() => setMounted(true), 50); return () => clearTimeout(t); }, []);
+
+  const top5 = data.slice(0, 5);
+  const max = Math.max(...top5.map((d) => d.count), 1);
+
+  if (top5.length === 0) {
     return <p className="text-xs font-mono text-muted-foreground/40 italic py-4 text-center">Run some analyses to see category breakdown</p>;
   }
+
+  const barH = 22, gapY = 8, labelW = 90, valW = 40, padR = 8;
+  const chartW = 320;
+  const svgH = top5.length * (barH + gapY) - gapY + 8;
+  const barAreaW = chartW - labelW - valW - padR;
+
+  const BAR_COLORS = [
+    "hsl(var(--primary))",
+    "hsl(110 100% 55% / 0.75)",
+    "hsl(110 100% 55% / 0.55)",
+    "hsl(110 100% 55% / 0.4)",
+    "hsl(110 100% 55% / 0.28)",
+  ];
+
   return (
-    <div className="space-y-2">
-      {data.map((d) => (
-        <div key={d.cat} className="flex items-center gap-2">
-          <span className="text-[10px] font-mono text-muted-foreground w-24 text-right shrink-0 truncate">{d.cat}</span>
-          <div className="flex-1 h-4 rounded-full bg-muted/30 overflow-hidden">
-            <div
-              className="h-full rounded-full bg-primary/70 transition-all duration-500"
-              style={{ width: `${(d.count / max) * 100}%` }}
+    <svg viewBox={`0 0 ${chartW} ${svgH}`} className="w-full" style={{ maxHeight: 200 }}>
+      {top5.map((d, i) => {
+        const y = i * (barH + gapY);
+        const bw = mounted ? (d.count / max) * barAreaW : 0;
+        const isHovered = hoverIdx === i;
+
+        return (
+          <g key={d.cat} onMouseEnter={() => setHoverIdx(i)} onMouseLeave={() => setHoverIdx(null)} className="cursor-pointer">
+            <text x={labelW - 6} y={y + barH / 2 + 4} textAnchor="end" className="fill-muted-foreground font-mono" style={{ fontSize: 10 }}>{d.cat}</text>
+            <rect x={labelW} y={y} width={barAreaW} height={barH} rx={6} fill="hsl(var(--muted))" opacity={0.2} />
+            <rect
+              x={labelW} y={y} width={bw} height={barH} rx={6}
+              fill={BAR_COLORS[i] || BAR_COLORS[4]}
+              opacity={isHovered ? 1 : 0.9}
+              className="transition-all duration-700"
+              style={{ transitionDelay: `${i * 80}ms` }}
             />
-          </div>
-          <span className="text-[10px] font-mono text-muted-foreground w-6 shrink-0">{d.count}</span>
-        </div>
-      ))}
-    </div>
+            <text x={labelW + barAreaW + 8} y={y + barH / 2 + 4} className="fill-foreground font-mono" style={{ fontSize: 11, fontWeight: 700 }}>{d.count}</text>
+            {isHovered && bw > 30 && (
+              <text x={labelW + bw / 2} y={y + barH / 2 + 4} textAnchor="middle" className="fill-primary-foreground font-mono" style={{ fontSize: 10, fontWeight: 700 }}>
+                {Math.round((d.count / max) * 100)}%
+              </text>
+            )}
+          </g>
+        );
+      })}
+    </svg>
   );
 }
 
