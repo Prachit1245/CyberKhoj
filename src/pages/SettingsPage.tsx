@@ -370,7 +370,7 @@ const SettingsPage = () => {
 
   const clearStorage = (key: string, label: string) => {
     localStorage.removeItem(key);
-    if (key === "hackmind_gemini_key") setKeySet(false);
+    if (key === "cyberkhoj_groq_key") setKeySet(false);
     toast.success(`${label} cleared`);
   };
 
