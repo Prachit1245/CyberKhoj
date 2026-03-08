@@ -41,6 +41,7 @@ const NAV_ITEMS = [
   { to: "/owasp", label: "OWASP Top 10", icon: ShieldAlert },
   { to: "/vuln-categories", label: "Vuln Categories", icon: Layers },
   { to: "/findings", label: "Findings", icon: Bug },
+  { to: "/bookmarks", label: "Bookmarks", icon: Bookmark },
   { to: "/settings", label: "Settings", icon: Settings },
 ];
 
