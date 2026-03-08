@@ -23,9 +23,9 @@ const RateLimitTerminal = () => {
     "$ hackmind --analyze",
     "> Connecting to Gemini API...",
     "> ERROR 429: Too Many Requests",
-    "> Daily quota exhausted.",
-    "> Limit: 1000 analyses / day",
-    "> Resets at: 00:00 UTC",
+    "> Request burst limit reached.",
+    "> Wait 10-30 seconds, then retry.",
+    "> If it persists, check quota in AI Studio.",
     "> _",
   ];
 

@@ -3,6 +3,9 @@ const MODEL_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent";
 
 const IS_DEV = import.meta.env.DEV;
+const MIN_REQUEST_INTERVAL_MS = 1200;
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const saveApiKey = (key: string): void => {
   localStorage.setItem(STORAGE_KEY, key);
@@ -46,6 +49,7 @@ export class GeminiError extends Error {
 
 /* ─── Active request tracking for deduplication ─── */
 let activeController: AbortController | null = null;
+let lastRequestAt = 0;
 
 /** Abort any in-flight Gemini request */
 export const abortGeminiRequest = (): void => {
@@ -97,7 +101,21 @@ const fetchGemini = async (prompt: string, key: string, signal?: AbortSignal): P
       throw new GeminiError("FORBIDDEN", "API key is restricted or Gemini API is not enabled for this project.", 403);
     }
     if (response.status === 429) {
-      throw new GeminiError("RATE_LIMIT", "Rate limit hit. Wait a moment and try again.", 429);
+      const details = errText.toLowerCase();
+      const quotaLike =
+        details.includes("quota") ||
+        details.includes("resource_exhausted") ||
+        details.includes("exceeded") ||
+        details.includes("per minute") ||
+        details.includes("per day");
+
+      throw new GeminiError(
+        "RATE_LIMIT",
+        quotaLike
+          ? "Gemini quota/rate limit reached for this key. Wait 30–60s and try again. If it keeps failing, check quota/billing in Google AI Studio."
+          : "Too many requests in a short time. Wait a few seconds and try again.",
+        429
+      );
     }
     throw new GeminiError("API_ERROR", `Gemini API error (${response.status}): ${errText.slice(0, 200)}`, response.status);
   }
@@ -117,16 +135,29 @@ const fetchGemini = async (prompt: string, key: string, signal?: AbortSignal): P
   return text;
 };
 
-/* ─── JSON validation helper ─── */
+/* ─── JSON helpers ─── */
+const stripCodeFences = (text: string): string =>
+  text.trim().replace(/^```(?:json)?\s*/im, "").replace(/\s*```\s*$/m, "").trim();
+
 const looksLikeJson = (text: string): boolean => {
-  const trimmed = text.trim()
-    .replace(/^```(?:json)?\s*/im, "")
-    .replace(/\s*```\s*$/m, "")
-    .trim();
+  const trimmed = stripCodeFences(text);
   return trimmed.startsWith("{") || trimmed.startsWith("[");
 };
 
-/* ─── Main API call with retry for invalid JSON ─── */
+const extractLikelyJson = (text: string): string | null => {
+  const cleaned = stripCodeFences(text);
+  if (cleaned.startsWith("{") || cleaned.startsWith("[")) return cleaned;
+
+  const objectMatch = cleaned.match(/\{[\s\S]*\}/);
+  if (objectMatch) return objectMatch[0];
+
+  const arrayMatch = cleaned.match(/\[[\s\S]*\]/);
+  if (arrayMatch) return arrayMatch[0];
+
+  return null;
+};
+
+/* ─── Main API call (with pacing + single request) ─── */
 export const callGemini = async (prompt: string, expectJson = false): Promise<string> => {
   const key = getApiKey();
   if (!key) {
@@ -157,6 +188,12 @@ export const callGemini = async (prompt: string, expectJson = false): Promise<st
 
   let text: string;
   try {
+    // Pace calls to reduce 429 bursts, especially in fast repeated actions.
+    const elapsed = Date.now() - lastRequestAt;
+    const waitMs = Math.max(0, MIN_REQUEST_INTERVAL_MS - elapsed);
+    if (waitMs > 0) await sleep(waitMs);
+    lastRequestAt = Date.now();
+
     text = await fetchGemini(prompt, key, controller.signal);
 
     if (IS_DEV) {
@@ -166,18 +203,11 @@ export const callGemini = async (prompt: string, expectJson = false): Promise<st
       console.groupEnd();
     }
 
-    // Retry once if we expected JSON but got something else
+    // Avoid a second API call; extract JSON locally when model wraps output in prose/fences.
     if (expectJson && !looksLikeJson(text)) {
-      if (IS_DEV) {
-        console.warn("[HackMind] Response is not valid JSON, retrying once...");
-      }
-      text = await fetchGemini(prompt, key, controller.signal);
-
-      if (IS_DEV) {
-        console.group("[HackMind] Gemini Retry Response");
-        console.log("Response length:", text.length);
-        console.log("Response (first 500 chars):", text.slice(0, 500));
-        console.groupEnd();
+      const extracted = extractLikelyJson(text);
+      if (extracted) {
+        text = extracted;
       }
     }
   } finally {
