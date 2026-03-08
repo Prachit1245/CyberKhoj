@@ -325,6 +325,11 @@ const Findings = () => {
           </div>
         )
       )}
+
+      {/* Report Writer Modal */}
+      {reportFinding && (
+        <ReportWriterModal finding={reportFinding} onClose={() => setReportFinding(null)} />
+      )}
     </div>
   );
 };
