@@ -3,6 +3,7 @@ import MatrixRain from "@/components/MatrixRain";
 import Typewriter from "@/components/Typewriter";
 import HowItWorks from "@/components/HowItWorks";
 import Features from "@/components/Features";
+import FreeBanner from "@/components/FreeBanner";
 
 const TRUST_BADGES = [
   "100% Free Forever",
