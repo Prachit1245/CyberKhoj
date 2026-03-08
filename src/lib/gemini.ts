@@ -182,12 +182,13 @@ const fetchGemini = async (prompt: string, key: string, signal?: AbortSignal): P
       if (response.status === 429) {
         let errText = "";
         try {
-          errText = (await response.text()).toLowerCase();
+          errText = await response.text();
         } catch {
           // ignore
         }
 
-        lastRateLimitText = errText;
+        const normalizedErrText = errText.toLowerCase();
+        lastRateLimitText = normalizedErrText;
         const hasRetryLeft = attempt < MAX_RETRIES;
 
         if (hasRetryLeft) {
