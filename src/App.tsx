@@ -7,6 +7,7 @@ import ApiKeyGate from "@/components/ApiKeyGate";
 import Navbar from "@/components/Navbar";
 import AppSidebar from "@/components/AppSidebar";
 import OnboardingTour from "./components/OnboardingTour";
+import WhatsNewModal from "./components/WhatsNewModal";
 import DailyLimitOverlay from "@/components/DailyLimitOverlay";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import { SkeletonDashboard, SkeletonAnalyzer, SkeletonPage } from "@/components/Skeletons";
@@ -32,6 +33,7 @@ const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Ethics = lazy(() => import("./pages/Ethics"));
 const SharedView = lazy(() => import("./pages/SharedView"));
+const Changelog = lazy(() => import("./pages/Changelog"));
 
 const queryClient = new QueryClient();
 
@@ -46,6 +48,7 @@ const App = () => (
     <TooltipProvider>
       <BrowserRouter>
         <PWAInstallPrompt />
+        <WhatsNewModal />
         <Routes>
           {/* Public routes — no API key needed */}
           <Route
@@ -99,6 +102,17 @@ const App = () => (
                 <Navbar />
                 <div className="pt-14">
                   <SharedView />
+                </div>
+              </Suspense>
+            }
+          />
+          <Route
+            path="/changelog"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Navbar />
+                <div className="pt-14 px-4 py-10 max-w-5xl mx-auto">
+                  <Changelog />
                 </div>
               </Suspense>
             }
