@@ -176,7 +176,7 @@ export default function History() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
           <input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
             placeholder="Search by target..."
             className="w-full h-9 pl-9 pr-8 rounded-lg bg-card/50 border border-border/30 text-sm font-mono text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50"
           />
