@@ -133,7 +133,11 @@ const AttackMode = () => {
         }
       }, 50);
     } catch (err: any) {
-      toast.error(err.message || "Failed to generate ideas");
+      if (err instanceof GeminiError) {
+        toast.error(`${err.code}: ${err.message}`);
+      } else {
+        toast.error(err.message || "Failed to generate ideas");
+      }
     } finally {
       setLoading(false);
     }

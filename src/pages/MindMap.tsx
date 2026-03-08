@@ -259,7 +259,11 @@ function MindMapCanvas() {
       applyLayout(parsed, direction, new Set(), {});
       toast.success(`Mind map generated — ${parsed.length} nodes ✓`);
     } catch (err: any) {
-      toast.error(err.message || "Failed to generate mind map");
+      if (err instanceof GeminiError) {
+        toast.error(`${err.code}: ${err.message}`);
+      } else {
+        toast.error(err.message || "Failed to generate mind map");
+      }
     } finally {
       setLoading(false);
     }
