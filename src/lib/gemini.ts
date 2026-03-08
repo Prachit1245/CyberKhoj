@@ -194,7 +194,7 @@ const fetchGemini = async (prompt: string, key: string, signal?: AbortSignal): P
         if (hasRetryLeft) {
           const delayMs = BASE_DELAY_MS * Math.pow(2, attempt);
           if (IS_DEV) {
-            console.warn(`[HackMind] 429 on ${model} attempt ${attempt + 1}, retrying in ${delayMs}ms…`);
+            console.warn(`[CyberKhoj] 429 on ${model} attempt ${attempt + 1}, retrying in ${delayMs}ms…`);
           }
           await sleep(delayMs);
           continue;
