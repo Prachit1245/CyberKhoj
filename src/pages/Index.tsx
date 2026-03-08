@@ -5,6 +5,7 @@ import HowItWorks from "@/components/HowItWorks";
 import Features from "@/components/Features";
 import FreeBanner from "@/components/FreeBanner";
 import LandingDemo from "@/components/LandingDemo";
+import SocialProof from "@/components/SocialProof";
 
 const TRUST_BADGES = [
   "100% Free Forever",
