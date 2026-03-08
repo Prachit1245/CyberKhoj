@@ -194,6 +194,7 @@ const Analyzer = () => {
         setErrorCode("API_ERROR");
       }
     } finally {
+      stopTypingSound();
       setLoading(false);
     }
   };
