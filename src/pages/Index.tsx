@@ -11,6 +11,7 @@ import AnimatedCounter from "@/components/AnimatedCounter";
 import ComparisonTable from "@/components/ComparisonTable";
 import FinalCTA from "@/components/FinalCTA";
 import Footer from "@/components/Footer";
+import EthicalDisclaimer from "@/components/EthicalDisclaimer";
 
 const TRUST_BADGES = [
   "100% Free Forever",
