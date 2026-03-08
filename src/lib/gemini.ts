@@ -1,6 +1,6 @@
 const STORAGE_KEY = "hackmind_gemini_key";
-const MODEL_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent";
+const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models";
+const MODEL_CANDIDATES = ["gemini-2.5-flash-lite", "gemini-2.5-flash"] as const;
 
 const IS_DEV = import.meta.env.DEV;
 const MIN_REQUEST_INTERVAL_MS = 1200;
