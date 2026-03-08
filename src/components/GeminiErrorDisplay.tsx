@@ -129,6 +129,14 @@ const ERROR_CONFIG: Record<
     showSettings: false,
     showTerminal: false,
   },
+  ABORTED: {
+    icon: AlertCircle,
+    iconColor: "text-muted-foreground",
+    title: "Request Cancelled",
+    showRetry: true,
+    showSettings: false,
+    showTerminal: false,
+  },
   API_ERROR: {
     icon: AlertCircle,
     iconColor: "text-red-400",
