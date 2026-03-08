@@ -139,7 +139,7 @@ const App = () => (
                     <Route path="/dashboard" element={<Suspense fallback={<DashFallback />}><Dashboard /></Suspense>} />
                     <Route path="/analyzer" element={<Suspense fallback={<AnalyzerFallback />}><Analyzer /></Suspense>} />
                     <Route path="/attack" element={<Suspense fallback={<PageFallback />}><AttackMode /></Suspense>} />
-                    <Route path="/mindmap" element={<Suspense fallback={<PageFallback />}><MindMap /></Suspense>} />
+                    <Route path="/mindmap" element={<Suspense fallback={<SkeletonMindMap />}><MindMap /></Suspense>} />
                     <Route path="/history" element={<Suspense fallback={<div className="p-4 md:p-6"><SkeletonHistory /></div>}><History /></Suspense>} />
                     <Route path="/history/:id" element={<Suspense fallback={<div className="p-4 md:p-6"><SkeletonHistory /></div>}><HistoryDetail /></Suspense>} />
                     <Route path="/payloads" element={<Suspense fallback={<PageFallback />}><Payloads /></Suspense>} />
