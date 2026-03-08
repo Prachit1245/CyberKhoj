@@ -295,10 +295,16 @@ ${JSON_INSTRUCTION}`;
 };
 
 export const parseMindMapNodes = (raw: string): MindMapNode[] => {
-  let cleaned = raw.trim().replace(/^```(?:json)?\s*/im, "").replace(/\s*```\s*$/m, "");
+  const cleaned = stripAllFences(raw);
   const match = cleaned.match(/\{[\s\S]*\}/);
   if (!match) throw new Error("Could not parse mind map from AI response");
-  const parsed = JSON.parse(match[0]);
+  let parsed: any;
+  try {
+    parsed = JSON.parse(match[0]);
+  } catch (e) {
+    console.error("[parseMindMapNodes] JSON.parse failed:", e, "\nRaw excerpt:", match[0].slice(0, 300));
+    throw new Error("AI returned malformed JSON. Please try again.");
+  }
   const nodes: MindMapNode[] = parsed.nodes || [];
   return nodes.map((n) => ({
     id: String(n.id || ""),
