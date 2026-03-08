@@ -180,6 +180,11 @@ const AppSidebar = () => {
                 {!collapsed && (
                   <span className="flex-1 flex items-center justify-between">
                     {item.label}
+                    {item.to === "/bookmarks" && bmCount > 0 && (
+                      <span className="text-[9px] font-mono text-primary-foreground bg-primary rounded-full px-1.5 py-0.5 leading-none min-w-[1.25rem] text-center">
+                        {bmCount > 99 ? "99+" : bmCount}
+                      </span>
+                    )}
                     {!online && isOfflineOk && (
                       <span className="text-[9px] font-mono text-primary bg-primary/10 border border-primary/30 rounded px-1 py-0.5 leading-none">✓</span>
                     )}
