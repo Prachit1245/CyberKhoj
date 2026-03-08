@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import MatrixRain from "@/components/MatrixRain";
 import Typewriter from "@/components/Typewriter";
+import HowItWorks from "@/components/HowItWorks";
 
 const TRUST_BADGES = [
   "100% Free Forever",
