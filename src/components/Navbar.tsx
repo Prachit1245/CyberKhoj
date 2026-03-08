@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Terminal, Key, Menu, X } from "lucide-react";
+import { Terminal, Key, Menu, X, Github } from "lucide-react";
 import { hasApiKey, getApiKey, saveApiKey, removeApiKey } from "@/lib/gemini";
 
 const MODEL_URL =
