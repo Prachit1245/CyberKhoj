@@ -15,6 +15,7 @@ import {
 import { useState, useEffect } from "react";
 import { hasApiKey } from "@/lib/gemini";
 import { getUsageCount, DAILY_LIMIT } from "@/lib/usage";
+import QuickAnalyze from "@/components/QuickAnalyze";
 
 const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -157,6 +158,9 @@ const AppSidebar = () => {
           </div>
         </main>
       </div>
+
+      {/* Quick Analyze FAB + Modal */}
+      <QuickAnalyze />
     </div>
   );
 };
