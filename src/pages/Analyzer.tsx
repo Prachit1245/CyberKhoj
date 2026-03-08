@@ -101,6 +101,19 @@ const Analyzer = () => {
   const [resultTab, setResultTab] = useState<(typeof RESULT_TABS)[number]>("Attack Paths");
   const [selectedTemplate, setSelectedTemplate] = useState<TargetTemplate | null>(null);
   const [beginner, setBeginner] = useState(isBeginnerMode);
+
+  // Instant client-side target intelligence
+  const targetIntel = useMemo(() => {
+    const trimmed = target.trim();
+    if (!trimmed || trimmed.length < 5) return null;
+    try {
+      const ctx = parseTarget(trimmed);
+      return analyzeTarget(ctx);
+    } catch {
+      return null;
+    }
+  }, [target]);
+
   // Check for prefill from OWASP page
   useEffect(() => {
     const raw = sessionStorage.getItem("hackmind_prefill");
