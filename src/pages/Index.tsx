@@ -57,6 +57,7 @@ const Index = () => {
       </section>
 
       <HowItWorks />
+      <Features />
     </div>
   );
 };
