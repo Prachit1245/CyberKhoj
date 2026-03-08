@@ -12,6 +12,7 @@ import Analyzer from "./pages/Analyzer";
 import AttackMode from "./pages/AttackMode";
 import MindMap from "./pages/MindMap";
 import History from "./pages/History";
+import HistoryDetail from "./pages/HistoryDetail";
 import Payloads from "./pages/Payloads";
 import CheatSheets from "./pages/CheatSheets";
 import SettingsPage from "./pages/SettingsPage";
@@ -47,6 +48,7 @@ const App = () => (
               <Route path="/attack" element={<AttackMode />} />
               <Route path="/mindmap" element={<MindMap />} />
               <Route path="/history" element={<History />} />
+              <Route path="/history/:id" element={<HistoryDetail />} />
               <Route path="/payloads" element={<Payloads />} />
               <Route path="/cheatsheets" element={<CheatSheets />} />
               <Route path="/settings" element={<SettingsPage />} />

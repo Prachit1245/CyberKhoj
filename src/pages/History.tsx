@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback, useRef } from "react";
-import { Search, Trash2, Clock, ArrowUpDown, X, Undo2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Search, Trash2, Clock, ArrowUpDown, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -76,40 +77,13 @@ function SeverityBar({ result }: { result: string }) {
   );
 }
 
-/* ── Result detail view ── */
-function ResultDetail({ record, onBack }: { record: AnalysisRecord; onBack: () => void }) {
-  const data = useMemo(() => {
-    try { return JSON.parse(record.result); } catch { return null; }
-  }, [record.result]);
-
-  return (
-    <div className="space-y-4">
-      <button onClick={onBack} className="text-xs font-mono text-muted-foreground hover:text-foreground flex items-center gap-1 cursor-pointer">
-        ← Back to History
-      </button>
-      <div className="flex items-center gap-3">
-        <h2 className="text-lg font-mono font-bold text-foreground truncate">{record.target}</h2>
-        <Badge variant="outline" className={TYPE_LABELS[record.type]?.className}>
-          {TYPE_LABELS[record.type]?.label || record.type}
-        </Badge>
-      </div>
-      <p className="text-xs font-mono text-muted-foreground">
-        {new Date(record.date).toLocaleString()} · {record.pathsFound} paths
-      </p>
-      <pre className="text-xs font-mono text-foreground/80 bg-card/50 border border-border/20 rounded-lg p-4 overflow-auto max-h-[60vh] whitespace-pre-wrap">
-        {data ? JSON.stringify(data, null, 2) : record.result}
-      </pre>
-    </div>
-  );
-}
-
 /* ── Main History page ── */
 export default function History() {
+  const navigate = useNavigate();
   const [records, setRecords] = useState<AnalysisRecord[]>(() => getHistory());
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [sort, setSort] = useState("newest");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
   const undoRef = useRef<{ record: AnalysisRecord; timer: ReturnType<typeof setTimeout> } | null>(null);
 
   const refresh = useCallback(() => setRecords(getHistory()), []);
@@ -170,11 +144,6 @@ export default function History() {
     toast.success("All history cleared");
   };
 
-  // Detail view
-  if (selectedId) {
-    const record = records.find((r) => r.id === selectedId);
-    if (record) return <ResultDetail record={record} onBack={() => setSelectedId(null)} />;
-  }
 
   const chipBase =
     "px-3 py-1 rounded-full text-[11px] font-mono border cursor-pointer transition-colors";
@@ -276,7 +245,7 @@ export default function History() {
             return (
               <div
                 key={record.id}
-                onClick={() => setSelectedId(record.id)}
+                onClick={() => navigate(`/history/${record.id}`)}
                 className="group relative rounded-lg border border-border/20 bg-card/50 hover:bg-card/80 hover:border-border/40 p-4 cursor-pointer transition-all space-y-3"
               >
                 {/* Delete button */}
