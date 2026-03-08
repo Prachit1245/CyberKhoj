@@ -467,7 +467,7 @@ const SettingsPage = () => {
                   setConfirm({
                     title: "Remove API Key",
                     message:
-                      "This will remove your saved API key. You'll need to re-enter it to use HackMind.",
+                      "This will remove your saved API key. You'll need to re-enter it to use CyberKhoj.",
                     action: handleRemoveKey,
                   })
                 }
