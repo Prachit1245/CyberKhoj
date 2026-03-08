@@ -54,6 +54,8 @@ const App = () => (
         <PWAInstallPrompt />
         <WhatsNewModal />
         <FeedbackTab />
+        <AchievementOverlay />
+        <LevelUpOverlay />
         <Routes>
           {/* Public routes — no API key needed */}
           <Route
