@@ -11,10 +11,15 @@ import {
   ReactFlowProvider,
   useReactFlow,
   MarkerType,
+  type Viewport,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import Dagre from "@dagrejs/dagre";
-import { ZoomIn, ZoomOut, Maximize, Image, FileJson, ClipboardList, Save, Network, TreePine, Zap, StickyNote, CheckCircle, Copy, Search, WifiOff } from "lucide-react";
+import {
+  ZoomIn, ZoomOut, Maximize, Image, FileJson, ClipboardList, Save, Network,
+  TreePine, Zap, StickyNote, CheckCircle, Copy, Search, WifiOff, Plus,
+  ChevronsDownUp, ChevronsUpDown,
+} from "lucide-react";
 import html2canvas from "html2canvas";
 import { callGemini, GeminiError } from "@/lib/gemini";
 import { buildMindMapPrompt, parseMindMapNodes, type MindMapNode } from "@/lib/prompts";
@@ -30,8 +35,35 @@ import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
+  ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+
+/* ── localStorage keys ── */
+const META_KEY_PREFIX = "hackmind_mm_meta_";
+const VIEWPORT_KEY_PREFIX = "hackmind_mm_vp_";
+
+function loadMeta(domain: string): Record<string, { tested?: boolean; note?: string }> {
+  try {
+    const raw = localStorage.getItem(META_KEY_PREFIX + domain);
+    return raw ? JSON.parse(raw) : {};
+  } catch { return {}; }
+}
+
+function saveMeta(domain: string, meta: Record<string, { tested?: boolean; note?: string }>) {
+  localStorage.setItem(META_KEY_PREFIX + domain, JSON.stringify(meta));
+}
+
+function loadViewport(domain: string): Viewport | null {
+  try {
+    const raw = localStorage.getItem(VIEWPORT_KEY_PREFIX + domain);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function saveViewport(domain: string, vp: Viewport) {
+  localStorage.setItem(VIEWPORT_KEY_PREFIX + domain, JSON.stringify(vp));
+}
 
 /* ── Severity colors ── */
 const SEV_BORDER: Record<string, string> = {
@@ -89,12 +121,13 @@ function layoutWithDagre(
 function buildFlowElements(
   mapNodes: MindMapNode[],
   collapsedIds: Set<string>,
-  nodeMetadata: Record<string, { tested?: boolean; note?: string }>
+  nodeMetadata: Record<string, { tested?: boolean; note?: string }>,
+  searchTerm: string
 ): { nodes: Node[]; edges: Edge[] } {
   const nodes: Node[] = [];
   const edges: Edge[] = [];
+  const lowerSearch = searchTerm.toLowerCase().trim();
 
-  // Determine which nodes are hidden due to collapsed ancestors
   const hiddenIds = new Set<string>();
   const markHidden = (parentId: string) => {
     for (const mn of mapNodes) {
@@ -110,6 +143,13 @@ function buildFlowElements(
 
   for (const mn of mapNodes) {
     if (hiddenIds.has(mn.id)) continue;
+
+    const meta = nodeMetadata[mn.id] || {};
+    const searchMatch = lowerSearch
+      ? mn.label.toLowerCase().includes(lowerSearch) ||
+        (mn.description || "").toLowerCase().includes(lowerSearch) ||
+        mn.attackIdeas.some((a) => a.toLowerCase().includes(lowerSearch))
+      : false;
 
     let style: React.CSSProperties = {};
 
@@ -150,8 +190,6 @@ function buildFlowElements(
       };
     }
 
-    const meta = nodeMetadata[mn.id] || {};
-
     nodes.push({
       id: mn.id,
       type: "mindMapNode",
@@ -165,6 +203,7 @@ function buildFlowElements(
         parentId: mn.parentId,
         tested: meta.tested,
         note: meta.note,
+        searchMatch,
       } as MindMapNodeData,
       style,
     });
@@ -202,7 +241,8 @@ function MindMapCanvas() {
   const [direction, setDirection] = useState<"LR" | "TB">("LR");
   const [hasData, setHasData] = useState(false);
   const rawNodesRef = useRef<MindMapNode[]>([]);
-  const { fitView, zoomIn, zoomOut } = useReactFlow();
+  const { fitView, zoomIn, zoomOut, setViewport } = useReactFlow();
+  const domainRef = useRef("");
 
   // Interaction state
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
@@ -210,8 +250,16 @@ function MindMapCanvas() {
   const [checkedIdeas, setCheckedIdeas] = useState<Record<string, boolean>>({});
   const [nodeMetadata, setNodeMetadata] = useState<Record<string, { tested?: boolean; note?: string }>>({});
   const [contextNodeId, setContextNodeId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showNoteModal, setShowNoteModal] = useState(false);
+  const [noteText, setNoteText] = useState("");
 
-  // Keyboard shortcuts: F = fit, +/= = zoom in, - = zoom out
+  // Persist viewport on move
+  const handleMoveEnd = useCallback((_: any, vp: Viewport) => {
+    if (domainRef.current) saveViewport(domainRef.current, vp);
+  }, []);
+
+  // Keyboard shortcuts
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement)?.tagName;
@@ -234,14 +282,14 @@ function MindMapCanvas() {
   }, [fitView, zoomIn, zoomOut]);
 
   const applyLayout = useCallback(
-    (data: MindMapNode[], dir: "LR" | "TB", collapsed?: Set<string>, meta?: Record<string, { tested?: boolean; note?: string }>) => {
-      const { nodes: n, edges: e } = buildFlowElements(data, collapsed ?? collapsedIds, meta ?? nodeMetadata);
+    (data: MindMapNode[], dir: "LR" | "TB", collapsed?: Set<string>, meta?: Record<string, { tested?: boolean; note?: string }>, search?: string) => {
+      const { nodes: n, edges: e } = buildFlowElements(data, collapsed ?? collapsedIds, meta ?? nodeMetadata, search ?? searchTerm);
       const laid = layoutWithDagre(n, e, dir);
       setNodes(laid.nodes);
       setEdges(laid.edges);
       setTimeout(() => fitView({ padding: 0.15, duration: 800 }), 150);
     },
-    [setNodes, setEdges, fitView, collapsedIds, nodeMetadata]
+    [setNodes, setEdges, fitView, collapsedIds, nodeMetadata, searchTerm]
   );
 
   const generate = async () => {
@@ -251,15 +299,23 @@ function MindMapCanvas() {
     }
     setLoading(true);
     setSelectedNodeId(null);
+    setSearchTerm("");
+    const savedMeta = loadMeta(domain.trim());
     setCollapsedIds(new Set());
     setCheckedIdeas({});
-    setNodeMetadata({});
+    setNodeMetadata(savedMeta);
+    domainRef.current = domain.trim();
     try {
       const raw = await callGemini(buildMindMapPrompt(domain), true);
       const parsed = parseMindMapNodes(raw);
       rawNodesRef.current = parsed;
       setHasData(true);
-      applyLayout(parsed, direction, new Set(), {});
+      applyLayout(parsed, direction, new Set(), savedMeta, "");
+      // Restore saved viewport
+      const savedVp = loadViewport(domain.trim());
+      if (savedVp) {
+        setTimeout(() => setViewport(savedVp, { duration: 600 }), 900);
+      }
       toast.success(`Mind map generated — ${parsed.length} nodes ✓`);
     } catch (err: any) {
       if (err instanceof GeminiError) {
@@ -297,7 +353,7 @@ function MindMapCanvas() {
 
   const exportJson = () => {
     if (!rawNodesRef.current.length) { toast.error("No data to export"); return; }
-    const blob = new Blob([JSON.stringify({ nodes: rawNodesRef.current }, null, 2)], { type: "application/json" });
+    const blob = new Blob([JSON.stringify({ nodes: rawNodesRef.current, metadata: nodeMetadata }, null, 2)], { type: "application/json" });
     const link = document.createElement("a");
     const date = new Date().toISOString().slice(0, 10);
     link.download = `hackmind-mindmap-${domain || "target"}-${date}.json`;
@@ -316,8 +372,10 @@ function MindMapCanvas() {
       if (!node) return;
       const prefix = "  ".repeat(depth);
       const sev = node.severity ? ` [${node.severity.toUpperCase()}]` : "";
-      lines.push(`${prefix}${node.label}${sev}`);
+      const tested = nodeMetadata[id]?.tested ? " ✓" : "";
+      lines.push(`${prefix}${node.label}${sev}${tested}`);
       if (node.description) lines.push(`${prefix}  ↳ ${node.description}`);
+      if (nodeMetadata[id]?.note) lines.push(`${prefix}  📝 ${nodeMetadata[id].note}`);
       node.attackIdeas.forEach((a) => lines.push(`${prefix}    • ${a}`));
       rawNodesRef.current.filter((c) => c.parentId === id).forEach((c) => render(c.id, depth + 1));
     };
@@ -341,6 +399,16 @@ function MindMapCanvas() {
     checkMindMap();
   };
 
+  // Update metadata helper (persists to localStorage)
+  const updateMeta = useCallback((id: string, partial: Partial<{ tested: boolean; note: string }>) => {
+    setNodeMetadata((prev) => {
+      const next = { ...prev, [id]: { ...prev[id], ...partial } };
+      if (domainRef.current) saveMeta(domainRef.current, next);
+      setTimeout(() => applyLayout(rawNodesRef.current, direction, collapsedIds, next), 0);
+      return next;
+    });
+  }, [applyLayout, direction, collapsedIds]);
+
   // Node click → open side panel
   const onNodeClick = useCallback((_: any, node: Node) => {
     setSelectedNodeId(node.id);
@@ -349,17 +417,40 @@ function MindMapCanvas() {
   // Double click → toggle collapse
   const onNodeDoubleClick = useCallback((_: any, node: Node) => {
     const d = node.data as MindMapNodeData;
-    if (d.nodeType === "attack") return; // leaves don't collapse
+    if (d.nodeType === "attack") return;
 
     setCollapsedIds((prev) => {
       const next = new Set(prev);
       if (next.has(node.id)) next.delete(node.id);
       else next.add(node.id);
-      // Re-layout
       setTimeout(() => applyLayout(rawNodesRef.current, direction, next), 0);
       return next;
     });
   }, [applyLayout, direction]);
+
+  // Collapse / expand all
+  const collapseAll = () => {
+    const ids = new Set(
+      rawNodesRef.current
+        .filter((n) => n.type !== "attack" && rawNodesRef.current.some((c) => c.parentId === n.id))
+        .map((n) => n.id)
+    );
+    setCollapsedIds(ids);
+    setTimeout(() => applyLayout(rawNodesRef.current, direction, ids), 0);
+  };
+
+  const expandAll = () => {
+    setCollapsedIds(new Set());
+    setTimeout(() => applyLayout(rawNodesRef.current, direction, new Set()), 0);
+  };
+
+  // Search handler
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+    if (rawNodesRef.current.length) {
+      applyLayout(rawNodesRef.current, direction, collapsedIds, nodeMetadata, term);
+    }
+  };
 
   // Context menu actions
   const handleContextAction = (action: string) => {
@@ -369,42 +460,66 @@ function MindMapCanvas() {
 
     switch (action) {
       case "note": {
-        const note = prompt("Add a note for: " + mn.label);
-        if (note !== null) {
-          setNodeMetadata((prev) => {
-            const next = { ...prev, [contextNodeId]: { ...prev[contextNodeId], note } };
-            setTimeout(() => applyLayout(rawNodesRef.current, direction, collapsedIds, next), 0);
-            return next;
-          });
-          toast.success("Note added");
-        }
+        setNoteText(nodeMetadata[contextNodeId]?.note || "");
+        setShowNoteModal(true);
         break;
       }
       case "tested": {
-        setNodeMetadata((prev) => {
-          const next = { ...prev, [contextNodeId]: { ...prev[contextNodeId], tested: !prev[contextNodeId]?.tested } };
-          setTimeout(() => applyLayout(rawNodesRef.current, direction, collapsedIds, next), 0);
-          return next;
-        });
+        updateMeta(contextNodeId, { tested: !nodeMetadata[contextNodeId]?.tested });
         toast.success("Toggled tested status");
+        setContextNodeId(null);
         break;
       }
       case "copy": {
         navigator.clipboard.writeText(mn.attackIdeas.join("\n"));
         toast.success("Attack ideas copied");
+        setContextNodeId(null);
         break;
       }
       case "analyze": {
         navigate(`/analyzer?target=${encodeURIComponent(mn.label)}`);
+        setContextNodeId(null);
+        break;
+      }
+      case "add-child": {
+        const label = prompt("New child node label:");
+        if (label && label.trim()) {
+          const newId = `custom-${Date.now()}`;
+          rawNodesRef.current.push({
+            id: newId,
+            label: label.trim(),
+            type: "attack",
+            parentId: contextNodeId,
+            description: "Custom node",
+            attackIdeas: [],
+            severity: "low",
+          });
+          applyLayout(rawNodesRef.current, direction);
+          toast.success("Custom node added");
+        }
+        setContextNodeId(null);
         break;
       }
     }
+  };
+
+  // Save note from modal
+  const handleSaveNote = () => {
+    if (contextNodeId) {
+      updateMeta(contextNodeId, { note: noteText });
+      toast.success("Note saved");
+    }
+    setShowNoteModal(false);
     setContextNodeId(null);
   };
 
   const selectedNode = selectedNodeId
     ? nodes.find((n) => n.id === selectedNodeId)
     : null;
+
+  // Tested counter
+  const totalNodes = rawNodesRef.current.length;
+  const testedCount = Object.values(nodeMetadata).filter((m) => m.tested).length;
 
   const btn =
     "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono border border-border/30 bg-card/80 text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors cursor-pointer backdrop-blur-sm";
@@ -430,7 +545,40 @@ function MindMapCanvas() {
           {!online ? "Offline" : loading ? "Generating..." : "Generate Mind Map"}
         </button>
 
+        {/* Search */}
+        {hasData && (
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+            <input
+              value={searchTerm}
+              onChange={(e) => handleSearch(e.target.value)}
+              placeholder="Search nodes..."
+              className="h-9 w-40 rounded-lg bg-card/50 border border-border/30 pl-8 pr-3 text-xs font-mono text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50"
+            />
+          </div>
+        )}
+
+        {/* Tested counter */}
+        {hasData && totalNodes > 0 && (
+          <span className="text-[10px] font-mono text-muted-foreground border border-border/30 rounded-lg px-2.5 py-1.5 bg-card/80 backdrop-blur-sm flex items-center gap-1.5">
+            <CheckCircle className="h-3 w-3 text-primary" />
+            <span className="text-primary font-bold">{testedCount}</span>/{totalNodes} tested
+          </span>
+        )}
+
         <div className="flex-1" />
+
+        {/* Collapse/Expand */}
+        {hasData && (
+          <>
+            <button onClick={collapseAll} className={btn} title="Collapse All">
+              <ChevronsDownUp className="h-3.5 w-3.5" />
+            </button>
+            <button onClick={expandAll} className={btn} title="Expand All">
+              <ChevronsUpDown className="h-3.5 w-3.5" />
+            </button>
+          </>
+        )}
 
         <button onClick={() => zoomIn()} className={btn}>
           <ZoomIn className="h-3.5 w-3.5" />
@@ -475,6 +623,7 @@ function MindMapCanvas() {
                   e.preventDefault();
                   setContextNodeId(node.id);
                 }}
+                onMoveEnd={handleMoveEnd}
                 nodeTypes={nodeTypes}
                 fitView
                 fitViewOptions={{ padding: 0.15 }}
@@ -495,6 +644,10 @@ function MindMapCanvas() {
                         <span className="text-[10px] font-mono text-muted-foreground">{l.label}</span>
                       </div>
                     ))}
+                    <div className="flex items-center gap-2">
+                      <span className="text-primary shrink-0" style={{ fontSize: 10 }}>✓</span>
+                      <span className="text-[10px] font-mono text-muted-foreground">Tested</span>
+                    </div>
                   </div>
                 </Panel>
 
@@ -513,21 +666,62 @@ function MindMapCanvas() {
             </div>
           </ContextMenuTrigger>
 
-          <ContextMenuContent className="w-48 font-mono text-xs">
+          <ContextMenuContent className="w-52 font-mono text-xs">
+            <ContextMenuItem onClick={() => handleContextAction("add-child")} className="cursor-pointer">
+              <Plus className="h-3.5 w-3.5 mr-2" /> Add Custom Child Node
+            </ContextMenuItem>
+            <ContextMenuSeparator />
+            <ContextMenuItem onClick={() => handleContextAction("tested")} className="cursor-pointer">
+              <CheckCircle className="h-3.5 w-3.5 mr-2" /> {contextNodeId && nodeMetadata[contextNodeId]?.tested ? "Unmark Tested" : "Mark as Tested"}
+            </ContextMenuItem>
             <ContextMenuItem onClick={() => handleContextAction("note")} className="cursor-pointer">
               <StickyNote className="h-3.5 w-3.5 mr-2" /> Add Note
             </ContextMenuItem>
-            <ContextMenuItem onClick={() => handleContextAction("tested")} className="cursor-pointer">
-              <CheckCircle className="h-3.5 w-3.5 mr-2" /> Mark Tested
-            </ContextMenuItem>
             <ContextMenuItem onClick={() => handleContextAction("copy")} className="cursor-pointer">
-              <Copy className="h-3.5 w-3.5 mr-2" /> Copy Ideas
+              <Copy className="h-3.5 w-3.5 mr-2" /> Copy Attack Ideas
             </ContextMenuItem>
+            <ContextMenuSeparator />
             <ContextMenuItem onClick={() => handleContextAction("analyze")} className="cursor-pointer">
               <Search className="h-3.5 w-3.5 mr-2" /> Deep Analyze
             </ContextMenuItem>
           </ContextMenuContent>
         </ContextMenu>
+
+        {/* Note Modal */}
+        {showNoteModal && (
+          <div
+            className="fixed inset-0 z-[70] flex items-center justify-center bg-background/80 backdrop-blur-sm"
+            onClick={(e) => { if (e.target === e.currentTarget) { setShowNoteModal(false); setContextNodeId(null); } }}
+          >
+            <div className="w-full max-w-md rounded-xl border border-border bg-card p-5 space-y-4 animate-scale-in">
+              <h3 className="font-heading text-base font-bold text-foreground">
+                Add Note
+              </h3>
+              <textarea
+                autoFocus
+                value={noteText}
+                onChange={(e) => setNoteText(e.target.value)}
+                placeholder="Your notes about this node..."
+                rows={4}
+                className="w-full rounded-lg border border-border bg-muted/30 px-3 py-2.5 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 resize-none"
+              />
+              <div className="flex gap-2 justify-end">
+                <button
+                  onClick={() => { setShowNoteModal(false); setContextNodeId(null); }}
+                  className="px-4 py-2 rounded-lg border border-border text-xs font-mono text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveNote}
+                  className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-mono font-bold hover:bg-primary/90 transition-colors cursor-pointer"
+                >
+                  Save Note
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Side Panel */}
         {selectedNode && (
