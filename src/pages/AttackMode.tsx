@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { AlertTriangle, Zap, ShoppingCart, LogIn, Server, Shield, Upload, ListChecks, Download, CheckSquare, XSquare, Copy, Search, Shuffle, WifiOff } from "lucide-react";
 import useOnline from "@/hooks/useOnline";
 import { callGemini, GeminiError } from "@/lib/gemini";
