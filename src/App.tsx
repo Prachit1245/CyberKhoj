@@ -20,6 +20,7 @@ import OwaspPage from "./pages/OwaspPage";
 import VulnCategories from "./pages/VulnCategories";
 import NotFound from "./pages/NotFound";
 import Bookmarks from "./pages/Bookmarks";
+import Achievements from "./pages/Achievements";
 import DailyLimitOverlay from "@/components/DailyLimitOverlay";
 
 const queryClient = new QueryClient();
@@ -60,6 +61,7 @@ const App = () => (
               <Route path="/owasp" element={<OwaspPage />} />
               <Route path="/vuln-categories" element={<VulnCategories />} />
               <Route path="/bookmarks" element={<Bookmarks />} />
+              <Route path="/achievements" element={<Achievements />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />

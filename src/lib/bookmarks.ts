@@ -36,6 +36,8 @@ export const addBookmark = (bookmark: Omit<Bookmark, "id" | "createdAt">): Bookm
   };
   bookmarks.unshift(entry);
   save(bookmarks);
+  // Achievement check
+  import("@/lib/achievements").then(m => m.checkBookmarkAchievement());
   return entry;
 };
 

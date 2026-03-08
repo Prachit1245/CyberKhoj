@@ -43,6 +43,8 @@ export const addFinding = (finding: Finding): void => {
   const findings = getFindings();
   findings.unshift(finding);
   saveFindings(findings);
+  // Achievement check (lazy import to avoid circular deps)
+  import("@/lib/achievements").then(m => m.checkBugLogger());
 };
 
 export const updateFinding = (id: string, partial: Partial<Finding>): void => {

@@ -4,6 +4,7 @@ import useOnline from "@/hooks/useOnline";
 import { callGemini, GeminiError, type GeminiErrorCode } from "@/lib/gemini";
 import GeminiErrorDisplay from "@/components/GeminiErrorDisplay";
 import { addToHistory, incrementStat } from "@/lib/store";
+import { checkAnalysisAchievements, checkDeepAnalysis, checkCriticalFound, checkJwtAnalysis } from "@/lib/achievements";
 import { parseTarget, contextToPromptBlock } from "@/lib/parseTarget";
 import JwtAnalyzer from "@/components/JwtAnalyzer";
 import HttpRequestAnalyzer from "@/components/HttpRequestAnalyzer";
@@ -153,6 +154,10 @@ const Analyzer = () => {
 
       incrementStat("totalAnalyses");
       incrementStat("attackPaths", pathCount);
+      checkAnalysisAchievements();
+      if (depth === "Deep") checkDeepAnalysis();
+      if (/critical/i.test(response)) checkCriticalFound();
+      if (analysisType === "JWT Token") checkJwtAnalysis();
 
       // Extract domain for stats
       try {

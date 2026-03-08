@@ -16,6 +16,7 @@ import {
   Layers,
   WifiOff,
   Bookmark,
+  Trophy,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -42,6 +43,7 @@ const NAV_ITEMS = [
   { to: "/vuln-categories", label: "Vuln Categories", icon: Layers },
   { to: "/findings", label: "Findings", icon: Bug },
   { to: "/bookmarks", label: "Bookmarks", icon: Bookmark },
+  { to: "/achievements", label: "Achievements", icon: Trophy },
   { to: "/settings", label: "Settings", icon: Settings },
 ];
 
@@ -57,6 +59,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/vuln-categories": "Vuln Categories",
   "/findings": "Findings",
   "/bookmarks": "Bookmarks",
+  "/achievements": "Achievements",
   "/settings": "Settings",
 };
 
