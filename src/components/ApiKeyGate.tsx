@@ -76,7 +76,7 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
               <span className="text-primary">01</span> — Get your key
             </p>
             <a
-              href="https://aistudio.google.com/apikey"
+              href="https://console.groq.com/keys"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 w-full rounded-lg bg-primary px-5 py-3 font-heading font-bold text-primary-foreground transition-all hover:brightness-110"
