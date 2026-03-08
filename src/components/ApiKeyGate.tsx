@@ -1,31 +1,58 @@
 import { useState, useEffect, type ReactNode } from "react";
 import { hasApiKey, saveApiKey } from "@/lib/gemini";
 
+const MODEL_URL =
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent";
+
 const ApiKeyGate = ({ children }: { children: ReactNode }) => {
   const [unlocked, setUnlocked] = useState(hasApiKey());
   const [key, setKey] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [successAnim, setSuccessAnim] = useState(false);
 
   useEffect(() => {
     setUnlocked(hasApiKey());
   }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const trimmed = key.trim();
     if (!trimmed || trimmed.length < 10) {
       setError("Please enter a valid API key.");
       return;
     }
-    saveApiKey(trimmed);
-    setUnlocked(true);
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch(`${MODEL_URL}?key=${trimmed}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: [{ parts: [{ text: "Say OK" }] }] }),
+      });
+
+      if (!res.ok) {
+        setError("Invalid key — make sure you copied it correctly from aistudio.google.com");
+        setLoading(false);
+        return;
+      }
+
+      saveApiKey(trimmed);
+      setSuccessAnim(true);
+      setTimeout(() => setUnlocked(true), 600);
+    } catch {
+      setError("Invalid key — make sure you copied it correctly from aistudio.google.com");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (unlocked) return <>{children}</>;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-background px-4">
+    <div className={`fixed inset-0 flex items-center justify-center bg-background px-4 transition-opacity duration-500 ${successAnim ? "opacity-0 scale-105" : "opacity-100"}`}>
       <div className="gate-card w-full max-w-lg rounded-xl border border-primary/30 bg-card p-8 md:p-10">
-        {/* Title */}
         <h1 className="font-heading text-3xl font-extrabold tracking-tight md:text-4xl">
           <span className="text-primary text-glow-primary">Welcome to </span>
           <span className="text-secondary text-glow-secondary">HackMind</span>
@@ -38,7 +65,6 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
           <span className="blinking-cursor ml-0.5 text-primary">▌</span>
         </p>
 
-        {/* Steps */}
         <div className="mt-8 space-y-6">
           {/* Step 1 */}
           <div className="space-y-2">
@@ -49,7 +75,7 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
               href="https://aistudio.google.com/apikey"
               target="_blank"
               rel="noopener noreferrer"
-              className="gate-btn-primary flex items-center justify-center gap-2 w-full rounded-lg bg-primary px-5 py-3 font-heading font-bold text-primary-foreground transition-all hover:brightness-110"
+              className="flex items-center justify-center gap-2 w-full rounded-lg bg-primary px-5 py-3 font-heading font-bold text-primary-foreground transition-all hover:brightness-110"
             >
               Get Free API Key →
             </a>
@@ -71,7 +97,7 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
               className="w-full rounded-lg border border-border bg-muted/50 px-4 py-3 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 transition-colors"
             />
             {error && (
-              <p className="text-xs text-destructive font-mono">{error}</p>
+              <p className="text-xs text-destructive font-mono mt-1">{error}</p>
             )}
           </div>
 
@@ -82,15 +108,26 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
             </p>
             <button
               onClick={handleSubmit}
-              className="gate-btn-launch w-full rounded-lg border border-primary/50 bg-primary/10 px-5 py-3 font-heading font-bold text-primary transition-all hover:bg-primary hover:text-primary-foreground"
+              disabled={loading}
+              className="w-full rounded-lg border border-primary/50 bg-primary/10 px-5 py-3 font-heading font-bold text-primary transition-all hover:bg-primary hover:text-primary-foreground disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              Start HackMind
+              {loading ? (
+                <>
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  Validating…
+                </>
+              ) : (
+                "Start HackMind"
+              )}
             </button>
           </div>
         </div>
 
         <p className="mt-6 text-center text-xs text-muted-foreground font-mono">
-          Your key is stored locally and never sent to our servers.
+          Your key is stored only in your browser. We never see it.
         </p>
       </div>
 
