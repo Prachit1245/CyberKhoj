@@ -76,11 +76,13 @@ const Toggle = ({
 }) => (
   <div className="flex items-center justify-between gap-4 py-3">
     <div>
-      <p className="text-sm font-mono text-foreground">{label}</p>
+      <p className="text-sm font-mono text-foreground" id={`toggle-${label.replace(/\s+/g, "-").toLowerCase()}`}>{label}</p>
       <p className="text-xs text-muted-foreground">{description}</p>
     </div>
     <button
       onClick={onToggle}
+      aria-pressed={enabled}
+      aria-labelledby={`toggle-${label.replace(/\s+/g, "-").toLowerCase()}`}
       className={`shrink-0 transition-colors ${enabled ? "text-primary" : "text-muted-foreground"}`}
     >
       {enabled ? <ToggleRight size={28} /> : <ToggleLeft size={28} />}
