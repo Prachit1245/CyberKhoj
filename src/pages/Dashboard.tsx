@@ -288,12 +288,12 @@ const Dashboard = () => {
       {/* Stat Cards */}
       <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
         {STAT_CARDS.map((card) => (
-          <div key={card.key} className="rounded-xl border border-border bg-card p-5 space-y-3 hover:border-primary/30 transition-colors">
+          <div key={card.key} className="rounded-xl border border-border bg-card p-4 md:p-5 space-y-2 md:space-y-3 hover:border-primary/30 transition-colors">
             <div className="inline-flex items-center justify-center rounded-lg bg-primary/10 p-2">
               <card.icon size={18} className="text-primary" />
             </div>
-            <p className="font-heading text-2xl font-bold text-foreground">{stats[card.key].toLocaleString()}</p>
-            <p className="text-xs font-mono text-muted-foreground">{card.label}</p>
+            <p className="font-heading text-xl md:text-2xl font-bold text-foreground">{stats[card.key].toLocaleString()}</p>
+            <p className="text-[10px] md:text-xs font-mono text-muted-foreground">{card.label}</p>
           </div>
         ))}
       </div>
