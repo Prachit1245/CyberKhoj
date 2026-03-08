@@ -60,8 +60,6 @@ const loadPrefs = (): Prefs => {
 const savePrefs = (p: Prefs) => localStorage.setItem(PREFS_KEY, JSON.stringify(p));
 
 /* ─── Validate key helper ─── */
-const MODEL_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent";
 
 /* ─── Toggle Component ─── */
 const Toggle = ({
