@@ -12,8 +12,9 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { hasApiKey } from "@/lib/gemini";
+import { getUsageCount, DAILY_LIMIT } from "@/lib/usage";
 
 const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
