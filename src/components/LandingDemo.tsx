@@ -284,7 +284,7 @@ const LandingDemo = () => {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-lg bg-primary px-8 py-4 font-heading text-base font-bold text-primary-foreground hover:brightness-110 transition-all glow-primary"
             >
-              Get your free API key and analyze real targets <ArrowRight size={18} />
+              Get your free Groq API key and analyze real targets <ArrowRight size={18} />
             </a>
             <p className="text-xs text-muted-foreground font-mono">
               Free forever · No signup required · 1000 analyses per day
