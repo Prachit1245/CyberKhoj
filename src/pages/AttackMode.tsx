@@ -143,13 +143,49 @@ const AttackMode = () => {
     d === "advanced" ? "bg-red-500" : d === "intermediate" ? "bg-yellow-500" : "bg-emerald-500";
 
   const total = allIdeas.length;
-  const visible = allIdeas.slice(0, visibleCount);
+  const revealed = allIdeas.slice(0, visibleCount);
   const progress = total > 0 ? (visibleCount / total) * 100 : 0;
   const streaming = visibleCount > 0 && visibleCount < total;
   const testedCount = checked.size;
   const testProgress = total > 0 ? (testedCount / total) * 100 : 0;
 
+  // Collect unique categories
+  const categories = [...new Set(revealed.map(i => i.category))].sort();
+
+  // Filter + sort
+  const filtered = (() => {
+    let result = [...revealed];
+    if (catFilter) result = result.filter(i => i.category === catFilter);
+    if (diffFilter !== "all") result = result.filter(i => i.difficulty === diffFilter);
+    if (prioFilter !== "all") result = result.filter(i => i.priority === prioFilter);
+    if (untestedOnly) result = result.filter(i => !checked.has(i.id));
+    if (searchQ.trim()) {
+      const q = searchQ.toLowerCase();
+      result = result.filter(i => i.idea.toLowerCase().includes(q) || i.category.toLowerCase().includes(q));
+    }
+    // Sort
+    const prioRank: Record<string, number> = { high: 0, medium: 1, low: 2 };
+    const diffRank: Record<string, number> = { beginner: 0, intermediate: 1, advanced: 2 };
+    if (sortMode === "priority") result.sort((a, b) => (prioRank[a.priority] ?? 1) - (prioRank[b.priority] ?? 1));
+    else if (sortMode === "difficulty") result.sort((a, b) => (diffRank[a.difficulty] ?? 1) - (diffRank[b.difficulty] ?? 1));
+    else result.sort((a, b) => a.category.localeCompare(b.category));
+    // Shuffle
+    if (shuffleSeed > 0) {
+      for (let i = result.length - 1; i > 0; i--) {
+        const j = (shuffleSeed * (i + 1) * 9301 + 49297) % result.length;
+        [result[i], result[j]] = [result[j], result[i]];
+      }
+    }
+    return result;
+  })();
+
   const btn = "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono border border-border/30 bg-card/50 text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors cursor-pointer";
+  const pillClass = (active: boolean) =>
+    `px-3 py-1 rounded-full text-xs font-mono cursor-pointer transition-all duration-200 border ${
+      active
+        ? "bg-primary/20 border-primary text-primary"
+        : "bg-card/50 border-border/30 text-muted-foreground hover:border-primary/40"
+    }`;
 
   return (
     <div className="space-y-6 max-w-6xl">
