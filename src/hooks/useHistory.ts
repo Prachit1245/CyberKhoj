@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import type { AnalysisResult } from "@/types";
 import { toast } from "@/components/Toast";
 import { incrementStat } from "@/lib/store";
+import { awardXp, XP_REWARDS } from "@/lib/xp";
 
 const HISTORY_KEY = "hackmind_history";
 const MAX_ITEMS = 100;
