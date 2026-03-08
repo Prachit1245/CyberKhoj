@@ -106,7 +106,92 @@
 /* Firefox scrollbar */
 * {
   scrollbar-width: thin;
-  scrollbar-color: hsl(110 100% 55% / 0.25) hsl(0 0% 6%);
+  scrollbar-color: hsl(110, 100%, 55%, 0.25) hsl(0, 0%, 6%);
+}
+
+/* ══════════════════════════════════════════════
+   CROSS-BROWSER COMPATIBILITY
+   ══════════════════════════════════════════════ */
+
+/* ── Safari flex gap fallback (Safari <14.1) ── */
+@supports not (gap: 1px) {
+  .flex > * + * {
+    margin-left: 0.5rem;
+  }
+  .flex-col > * + * {
+    margin-left: 0;
+    margin-top: 0.5rem;
+  }
+}
+
+/* ── Safari: CSS hsl() syntax compatibility ──
+   Safari <15 needs comma-separated hsl values */
+@supports not (color: hsl(0 0% 0%)) {
+  :root {
+    --background: 0, 0%, 4%;
+    --foreground: 0, 0%, 90%;
+    --primary: 110, 100%, 55%;
+    --primary-foreground: 0, 0%, 4%;
+    --card: 0, 0%, 7%;
+    --card-foreground: 0, 0%, 90%;
+    --muted: 0, 0%, 12%;
+    --muted-foreground: 0, 0%, 55%;
+    --border: 0, 0%, 15%;
+  }
+}
+
+/* ── Safari/iOS: tap highlight removal ── */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Safari: input zoom prevention on iOS (font-size < 16px triggers zoom) ── */
+@media screen and (max-width: 768px) {
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+}
+
+/* ── Safari: backdrop-filter fallback ── */
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  [class*="backdrop-blur"] {
+    background-color: hsl(0 0% 5% / 0.95) !important;
+  }
+}
+
+/* ── Ensure backdrop-filter works in Safari with webkit prefix ── */
+[class*="backdrop-blur"] {
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ── Firefox: remove inner focus ring on buttons ── */
+button::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
+/* ── Edge/Firefox: number input spinner ── */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* ── Safari: position:fixed + overflow fix ── */
+@supports (-webkit-touch-callout: none) {
+  .fixed {
+    -webkit-transform: translateZ(0);
+  }
+}
+
+/* ── iOS Safari: 100vh fix ── */
+@supports (-webkit-touch-callout: none) {
+  .h-screen {
+    height: -webkit-fill-available;
+  }
 }
 
 /* ── Selection highlight ── */
