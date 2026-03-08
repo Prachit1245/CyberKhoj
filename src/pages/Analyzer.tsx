@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Trash2, ArrowRight, Loader2 } from "lucide-react";
-import { callGemini } from "@/lib/gemini";
+import { callGemini, GeminiError, type GeminiErrorCode } from "@/lib/gemini";
+import GeminiErrorDisplay from "@/components/GeminiErrorDisplay";
 import { addToHistory, incrementStat } from "@/lib/store";
 import { parseTarget, contextToPromptBlock } from "@/lib/parseTarget";
 import JwtAnalyzer from "@/components/JwtAnalyzer";
