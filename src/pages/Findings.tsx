@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Plus, Download, Trash2, ChevronDown, ChevronUp, X, DollarSign, Target, Shield, Bug, FileText } from "lucide-react";
+import { Plus, Download, Trash2, ChevronDown, ChevronUp, X, DollarSign, Target, Shield, Bug, FileText, Printer } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import ReportWriterModal from "@/components/ReportWriterModal";
 import {
