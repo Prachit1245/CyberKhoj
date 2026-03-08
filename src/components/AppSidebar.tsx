@@ -234,6 +234,7 @@ const AppSidebar = () => {
           )}
           <button
             onClick={() => setCollapsed(!collapsed)}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             className="text-muted-foreground hover:text-foreground transition-colors p-1"
           >
             {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
