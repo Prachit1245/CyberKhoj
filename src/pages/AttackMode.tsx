@@ -34,6 +34,13 @@ const AttackMode = () => {
   const [checklistMode, setChecklistMode] = useState(false);
   const [checked, setChecked] = useState<Set<number>>(new Set());
   const [celebrated, setCelebrated] = useState(false);
+  const [searchQ, setSearchQ] = useState("");
+  const [catFilter, setCatFilter] = useState<string | null>(null);
+  const [diffFilter, setDiffFilter] = useState<string>("all");
+  const [prioFilter, setPrioFilter] = useState<string>("all");
+  const [sortMode, setSortMode] = useState<"priority" | "difficulty" | "category">("priority");
+  const [untestedOnly, setUntestedOnly] = useState(false);
+  const [shuffleSeed, setShuffleSeed] = useState(0);
   const streamRef = useRef<ReturnType<typeof setInterval>>();
 
   useEffect(() => () => { if (streamRef.current) clearInterval(streamRef.current); }, []);
