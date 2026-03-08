@@ -12,6 +12,7 @@ import Analyzer from "./pages/Analyzer";
 import AttackMode from "./pages/AttackMode";
 import MindMap from "./pages/MindMap";
 import History from "./pages/History";
+import HistoryDetail from "./pages/HistoryDetail";
 import Payloads from "./pages/Payloads";
 import CheatSheets from "./pages/CheatSheets";
 import SettingsPage from "./pages/SettingsPage";

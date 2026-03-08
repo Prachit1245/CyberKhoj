@@ -77,33 +77,6 @@ function SeverityBar({ result }: { result: string }) {
   );
 }
 
-/* ── Result detail view ── */
-function ResultDetail({ record, onBack }: { record: AnalysisRecord; onBack: () => void }) {
-  const data = useMemo(() => {
-    try { return JSON.parse(record.result); } catch { return null; }
-  }, [record.result]);
-
-  return (
-    <div className="space-y-4">
-      <button onClick={onBack} className="text-xs font-mono text-muted-foreground hover:text-foreground flex items-center gap-1 cursor-pointer">
-        ← Back to History
-      </button>
-      <div className="flex items-center gap-3">
-        <h2 className="text-lg font-mono font-bold text-foreground truncate">{record.target}</h2>
-        <Badge variant="outline" className={TYPE_LABELS[record.type]?.className}>
-          {TYPE_LABELS[record.type]?.label || record.type}
-        </Badge>
-      </div>
-      <p className="text-xs font-mono text-muted-foreground">
-        {new Date(record.date).toLocaleString()} · {record.pathsFound} paths
-      </p>
-      <pre className="text-xs font-mono text-foreground/80 bg-card/50 border border-border/20 rounded-lg p-4 overflow-auto max-h-[60vh] whitespace-pre-wrap">
-        {data ? JSON.stringify(data, null, 2) : record.result}
-      </pre>
-    </div>
-  );
-}
-
 /* ── Main History page ── */
 export default function History() {
   const [records, setRecords] = useState<AnalysisRecord[]>(() => getHistory());
