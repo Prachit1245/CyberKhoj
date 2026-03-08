@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { isBeginnerMode } from "@/lib/beginnerMode";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, RefreshCw, FileJson, FileText, Trash2, ChevronRight, Calendar, Target, Hash, Share2 } from "lucide-react";
+import { ArrowLeft, RefreshCw, FileJson, FileText, Trash2, ChevronRight, Calendar, Target, Hash, Share2, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { compressForShare } from "@/lib/shareResults";
