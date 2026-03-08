@@ -617,6 +617,32 @@ const SettingsPage = () => {
         </div>
       </Section>
 
+      {/* ─── Accessibility Section ─── */}
+      <Section icon={<Accessibility size={16} />} title="Accessibility">
+        <div className="divide-y divide-border/30">
+          <Toggle
+            enabled={prefs.reduceMotion}
+            onToggle={() => {
+              const next = !prefs.reduceMotion;
+              updatePref("reduceMotion", next);
+              // Apply immediately
+              if (next) {
+                document.documentElement.classList.add("reduce-motion");
+              } else {
+                document.documentElement.classList.remove("reduce-motion");
+              }
+            }}
+            label="Reduce Motion"
+            description="Disable all animations and transitions for accessibility or performance."
+          />
+          <div className="py-3">
+            <p className="text-xs text-muted-foreground font-mono">
+              All interactive elements have keyboard focus indicators. Color information is always accompanied by icons or text labels. Screen readers can use the skip-to-content link and all form fields have labels.
+            </p>
+          </div>
+        </div>
+      </Section>
+
       {/* ─── Data Management Section ─── */}
       <Section icon={<Database size={16} />} title="Data Management">
         <div className="space-y-4">

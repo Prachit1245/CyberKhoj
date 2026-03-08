@@ -314,6 +314,7 @@ const AppSidebar = () => {
       <nav
         className="md:hidden fixed bottom-0 left-0 right-0 z-[80] border-t border-border/50 flex items-stretch safe-area-pb"
         style={{ background: "#0d0d0d" }}
+        aria-label="Mobile navigation"
       >
         {BOTTOM_TABS.map((tab) => {
           const isActive = location.pathname === tab.to;
