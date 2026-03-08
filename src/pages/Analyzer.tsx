@@ -228,13 +228,13 @@ const Analyzer = () => {
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
-      {/* Page-level tabs */}
-      <div className="flex border-b border-border/50 mb-2">
+      {/* Page-level tabs — scrollable on mobile */}
+      <div className="flex border-b border-border/50 mb-2 overflow-x-auto scrollbar-thin">
         {PAGE_TABS.map((tab) => (
           <button
             key={tab}
             onClick={() => setPageTab(tab)}
-            className={`px-5 py-3 text-sm font-heading font-bold transition-all border-b-2 -mb-px ${
+            className={`shrink-0 px-4 md:px-5 py-3 text-sm font-heading font-bold transition-all border-b-2 -mb-px min-h-[2.75rem] ${
               pageTab === tab
                 ? "border-primary text-primary"
                 : "border-transparent text-muted-foreground hover:text-foreground"
