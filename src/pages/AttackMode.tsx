@@ -361,14 +361,14 @@ const AttackMode = () => {
         </div>
       </div>
 
-      {/* Input + Button */}
-      <div className="flex gap-3">
+      {/* Input + Buttons */}
+      <div className="flex flex-wrap gap-3">
         <input
           value={domain}
           onChange={(e) => setDomain(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && !loading && generate()}
           placeholder="example.com"
-          className="flex-1 h-12 rounded-lg bg-card/50 border border-border/30 px-4 text-sm font-mono text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50"
+          className="flex-1 h-12 min-w-[200px] rounded-lg bg-card/50 border border-border/30 px-4 text-sm font-mono text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50"
         />
         <button
           onClick={generate}
@@ -383,7 +383,26 @@ const AttackMode = () => {
             {online && <kbd className="hidden sm:inline-flex px-1.5 py-0.5 rounded border border-white/30 text-[10px] font-mono opacity-70">⌘↵</kbd>}
           </span>
         </button>
+        <button
+          onClick={() => setShowRecon(!showRecon)}
+          disabled={!domain.trim()}
+          className={`h-12 px-4 rounded-lg font-heading font-bold text-sm transition-all cursor-pointer border ${
+            showRecon
+              ? "border-primary bg-primary/10 text-primary"
+              : "border-border/30 bg-card/50 text-muted-foreground hover:text-primary hover:border-primary/40"
+          } disabled:opacity-40 disabled:cursor-not-allowed`}
+        >
+          <span className="flex items-center gap-2">
+            <Radar className="h-4 w-4" />
+            Recon Checklist
+          </span>
+        </button>
       </div>
+
+      {/* Recon Checklist Panel */}
+      {showRecon && domain.trim() && (
+        <ReconChecklist domain={domain.trim()} />
+      )}
 
       {/* Progress + Counter */}
       {(loading || visibleCount > 0) && (
