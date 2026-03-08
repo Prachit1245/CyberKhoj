@@ -110,7 +110,7 @@ export default function History() {
     else if (sort === "most") list.sort((a, b) => b.pathsFound - a.pathsFound);
 
     return list;
-  }, [records, search, filter, sort]);
+  }, [records, debouncedSearch, filter, sort]);
 
   const handleDelete = (record: AnalysisRecord) => {
     deleteFromHistory(record.id);
