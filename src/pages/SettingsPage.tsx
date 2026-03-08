@@ -512,6 +512,37 @@ const SettingsPage = () => {
         </div>
       </Section>
 
+      {/* ─── Install App Section ─── */}
+      <Section icon={<Smartphone size={16} />} title="Install App">
+        <div className="space-y-3">
+          {isInstalled ? (
+            <p className="text-sm text-primary font-mono flex items-center gap-2">
+              <Check size={14} /> HackMind is installed on this device
+            </p>
+          ) : canInstall ? (
+            <>
+              <p className="text-sm text-muted-foreground font-mono">
+                Install HackMind as a standalone app for offline access and a native experience.
+              </p>
+              <button
+                onClick={async () => {
+                  const ok = await install();
+                  if (ok) toast.success("HackMind installed!");
+                }}
+                className="flex items-center gap-2 rounded-md bg-primary px-4 py-2.5 text-xs font-heading font-bold text-primary-foreground hover:brightness-110 transition-all glow-primary"
+              >
+                <Download size={13} />
+                Add to Home Screen
+              </button>
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground font-mono">
+              Open HackMind in Chrome or Safari on mobile to install it as an app. On desktop, look for the install icon in your browser's address bar.
+            </p>
+          )}
+        </div>
+      </Section>
+
       {/* ─── Preferences Section ─── */}
       <Section icon={<Settings2 size={16} />} title="Preferences">
         <div className="divide-y divide-border/30">
