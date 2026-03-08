@@ -28,6 +28,7 @@ const NAV_ITEMS = [
   { to: "/history", label: "History", icon: Clock },
   { to: "/payloads", label: "Payload Library", icon: Code2 },
   { to: "/cheatsheets", label: "Cheat Sheets", icon: BookOpen },
+  { to: "/owasp", label: "OWASP Top 10", icon: ShieldAlert },
   { to: "/findings", label: "Findings", icon: Bug },
   { to: "/settings", label: "Settings", icon: Settings },
 ];
