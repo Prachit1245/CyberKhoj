@@ -104,6 +104,7 @@ const Analyzer = () => {
   const [resultTab, setResultTab] = useState<(typeof RESULT_TABS)[number]>("Attack Paths");
   const [selectedTemplate, setSelectedTemplate] = useState<TargetTemplate | null>(null);
   const [beginner, setBeginner] = useState(isBeginnerMode);
+  const [isFallback, setIsFallback] = useState(false);
 
   // Instant client-side target intelligence
   const targetIntel = useMemo(() => {
