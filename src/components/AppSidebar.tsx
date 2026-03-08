@@ -56,6 +56,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/owasp": "OWASP Top 10",
   "/vuln-categories": "Vuln Categories",
   "/findings": "Findings",
+  "/bookmarks": "Bookmarks",
   "/settings": "Settings",
 };
 
