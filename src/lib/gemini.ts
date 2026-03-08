@@ -135,13 +135,26 @@ const fetchGemini = async (prompt: string, key: string, signal?: AbortSignal): P
   return text;
 };
 
-/* ─── JSON validation helper ─── */
+/* ─── JSON helpers ─── */
+const stripCodeFences = (text: string): string =>
+  text.trim().replace(/^```(?:json)?\s*/im, "").replace(/\s*```\s*$/m, "").trim();
+
 const looksLikeJson = (text: string): boolean => {
-  const trimmed = text.trim()
-    .replace(/^```(?:json)?\s*/im, "")
-    .replace(/\s*```\s*$/m, "")
-    .trim();
+  const trimmed = stripCodeFences(text);
   return trimmed.startsWith("{") || trimmed.startsWith("[");
+};
+
+const extractLikelyJson = (text: string): string | null => {
+  const cleaned = stripCodeFences(text);
+  if (cleaned.startsWith("{") || cleaned.startsWith("[")) return cleaned;
+
+  const objectMatch = cleaned.match(/\{[\s\S]*\}/);
+  if (objectMatch) return objectMatch[0];
+
+  const arrayMatch = cleaned.match(/\[[\s\S]*\]/);
+  if (arrayMatch) return arrayMatch[0];
+
+  return null;
 };
 
 /* ─── Main API call with retry for invalid JSON ─── */
