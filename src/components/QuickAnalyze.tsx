@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Zap, X, ArrowRight, Loader2, ExternalLink, Save } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { callGemini } from "@/lib/gemini";
+import { callGemini, GeminiError, type GeminiErrorCode } from "@/lib/gemini";
 import { addToHistory, incrementStat } from "@/lib/store";
 import { parseTarget, contextToPromptBlock } from "@/lib/parseTarget";
 import { Badge } from "@/components/ui/badge";
@@ -116,7 +116,11 @@ Format as numbered list with markdown.`;
       setPaths(parseQuickPaths(response));
       incrementStat("totalAnalyses");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Analysis failed.");
+      if (e instanceof GeminiError) {
+        setError(`${e.message}`);
+      } else {
+        setError(e instanceof Error ? e.message : "Analysis failed.");
+      }
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Trash2, ArrowRight, Loader2 } from "lucide-react";
-import { callGemini } from "@/lib/gemini";
+import { callGemini, GeminiError, type GeminiErrorCode } from "@/lib/gemini";
+import GeminiErrorDisplay from "@/components/GeminiErrorDisplay";
 import { addToHistory, incrementStat } from "@/lib/store";
 import { parseTarget, contextToPromptBlock } from "@/lib/parseTarget";
 import JwtAnalyzer from "@/components/JwtAnalyzer";
@@ -79,6 +80,7 @@ const Analyzer = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState("");
   const [error, setError] = useState("");
+  const [errorCode, setErrorCode] = useState<GeminiErrorCode | null>(null);
   const [resultTab, setResultTab] = useState<(typeof RESULT_TABS)[number]>("Attack Paths");
   const [selectedTemplate, setSelectedTemplate] = useState<TargetTemplate | null>(null);
 
@@ -136,6 +138,7 @@ const Analyzer = () => {
 
     setLoading(true);
     setError("");
+    setErrorCode(null);
     setResult("");
 
     try {
@@ -174,7 +177,13 @@ const Analyzer = () => {
 
       setResultTab("Attack Paths");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Analysis failed.");
+      if (e instanceof GeminiError) {
+        setError(e.message);
+        setErrorCode(e.code);
+      } else {
+        setError(e instanceof Error ? e.message : "Analysis failed.");
+        setErrorCode("API_ERROR");
+      }
     } finally {
       setLoading(false);
     }
@@ -252,7 +261,10 @@ const Analyzer = () => {
           rows={5}
           className="w-full rounded-xl border border-border bg-card px-4 py-3 font-mono text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 transition-colors resize-y"
         />
-        {error && <p className="text-xs text-destructive font-mono">{error}</p>}
+        {error && errorCode && (
+          <GeminiErrorDisplay code={errorCode} message={error} onRetry={handleAnalyze} />
+        )}
+        {error && !errorCode && <p className="text-xs text-destructive font-mono">{error}</p>}
       </div>
 
       {/* Target Templates */}

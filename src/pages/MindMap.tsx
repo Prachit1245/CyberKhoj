@@ -16,7 +16,7 @@ import "@xyflow/react/dist/style.css";
 import Dagre from "@dagrejs/dagre";
 import { ZoomIn, ZoomOut, Maximize, Image, FileJson, ClipboardList, Save, Network, TreePine, Zap, StickyNote, CheckCircle, Copy, Search } from "lucide-react";
 import html2canvas from "html2canvas";
-import { callGemini } from "@/lib/gemini";
+import { callGemini, GeminiError } from "@/lib/gemini";
 import { buildMindMapPrompt, parseMindMapNodes, type MindMapNode } from "@/lib/prompts";
 import { toast } from "@/components/Toast";
 import { useNavigate } from "react-router-dom";
@@ -259,7 +259,11 @@ function MindMapCanvas() {
       applyLayout(parsed, direction, new Set(), {});
       toast.success(`Mind map generated — ${parsed.length} nodes ✓`);
     } catch (err: any) {
-      toast.error(err.message || "Failed to generate mind map");
+      if (err instanceof GeminiError) {
+        toast.error(`${err.code}: ${err.message}`);
+      } else {
+        toast.error(err.message || "Failed to generate mind map");
+      }
     } finally {
       setLoading(false);
     }

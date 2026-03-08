@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { AlertTriangle, Zap, ShoppingCart, LogIn, Server, Shield, Upload, ListChecks, Download, CheckSquare, XSquare, Copy, Search, Shuffle } from "lucide-react";
-import { callGemini } from "@/lib/gemini";
+import { callGemini, GeminiError } from "@/lib/gemini";
 import { buildAttackModePrompt, parseAttackIdeas, type AttackIdea } from "@/lib/prompts";
 import { toast } from "@/components/Toast";
 
@@ -133,7 +133,11 @@ const AttackMode = () => {
         }
       }, 50);
     } catch (err: any) {
-      toast.error(err.message || "Failed to generate ideas");
+      if (err instanceof GeminiError) {
+        toast.error(`${err.code}: ${err.message}`);
+      } else {
+        toast.error(err.message || "Failed to generate ideas");
+      }
     } finally {
       setLoading(false);
     }
