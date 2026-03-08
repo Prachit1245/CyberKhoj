@@ -162,12 +162,22 @@ const AttackMode = () => {
               </span>
               <div className="min-w-0 space-y-1">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-mono text-sm text-foreground font-medium">{idea.title}</span>
+                  <span className="font-mono text-sm text-foreground font-medium">{idea.idea}</span>
                   <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${catColor(idea.category)}`}>
                     {idea.category}
                   </span>
+                  <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${
+                    idea.difficulty === "advanced" ? "text-red-400 border-red-400/30" :
+                    idea.difficulty === "intermediate" ? "text-yellow-400 border-yellow-400/30" :
+                    "text-primary border-primary/30"
+                  }`}>{idea.difficulty}</span>
+                  <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${
+                    idea.priority === "high" ? "text-red-400 border-red-400/30" :
+                    idea.priority === "medium" ? "text-orange-400 border-orange-400/30" :
+                    "text-muted-foreground border-border/30"
+                  }`}>{idea.priority}</span>
                 </div>
-                <p className="text-xs font-mono text-muted-foreground leading-relaxed">{idea.detail}</p>
+              </div>
               </div>
             </div>
           ))}
