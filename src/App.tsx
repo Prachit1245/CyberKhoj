@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar";
 import AppSidebar from "@/components/AppSidebar";
 import OnboardingTour from "./components/OnboardingTour";
 import DailyLimitOverlay from "@/components/DailyLimitOverlay";
+import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import { SkeletonDashboard, SkeletonAnalyzer, SkeletonPage } from "@/components/Skeletons";
 
 /* ── Lazy-loaded pages ── */
