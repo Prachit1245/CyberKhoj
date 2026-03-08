@@ -131,7 +131,11 @@ const ConfirmDialog = ({
         if (e.target === e.currentTarget) onCancel();
       }}
     >
-      <div className="w-full max-w-sm rounded-xl border border-destructive/30 bg-card p-6 space-y-4 animate-scale-in">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="confirm-title"
+        className="w-full max-w-sm rounded-xl border border-destructive/30 bg-card p-6 space-y-4 animate-scale-in">
         <div className="flex items-center gap-2">
           <AlertTriangle size={18} className="text-destructive" />
           <h3 className="font-heading font-bold text-foreground">{title}</h3>
