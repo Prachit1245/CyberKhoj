@@ -52,8 +52,6 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     }
   };
-    }
-  };
 
   if (unlocked) return <>{children}</>;
 
