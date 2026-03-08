@@ -198,6 +198,11 @@ export default function HistoryDetail() {
 
   return (
     <div className="space-y-5">
+      {/* Print Header — hidden on screen, shown in print */}
+      <div className="print-header hidden">
+        <h1>HackMind Security Analysis Report</h1>
+        <p>{record.target} — {new Date(record.date).toLocaleDateString()} {new Date(record.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</p>
+      </div>
       {/* Breadcrumb */}
       <div className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground">
         <button onClick={() => navigate("/history")} className="hover:text-foreground cursor-pointer flex items-center gap-1">

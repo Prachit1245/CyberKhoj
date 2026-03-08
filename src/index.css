@@ -188,3 +188,121 @@ body::after {
 .route-animate {
   animation: route-fade-in 0.25s ease-out both;
 }
+
+/* ══════════════════════════════════════════════
+   PRINT STYLES
+   ══════════════════════════════════════════════ */
+@media print {
+  /* Hide chrome: sidebar, navbar, mobile tab bar, feedback tab, FABs, overlays */
+  aside,
+  nav,
+  .skip-to-content,
+  [data-tour],
+  button:not(.print-keep),
+  .fixed,
+  body::after {
+    display: none !important;
+  }
+
+  /* Override dark background */
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+    --muted: 0 0% 94%;
+    --muted-foreground: 0 0% 40%;
+    --border: 0 0% 80%;
+    --input: 0 0% 80%;
+  }
+
+  body {
+    background: white !important;
+    color: #111 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Remove dark glows & shadows */
+  * {
+    text-shadow: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Reset layout: remove sidebar flex, make main full width */
+  .flex.flex-col.md\\:flex-row {
+    display: block !important;
+  }
+  main {
+    overflow: visible !important;
+    height: auto !important;
+  }
+  main > div {
+    padding: 0 !important;
+  }
+
+  /* ── Print header (injected via .print-header) ── */
+  .print-header {
+    display: block !important;
+    text-align: center;
+    padding: 1rem 0 0.5rem;
+    border-bottom: 2px solid #111;
+    margin-bottom: 1.5rem;
+  }
+  .print-header h1 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #111;
+    margin: 0;
+  }
+  .print-header p {
+    font-size: 0.75rem;
+    color: #555;
+    margin: 0.25rem 0 0;
+    font-family: monospace;
+  }
+
+  /* ── Severity colors survive print ── */
+  .print-sev-critical { color: #dc2626 !important; border-color: #dc2626 !important; }
+  .print-sev-high { color: #ea580c !important; border-color: #ea580c !important; }
+  .print-sev-medium { color: #ca8a04 !important; border-color: #ca8a04 !important; }
+  .print-sev-low { color: #2563eb !important; border-color: #2563eb !important; }
+
+  /* ── Page breaks ── */
+  .print-break-before {
+    page-break-before: always;
+  }
+  .print-break-inside-avoid {
+    page-break-inside: avoid;
+  }
+
+  /* ── Findings table clean print ── */
+  table {
+    width: 100% !important;
+    border-collapse: collapse;
+  }
+  th, td {
+    border: 1px solid #ccc !important;
+    padding: 6px 8px !important;
+    font-size: 11px !important;
+    color: #111 !important;
+  }
+  th {
+    background: #f3f3f3 !important;
+    font-weight: 700 !important;
+  }
+
+  /* Expand collapsed items */
+  [data-state="closed"] {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Ensure badges are visible */
+  .inline-flex {
+    border: 1px solid #ccc;
+  }
+}
