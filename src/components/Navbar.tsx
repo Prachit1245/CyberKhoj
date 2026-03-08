@@ -42,13 +42,9 @@ const Navbar = () => {
     setValidating(true);
     setKeyError("");
     try {
-      const res = await fetch(`${MODEL_URL}?key=${trimmed}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents: [{ parts: [{ text: "Say OK" }] }] }),
-      });
-      if (!res.ok) {
-        setKeyError("Invalid key — check aistudio.google.com");
+      const result = await validateApiKey(trimmed);
+      if (!result.ok) {
+        setKeyError(result.error || "Invalid key.");
         setValidating(false);
         return;
       }

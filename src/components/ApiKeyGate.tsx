@@ -28,32 +28,10 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
     setError("");
 
     try {
-      const res = await fetch(`${VALIDATE_URL}?key=${trimmed}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents: [{ parts: [{ text: "Say OK" }] }] }),
-      });
+      const result = await validateApiKey(trimmed);
 
-      if (!res.ok) {
-        const body = await res.text();
-        console.error("API key validation failed:", res.status, body);
-
-        if (res.status === 429) {
-          // Key is valid but quota is exhausted; let user proceed so app can show quota errors contextually.
-          saveApiKey(trimmed);
-          setSuccessAnim(true);
-          toast.warning("API key saved, but your Gemini quota is currently exhausted (429).");
-          setTimeout(() => setUnlocked(true), 600);
-          return;
-        }
-
-        if (res.status === 400) {
-          setError("Request failed while validating key. Please try again.");
-        } else if (res.status === 403) {
-          setError("API key is restricted or Gemini API is not enabled for this project.");
-        } else {
-          setError(`Validation failed (${res.status}). Please verify your key and try again.`);
-        }
+      if (!result.ok) {
+        setError(result.error || "Validation failed.");
         return;
       }
 
@@ -62,16 +40,18 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
       setTimeout(() => setUnlocked(true), 600);
     } catch (err) {
       console.error("API key validation error:", err);
-      // Network errors in preview — accept key if it looks valid (starts with AIza)
-      if (trimmed.startsWith("AIza")) {
+      // Network errors — accept key if it looks plausible (gsk_ prefix for Groq)
+      if (trimmed.startsWith("gsk_")) {
         saveApiKey(trimmed);
         setSuccessAnim(true);
         setTimeout(() => setUnlocked(true), 600);
       } else {
-        setError("Could not validate key. Make sure it starts with 'AIza' and try again.");
+        setError("Could not validate key. Check your Groq API key and try again.");
       }
     } finally {
       setLoading(false);
+    }
+  };
     }
   };
 

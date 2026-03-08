@@ -194,21 +194,17 @@ const SettingsPage = () => {
     setTesting(true);
     setTestResult(null);
     try {
-      const res = await fetch(`${MODEL_URL}?key=${k}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents: [{ parts: [{ text: "Say OK" }] }] }),
-      });
-      if (res.ok || res.status === 429) {
+      const result = await validateApiKey(k);
+      if (result.ok) {
         setTestResult("ok");
-        toast.success("API key is valid" + (res.status === 429 ? " (quota exhausted)" : ""));
+        toast.success("API key is valid");
       } else {
         setTestResult("fail");
-        toast.error("API key validation failed — check your key");
+        toast.error(result.error || "API key validation failed");
       }
     } catch {
       setTestResult("fail");
-      toast.error("Could not reach Gemini API");
+      toast.error("Could not reach Groq API");
     } finally {
       setTesting(false);
     }
