@@ -76,6 +76,9 @@ const App = () => (
               <Route path="/vuln-categories" element={<Suspense fallback={<PageFallback />}><VulnCategories /></Suspense>} />
               <Route path="/bookmarks" element={<Suspense fallback={<PageFallback />}><Bookmarks /></Suspense>} />
               <Route path="/achievements" element={<Suspense fallback={<PageFallback />}><Achievements /></Suspense>} />
+              <Route path="/terms" element={<Suspense fallback={<PageFallback />}><Terms /></Suspense>} />
+              <Route path="/privacy" element={<Suspense fallback={<PageFallback />}><Privacy /></Suspense>} />
+              <Route path="/ethics" element={<Suspense fallback={<PageFallback />}><Ethics /></Suspense>} />
             </Route>
 
             <Route path="*" element={<Suspense fallback={<PageFallback />}><NotFound /></Suspense>} />

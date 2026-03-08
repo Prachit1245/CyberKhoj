@@ -78,6 +78,11 @@ const Footer = () => (
 
       {/* Bottom row */}
       <div className="mt-12 pt-6 border-t border-border/30 space-y-3 text-center">
+        <div className="flex justify-center gap-4 text-xs font-mono">
+          <Link to="/terms" className="text-muted-foreground hover:text-primary transition-colors">Terms</Link>
+          <Link to="/privacy" className="text-muted-foreground hover:text-primary transition-colors">Privacy</Link>
+          <Link to="/ethics" className="text-muted-foreground hover:text-primary transition-colors">Ethics</Link>
+        </div>
         <p className="text-xs font-mono text-muted-foreground">
           HackMind is free forever. No tracking. No ads. No BS.
         </p>
