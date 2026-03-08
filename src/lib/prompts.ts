@@ -116,9 +116,12 @@ const sanitizePath = (item: Record<string, unknown>, index: number): AttackPath 
   userNotes: "",
 });
 
+/** Strip all markdown code fences from Gemini responses */
+const stripAllFences = (text: string): string =>
+  text.replace(/```(?:json)?\s*/gi, "").trim();
+
 const extractJsonArray = (text: string): unknown[] | null => {
-  let cleaned = text.trim();
-  cleaned = cleaned.replace(/^```(?:json)?\s*/im, "").replace(/\s*```\s*$/m, "");
+  const cleaned = stripAllFences(text);
 
   // Try direct parse
   try {
@@ -216,11 +219,16 @@ ${JSON_INSTRUCTION}`;
 };
 
 export const parseAttackIdeas = (raw: string): AttackIdea[] => {
-  // Strip markdown fences
-  let cleaned = raw.trim().replace(/^```(?:json)?\s*/im, "").replace(/\s*```\s*$/m, "");
+  const cleaned = stripAllFences(raw);
   const match = cleaned.match(/\[[\s\S]*\]/);
   if (!match) throw new Error("Could not parse attack ideas from AI response");
-  const parsed = JSON.parse(match[0]) as AttackIdea[];
+  let parsed: AttackIdea[];
+  try {
+    parsed = JSON.parse(match[0]) as AttackIdea[];
+  } catch (e) {
+    console.error("[parseAttackIdeas] JSON.parse failed:", e, "\nRaw excerpt:", match[0].slice(0, 300));
+    throw new Error("AI returned malformed JSON. Please try again.");
+  }
   return parsed.map((item, i) => ({
     id: item.id ?? i + 1,
     idea: String(item.idea || ""),
@@ -290,10 +298,16 @@ ${JSON_INSTRUCTION}`;
 };
 
 export const parseMindMapNodes = (raw: string): MindMapNode[] => {
-  let cleaned = raw.trim().replace(/^```(?:json)?\s*/im, "").replace(/\s*```\s*$/m, "");
+  const cleaned = stripAllFences(raw);
   const match = cleaned.match(/\{[\s\S]*\}/);
   if (!match) throw new Error("Could not parse mind map from AI response");
-  const parsed = JSON.parse(match[0]);
+  let parsed: any;
+  try {
+    parsed = JSON.parse(match[0]);
+  } catch (e) {
+    console.error("[parseMindMapNodes] JSON.parse failed:", e, "\nRaw excerpt:", match[0].slice(0, 300));
+    throw new Error("AI returned malformed JSON. Please try again.");
+  }
   const nodes: MindMapNode[] = parsed.nodes || [];
   return nodes.map((n) => ({
     id: String(n.id || ""),
