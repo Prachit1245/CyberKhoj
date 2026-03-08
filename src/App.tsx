@@ -42,49 +42,85 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <ToastProvider>
     <TooltipProvider>
-      <ApiKeyGate>
-        <DailyLimitOverlay />
-        <BrowserRouter>
-          <OnboardingTour />
-          <Routes>
-            {/* Landing page with navbar */}
-            <Route
-              path="/"
-              element={
-                <Suspense fallback={<PageFallback />}>
-                  <Navbar />
-                  <div className="pt-14">
-                    <Index />
-                  </div>
-                </Suspense>
-              }
-            />
+      <BrowserRouter>
+        <Routes>
+          {/* Public routes — no API key needed */}
+          <Route
+            path="/"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Navbar />
+                <div className="pt-14">
+                  <Index />
+                </div>
+              </Suspense>
+            }
+          />
+          <Route
+            path="/terms"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Navbar />
+                <div className="pt-14 px-4 py-10">
+                  <Terms />
+                </div>
+              </Suspense>
+            }
+          />
+          <Route
+            path="/privacy"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Navbar />
+                <div className="pt-14 px-4 py-10">
+                  <Privacy />
+                </div>
+              </Suspense>
+            }
+          />
+          <Route
+            path="/ethics"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Navbar />
+                <div className="pt-14 px-4 py-10">
+                  <Ethics />
+                </div>
+              </Suspense>
+            }
+          />
 
-            {/* App pages with sidebar layout */}
-            <Route element={<AppSidebar />}>
-              <Route path="/dashboard" element={<Suspense fallback={<DashFallback />}><Dashboard /></Suspense>} />
-              <Route path="/analyzer" element={<Suspense fallback={<AnalyzerFallback />}><Analyzer /></Suspense>} />
-              <Route path="/attack" element={<Suspense fallback={<PageFallback />}><AttackMode /></Suspense>} />
-              <Route path="/mindmap" element={<Suspense fallback={<PageFallback />}><MindMap /></Suspense>} />
-              <Route path="/history" element={<Suspense fallback={<PageFallback />}><History /></Suspense>} />
-              <Route path="/history/:id" element={<Suspense fallback={<PageFallback />}><HistoryDetail /></Suspense>} />
-              <Route path="/payloads" element={<Suspense fallback={<PageFallback />}><Payloads /></Suspense>} />
-              <Route path="/cheatsheets" element={<Suspense fallback={<PageFallback />}><CheatSheets /></Suspense>} />
-              <Route path="/settings" element={<Suspense fallback={<PageFallback />}><SettingsPage /></Suspense>} />
-              <Route path="/findings" element={<Suspense fallback={<PageFallback />}><Findings /></Suspense>} />
-              <Route path="/owasp" element={<Suspense fallback={<PageFallback />}><OwaspPage /></Suspense>} />
-              <Route path="/vuln-categories" element={<Suspense fallback={<PageFallback />}><VulnCategories /></Suspense>} />
-              <Route path="/bookmarks" element={<Suspense fallback={<PageFallback />}><Bookmarks /></Suspense>} />
-              <Route path="/achievements" element={<Suspense fallback={<PageFallback />}><Achievements /></Suspense>} />
-              <Route path="/terms" element={<Suspense fallback={<PageFallback />}><Terms /></Suspense>} />
-              <Route path="/privacy" element={<Suspense fallback={<PageFallback />}><Privacy /></Suspense>} />
-              <Route path="/ethics" element={<Suspense fallback={<PageFallback />}><Ethics /></Suspense>} />
-            </Route>
-
-            <Route path="*" element={<Suspense fallback={<PageFallback />}><NotFound /></Suspense>} />
-          </Routes>
-        </BrowserRouter>
-      </ApiKeyGate>
+          {/* Protected routes — API key required */}
+          <Route
+            path="/*"
+            element={
+              <ApiKeyGate>
+                <DailyLimitOverlay />
+                <OnboardingTour />
+                <Routes>
+                  <Route element={<AppSidebar />}>
+                    <Route path="/dashboard" element={<Suspense fallback={<DashFallback />}><Dashboard /></Suspense>} />
+                    <Route path="/analyzer" element={<Suspense fallback={<AnalyzerFallback />}><Analyzer /></Suspense>} />
+                    <Route path="/attack" element={<Suspense fallback={<PageFallback />}><AttackMode /></Suspense>} />
+                    <Route path="/mindmap" element={<Suspense fallback={<PageFallback />}><MindMap /></Suspense>} />
+                    <Route path="/history" element={<Suspense fallback={<PageFallback />}><History /></Suspense>} />
+                    <Route path="/history/:id" element={<Suspense fallback={<PageFallback />}><HistoryDetail /></Suspense>} />
+                    <Route path="/payloads" element={<Suspense fallback={<PageFallback />}><Payloads /></Suspense>} />
+                    <Route path="/cheatsheets" element={<Suspense fallback={<PageFallback />}><CheatSheets /></Suspense>} />
+                    <Route path="/settings" element={<Suspense fallback={<PageFallback />}><SettingsPage /></Suspense>} />
+                    <Route path="/findings" element={<Suspense fallback={<PageFallback />}><Findings /></Suspense>} />
+                    <Route path="/owasp" element={<Suspense fallback={<PageFallback />}><OwaspPage /></Suspense>} />
+                    <Route path="/vuln-categories" element={<Suspense fallback={<PageFallback />}><VulnCategories /></Suspense>} />
+                    <Route path="/bookmarks" element={<Suspense fallback={<PageFallback />}><Bookmarks /></Suspense>} />
+                    <Route path="/achievements" element={<Suspense fallback={<PageFallback />}><Achievements /></Suspense>} />
+                  </Route>
+                  <Route path="*" element={<Suspense fallback={<PageFallback />}><NotFound /></Suspense>} />
+                </Routes>
+              </ApiKeyGate>
+            }
+          />
+        </Routes>
+      </BrowserRouter>
     </TooltipProvider>
     </ToastProvider>
   </QueryClientProvider>
