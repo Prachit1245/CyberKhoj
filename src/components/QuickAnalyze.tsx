@@ -163,10 +163,10 @@ Format as numbered list with markdown.`;
 
   return (
     <>
-      {/* FAB */}
+      {/* FAB — bottom-center on mobile (above tab bar), bottom-right on desktop */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:scale-110 transition-all duration-200 glow-primary"
+        className="fixed z-50 w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:scale-110 transition-all duration-200 glow-primary bottom-20 left-1/2 -translate-x-1/2 md:bottom-6 md:right-6 md:left-auto md:translate-x-0"
         title="Quick Analyze (Ctrl+K)"
       >
         <Zap size={24} />
@@ -175,14 +175,14 @@ Format as numbered list with markdown.`;
       {/* Overlay */}
       {open && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          className="fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 md:p-4"
           onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
         >
           {/* Backdrop */}
           <div className="absolute inset-0 bg-background/80 backdrop-blur-sm animate-fade-in" />
 
-          {/* Modal */}
-          <div className="relative w-full max-w-lg bg-card border border-border rounded-2xl shadow-2xl shadow-primary/10 animate-enter z-10">
+          {/* Modal — full-screen on mobile */}
+          <div className="relative w-full md:max-w-lg h-full md:h-auto bg-card border-t md:border border-border md:rounded-2xl shadow-2xl shadow-primary/10 animate-enter z-10 flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-border/50">
               <div className="flex items-center gap-2">
@@ -196,7 +196,7 @@ Format as numbered list with markdown.`;
             </div>
 
             {/* Body */}
-            <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+            <div className="p-5 space-y-4 flex-1 overflow-y-auto">
               {/* Input row */}
               <div className="flex gap-2">
                 <input

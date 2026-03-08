@@ -17,6 +17,8 @@ import {
   WifiOff,
   Bookmark,
   Trophy,
+  MoreHorizontal,
+  X,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -45,6 +47,14 @@ const NAV_ITEMS = [
   { to: "/bookmarks", label: "Bookmarks", icon: Bookmark },
   { to: "/achievements", label: "Achievements", icon: Trophy },
   { to: "/settings", label: "Settings", icon: Settings },
+];
+
+/* Bottom tab bar items (mobile) */
+const BOTTOM_TABS = [
+  { to: "/dashboard", label: "Home", icon: LayoutDashboard },
+  { to: "/analyzer", label: "Analyze", icon: Link2 },
+  { to: "/attack", label: "Attack", icon: Swords },
+  { to: "/mindmap", label: "Map", icon: Network },
 ];
 
 const PAGE_TITLES: Record<string, string> = {
@@ -106,9 +116,75 @@ const SidebarUsage = ({ collapsed, keySet }: { collapsed: boolean; keySet: boole
   );
 };
 
+/* ── Mobile "More" drawer ── */
+const MobileMoreDrawer = ({
+  open,
+  onClose,
+  bmCount,
+  online,
+}: {
+  open: boolean;
+  onClose: () => void;
+  bmCount: number;
+  online: boolean;
+}) => {
+  const location = useLocation();
+  // Items not in bottom tabs
+  const moreItems = NAV_ITEMS.filter(
+    (item) => !BOTTOM_TABS.some((bt) => bt.to === item.to)
+  );
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-[90] md:hidden" onClick={onClose}>
+      <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" />
+      <div
+        className="absolute bottom-[4.5rem] left-0 right-0 mx-3 rounded-2xl border border-border bg-card shadow-2xl animate-scale-in overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border/50">
+          <span className="font-heading text-sm font-bold text-foreground">More</span>
+          <button onClick={onClose} className="p-1 text-muted-foreground hover:text-foreground">
+            <X size={18} />
+          </button>
+        </div>
+        <nav className="grid grid-cols-3 gap-1 p-3 max-h-[50vh] overflow-y-auto">
+          {moreItems.map((item) => {
+            const isActive = location.pathname === item.to;
+            return (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                onClick={onClose}
+                className={`flex flex-col items-center gap-1.5 rounded-xl p-3 min-h-[4rem] transition-all ${
+                  isActive
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                }`}
+              >
+                <item.icon size={20} />
+                <span className="text-[10px] font-mono leading-tight text-center">
+                  {item.label}
+                </span>
+                {item.to === "/bookmarks" && bmCount > 0 && (
+                  <span className="text-[8px] font-mono text-primary-foreground bg-primary rounded-full px-1 py-0.5 leading-none">
+                    {bmCount > 99 ? "99+" : bmCount}
+                  </span>
+                )}
+              </NavLink>
+            );
+          })}
+        </nav>
+      </div>
+    </div>
+  );
+};
+
 const AppSidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [bmCount, setBmCount] = useState(getBookmarkCount());
+  const [moreOpen, setMoreOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const keySet = hasApiKey();
@@ -120,6 +196,11 @@ const AppSidebar = () => {
     window.addEventListener("hackmind:bookmarks-changed", refresh);
     return () => window.removeEventListener("hackmind:bookmarks-changed", refresh);
   }, []);
+
+  // Close more drawer on route change
+  useEffect(() => {
+    setMoreOpen(false);
+  }, [location.pathname]);
 
   // Ctrl+B shortcut
   useEffect(() => {
@@ -136,10 +217,10 @@ const AppSidebar = () => {
   const pageTitle = PAGE_TITLES[location.pathname] || "HackMind";
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      {/* Sidebar */}
+    <div className="flex flex-col md:flex-row h-screen overflow-hidden">
+      {/* Desktop Sidebar — hidden on mobile */}
       <aside
-        className={`flex flex-col shrink-0 border-r border-primary/20 transition-all duration-300 ${
+        className={`hidden md:flex flex-col shrink-0 border-r border-primary/20 transition-all duration-300 ${
           collapsed ? "w-16" : "w-60"
         }`}
         style={{ background: "#0d0d0d" }}
@@ -176,7 +257,6 @@ const AppSidebar = () => {
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                 }`}
               >
-                {/* Active indicator */}
                 {isActive && (
                   <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-primary rounded-r" />
                 )}
@@ -204,31 +284,73 @@ const AppSidebar = () => {
 
         {/* Bottom status */}
         <div className="border-t border-border/50 p-3 space-y-2" data-tour="usage-counter">
-        <SidebarUsage collapsed={collapsed} keySet={keySet} />
+          <SidebarUsage collapsed={collapsed} keySet={keySet} />
         </div>
       </aside>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col min-h-screen overflow-hidden" style={{ background: "#0f0f0f" }}>
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden" style={{ background: "#0f0f0f" }}>
         {/* Top bar */}
-        <header className="h-14 flex items-center px-6 border-b border-border/50 shrink-0 gap-3">
-          <h1 className="font-heading text-lg font-bold text-foreground">{pageTitle}</h1>
+        <header className="h-12 md:h-14 flex items-center px-4 md:px-6 border-b border-border/50 shrink-0 gap-3">
+          {/* Mobile logo */}
+          <span className="md:hidden font-heading text-sm font-bold text-primary text-glow-primary mr-1">HM</span>
+          <h1 className="font-heading text-base md:text-lg font-bold text-foreground">{pageTitle}</h1>
           {!online && (
-            <span className="flex items-center gap-1.5 rounded-full border border-destructive/40 bg-destructive/10 px-2.5 py-1 text-[10px] font-mono text-destructive animate-fade-in">
+            <span className="flex items-center gap-1.5 rounded-full border border-destructive/40 bg-destructive/10 px-2 py-0.5 text-[10px] font-mono text-destructive animate-fade-in">
               <WifiOff size={12} /> Offline
             </span>
           )}
         </header>
 
-        {/* Content */}
+        {/* Content — extra bottom padding on mobile for tab bar */}
         <main className="flex-1 overflow-y-auto">
-          <div className="p-6">
+          <div className="p-4 md:p-6 pb-24 md:pb-6">
             <Outlet />
           </div>
         </main>
       </div>
 
-      {/* Quick Analyze FAB + Modal */}
+      {/* Mobile Bottom Tab Bar */}
+      <nav
+        className="md:hidden fixed bottom-0 left-0 right-0 z-[80] border-t border-border/50 flex items-stretch safe-area-pb"
+        style={{ background: "#0d0d0d" }}
+      >
+        {BOTTOM_TABS.map((tab) => {
+          const isActive = location.pathname === tab.to;
+          return (
+            <NavLink
+              key={tab.to}
+              to={tab.to}
+              className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2 min-h-[3.5rem] transition-colors ${
+                isActive ? "text-primary" : "text-muted-foreground"
+              }`}
+            >
+              <tab.icon size={22} />
+              <span className="text-[10px] font-mono">{tab.label}</span>
+            </NavLink>
+          );
+        })}
+        {/* More button */}
+        <button
+          onClick={() => setMoreOpen(!moreOpen)}
+          className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2 min-h-[3.5rem] transition-colors ${
+            moreOpen ? "text-primary" : "text-muted-foreground"
+          }`}
+        >
+          <MoreHorizontal size={22} />
+          <span className="text-[10px] font-mono">More</span>
+        </button>
+      </nav>
+
+      {/* Mobile More Drawer */}
+      <MobileMoreDrawer
+        open={moreOpen}
+        onClose={() => setMoreOpen(false)}
+        bmCount={bmCount}
+        online={online}
+      />
+
+      {/* Quick Analyze FAB + Palettes */}
       <QuickAnalyze />
       <CommandPalette />
       <ShortcutsModal />

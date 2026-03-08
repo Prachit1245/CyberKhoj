@@ -274,7 +274,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="space-y-8 max-w-5xl">
+    <div className="space-y-8 max-w-5xl mx-auto">
       {/* Welcome */}
       <div>
         <h2 className="font-heading text-2xl md:text-3xl font-extrabold text-foreground">
@@ -286,14 +286,14 @@ const Dashboard = () => {
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
         {STAT_CARDS.map((card) => (
-          <div key={card.key} className="rounded-xl border border-border bg-card p-5 space-y-3 hover:border-primary/30 transition-colors">
+          <div key={card.key} className="rounded-xl border border-border bg-card p-4 md:p-5 space-y-2 md:space-y-3 hover:border-primary/30 transition-colors">
             <div className="inline-flex items-center justify-center rounded-lg bg-primary/10 p-2">
               <card.icon size={18} className="text-primary" />
             </div>
-            <p className="font-heading text-2xl font-bold text-foreground">{stats[card.key].toLocaleString()}</p>
-            <p className="text-xs font-mono text-muted-foreground">{card.label}</p>
+            <p className="font-heading text-xl md:text-2xl font-bold text-foreground">{stats[card.key].toLocaleString()}</p>
+            <p className="text-[10px] md:text-xs font-mono text-muted-foreground">{card.label}</p>
           </div>
         ))}
       </div>
@@ -487,7 +487,8 @@ const Dashboard = () => {
           </div>
         ) : (
           <div className="rounded-xl border border-border bg-card overflow-hidden">
-            <table className="w-full text-sm">
+            {/* Desktop table */}
+            <table className="hidden md:table w-full text-sm">
               <thead>
                 <tr className="border-b border-border/50">
                   <th className="text-left px-4 py-3 font-mono text-xs text-muted-foreground uppercase tracking-wider">Target</th>
@@ -515,6 +516,24 @@ const Dashboard = () => {
                 ))}
               </tbody>
             </table>
+
+            {/* Mobile card list */}
+            <div className="md:hidden divide-y divide-border/30">
+              {recent.map((record) => (
+                <div
+                  key={record.id}
+                  onClick={() => setSelectedRecord(record)}
+                  className="p-4 hover:bg-primary/5 cursor-pointer transition-colors active:bg-primary/10 min-h-[3.5rem]"
+                >
+                  <p className="font-mono text-sm text-foreground truncate">{record.target}</p>
+                  <div className="flex items-center gap-3 mt-1.5">
+                    <span className="inline-block rounded bg-primary/10 px-2 py-0.5 text-[10px] font-mono text-primary">{record.type}</span>
+                    <span className="text-[10px] font-mono text-muted-foreground">{record.pathsFound} paths</span>
+                    <span className="text-[10px] font-mono text-muted-foreground ml-auto">{record.date}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
@@ -522,14 +541,14 @@ const Dashboard = () => {
       {/* Quick Actions */}
       <div className="space-y-3">
         <h3 className="font-heading text-lg font-bold text-foreground">Quick Actions</h3>
-        <div className="flex flex-wrap gap-3">
-          <button onClick={() => navigate("/analyzer")} className="flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 font-heading text-sm font-bold text-primary-foreground hover:brightness-110 transition-all">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <button onClick={() => navigate("/analyzer")} className="flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 md:py-2.5 font-heading text-sm font-bold text-primary-foreground hover:brightness-110 transition-all min-h-[2.75rem]">
             <Link2 size={16} /> Analyze URL
           </button>
-          <button onClick={() => navigate("/attack")} className="flex items-center gap-2 rounded-lg border border-secondary px-5 py-2.5 font-heading text-sm font-bold text-secondary hover:bg-secondary hover:text-secondary-foreground transition-all">
+          <button onClick={() => navigate("/attack")} className="flex items-center justify-center gap-2 rounded-lg border border-secondary px-5 py-3 md:py-2.5 font-heading text-sm font-bold text-secondary hover:bg-secondary hover:text-secondary-foreground transition-all min-h-[2.75rem]">
             <Swords size={16} /> Attack Mode
           </button>
-          <button onClick={() => navigate("/mindmap")} className="flex items-center gap-2 rounded-lg border border-border px-5 py-2.5 font-heading text-sm font-bold text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all">
+          <button onClick={() => navigate("/mindmap")} className="flex items-center justify-center gap-2 rounded-lg border border-border px-5 py-3 md:py-2.5 font-heading text-sm font-bold text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all min-h-[2.75rem]">
             <Network size={16} /> Open Mind Map
           </button>
         </div>
@@ -538,15 +557,15 @@ const Dashboard = () => {
       {/* Result Modal */}
       {selectedRecord && (
         <div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-background/80 backdrop-blur-sm px-4"
+          className="fixed inset-0 z-[60] flex items-end md:items-center justify-center bg-background/80 backdrop-blur-sm px-0 md:px-4"
           onClick={(e) => { if (e.target === e.currentTarget) setSelectedRecord(null); }}
         >
-          <div className="w-full max-w-2xl max-h-[80vh] rounded-xl border border-primary/30 bg-card p-6 overflow-y-auto animate-scale-in gate-card">
+          <div className="w-full md:max-w-2xl h-full md:h-auto md:max-h-[80vh] rounded-t-xl md:rounded-xl border-t md:border border-primary/30 bg-card p-4 md:p-6 overflow-y-auto animate-scale-in gate-card flex flex-col">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-heading text-lg font-bold text-foreground">
-                Analysis: <span className="text-primary">{selectedRecord.target}</span>
+              <h3 className="font-heading text-base md:text-lg font-bold text-foreground">
+                Analysis: <span className="text-primary truncate">{selectedRecord.target}</span>
               </h3>
-              <button onClick={() => setSelectedRecord(null)} className="text-muted-foreground hover:text-foreground text-sm font-mono">✕</button>
+              <button onClick={() => setSelectedRecord(null)} className="text-muted-foreground hover:text-foreground text-sm font-mono p-2 min-w-[2.75rem] min-h-[2.75rem] flex items-center justify-center">✕</button>
             </div>
             <div className="flex gap-3 mb-4 text-xs font-mono">
               <span className="rounded bg-primary/10 px-2 py-0.5 text-primary">{selectedRecord.type}</span>

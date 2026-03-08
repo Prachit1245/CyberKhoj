@@ -227,14 +227,14 @@ const Analyzer = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-4xl">
-      {/* Page-level tabs */}
-      <div className="flex border-b border-border/50 mb-2">
+    <div className="space-y-6 max-w-4xl mx-auto">
+      {/* Page-level tabs — scrollable on mobile */}
+      <div className="flex border-b border-border/50 mb-2 overflow-x-auto scrollbar-thin">
         {PAGE_TABS.map((tab) => (
           <button
             key={tab}
             onClick={() => setPageTab(tab)}
-            className={`px-5 py-3 text-sm font-heading font-bold transition-all border-b-2 -mb-px ${
+            className={`shrink-0 px-4 md:px-5 py-3 text-sm font-heading font-bold transition-all border-b-2 -mb-px min-h-[2.75rem] ${
               pageTab === tab
                 ? "border-primary text-primary"
                 : "border-transparent text-muted-foreground hover:text-foreground"
@@ -266,8 +266,8 @@ const Analyzer = () => {
             setError("");
           }}
           placeholder="https://example.com/api/user?id=45"
-          rows={5}
-          className="w-full rounded-xl border border-border bg-card px-4 py-3 font-mono text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 transition-colors resize-y"
+          rows={4}
+          className="w-full rounded-xl border border-border bg-card px-4 py-3 font-mono text-sm md:text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 transition-colors resize-y min-h-[6rem] md:min-h-0"
         />
         {error && errorCode && (
           <GeminiErrorDisplay code={errorCode} message={error} onRetry={handleAnalyze} />
@@ -348,12 +348,12 @@ const Analyzer = () => {
       </div>
 
       {/* Action buttons */}
-      <div className="flex gap-3">
+      <div className="flex flex-col sm:flex-row gap-3">
         <button
           onClick={handleAnalyze}
           disabled={loading || !online}
           title={!online ? "Requires internet for AI analysis" : "Ctrl+Enter"}
-          className="flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-heading text-sm font-bold text-primary-foreground hover:brightness-110 transition-all disabled:opacity-60 disabled:cursor-not-allowed glow-primary"
+          className="flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3.5 md:py-3 font-heading text-sm font-bold text-primary-foreground hover:brightness-110 transition-all disabled:opacity-60 disabled:cursor-not-allowed glow-primary min-h-[2.75rem]"
         >
           {loading ? (
             <>
@@ -377,7 +377,7 @@ const Analyzer = () => {
             setError("");
           }}
           title="Ctrl+L"
-          className="flex items-center gap-2 rounded-lg border border-border px-5 py-3 font-heading text-sm font-bold text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all"
+          className="flex items-center justify-center gap-2 rounded-lg border border-border px-5 py-3.5 md:py-3 font-heading text-sm font-bold text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all min-h-[2.75rem]"
         >
           <Trash2 size={16} /> Clear
           <kbd className="hidden sm:inline-flex ml-1 px-1.5 py-0.5 rounded border border-border text-[10px] font-mono opacity-50">⌘L</kbd>

@@ -279,7 +279,7 @@ const CommandPalette = () => {
 
   return (
     <div
-      className="fixed inset-0 z-[200] flex items-start justify-center pt-[15vh] p-4"
+      className="fixed inset-0 z-[200] flex items-start justify-center pt-[10vh] md:pt-[15vh] p-2 md:p-4"
       onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
     >
       <div className="absolute inset-0 bg-background/85 backdrop-blur-sm animate-fade-in" />

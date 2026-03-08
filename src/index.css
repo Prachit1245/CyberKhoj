@@ -76,4 +76,15 @@
   .text-glow-secondary {
     text-shadow: 0 0 10px hsl(185 100% 49% / 0.5);
   }
+  .safe-area-pb {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  /* Hide scrollbar but keep scrolling */
+  .scrollbar-thin::-webkit-scrollbar {
+    height: 4px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted));
+    border-radius: 2px;
+  }
 }
