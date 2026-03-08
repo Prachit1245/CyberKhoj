@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Trash2, ArrowRight, Loader2, WifiOff, GraduationCap } from "lucide-react";
+import AnalysisLoader from "@/components/AnalysisLoader";
+import { SkeletonResultCards } from "@/components/Skeletons";
 import { extractDomain } from "@/lib/targetNotes";
 import TargetNotesPanel from "@/components/TargetNotesPanel";
 import useOnline from "@/hooks/useOnline";
@@ -514,20 +516,22 @@ const Analyzer = () => {
         )}
 
         {/* Result content */}
-        <div className="rounded-xl border border-border bg-card p-5 min-h-[200px]">
-          {loading ? (
-            <div className="flex items-center gap-3 text-sm font-mono text-muted-foreground">
-              <Loader2 size={16} className="animate-spin text-primary" />
-              Running {depth.toLowerCase()} analysis on {analysisType.toLowerCase()}…
-            </div>
-          ) : result ? (
-            renderResult()
-          ) : (
-            <p className="text-sm font-mono text-muted-foreground/40 italic">
-              Your attack paths will appear here...
-            </p>
-          )}
-        </div>
+        {loading ? (
+          <div className="space-y-4">
+            <AnalysisLoader depth={depth.toLowerCase() as "quick" | "standard" | "deep"} />
+            <SkeletonResultCards />
+          </div>
+        ) : (
+          <div className="rounded-xl border border-border bg-card p-5 min-h-[200px]">
+            {result ? (
+              renderResult()
+            ) : (
+              <p className="text-sm font-mono text-muted-foreground/40 italic">
+                Your attack paths will appear here...
+              </p>
+            )}
+          </div>
+        )}
       </div>
       </>
       )}

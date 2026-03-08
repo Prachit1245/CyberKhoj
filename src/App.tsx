@@ -14,7 +14,7 @@ import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import AchievementOverlay from "@/components/AchievementOverlay";
 import LevelUpOverlay from "@/components/LevelUpOverlay";
 import PrivateBrowsingBanner from "@/components/PrivateBrowsingBanner";
-import { SkeletonDashboard, SkeletonAnalyzer, SkeletonPage } from "@/components/Skeletons";
+import { SkeletonDashboard, SkeletonAnalyzer, SkeletonPage, SkeletonHistory, SkeletonMindMap } from "@/components/Skeletons";
 
 /* ── Lazy-loaded pages ── */
 const Index = lazy(() => import("./pages/Index"));
@@ -139,9 +139,9 @@ const App = () => (
                     <Route path="/dashboard" element={<Suspense fallback={<DashFallback />}><Dashboard /></Suspense>} />
                     <Route path="/analyzer" element={<Suspense fallback={<AnalyzerFallback />}><Analyzer /></Suspense>} />
                     <Route path="/attack" element={<Suspense fallback={<PageFallback />}><AttackMode /></Suspense>} />
-                    <Route path="/mindmap" element={<Suspense fallback={<PageFallback />}><MindMap /></Suspense>} />
-                    <Route path="/history" element={<Suspense fallback={<PageFallback />}><History /></Suspense>} />
-                    <Route path="/history/:id" element={<Suspense fallback={<PageFallback />}><HistoryDetail /></Suspense>} />
+                    <Route path="/mindmap" element={<Suspense fallback={<SkeletonMindMap />}><MindMap /></Suspense>} />
+                    <Route path="/history" element={<Suspense fallback={<div className="p-4 md:p-6"><SkeletonHistory /></div>}><History /></Suspense>} />
+                    <Route path="/history/:id" element={<Suspense fallback={<div className="p-4 md:p-6"><SkeletonHistory /></div>}><HistoryDetail /></Suspense>} />
                     <Route path="/payloads" element={<Suspense fallback={<PageFallback />}><Payloads /></Suspense>} />
                     <Route path="/cheatsheets" element={<Suspense fallback={<PageFallback />}><CheatSheets /></Suspense>} />
                     <Route path="/settings" element={<Suspense fallback={<PageFallback />}><SettingsPage /></Suspense>} />

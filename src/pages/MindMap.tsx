@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
+import { SkeletonMindMap } from "@/components/Skeletons";
 import {
   ReactFlow,
   Background,
@@ -18,7 +19,7 @@ import Dagre from "@dagrejs/dagre";
 import {
   ZoomIn, ZoomOut, Maximize, Image, FileJson, ClipboardList, Save, Network,
   TreePine, Zap, StickyNote, CheckCircle, Copy, Search, WifiOff, Plus,
-  ChevronsDownUp, ChevronsUpDown, List,
+  ChevronsDownUp, ChevronsUpDown, List, Loader2,
 } from "lucide-react";
 import html2canvas from "html2canvas";
 import { callGemini, GeminiError } from "@/lib/gemini";
@@ -571,8 +572,13 @@ function MindMapCanvas() {
           title={!online ? "Requires internet for AI analysis" : undefined}
           className="h-9 px-4 rounded-lg font-mono font-bold text-xs bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
         >
-          {!online ? <WifiOff className="h-3.5 w-3.5" /> : <Zap className="h-3.5 w-3.5" />}
-          {!online ? "Offline" : loading ? "Generating..." : "Generate Mind Map"}
+          {loading ? (
+            <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Generating…</>
+          ) : !online ? (
+            <><WifiOff className="h-3.5 w-3.5" /> Offline</>
+          ) : (
+            <><Zap className="h-3.5 w-3.5" /> Generate Mind Map</>
+          )}
         </button>
 
         {/* Search */}
@@ -730,7 +736,12 @@ function MindMapCanvas() {
                   </div>
                 </Panel>
 
-                {/* Empty state */}
+                {/* Empty state / Loading state */}
+                {loading && (
+                  <Panel position="top-center">
+                    <SkeletonMindMap />
+                  </Panel>
+                )}
                 {!hasData && !loading && (
                   <Panel position="top-center">
                     <div className="mt-[30vh] text-center space-y-4">
