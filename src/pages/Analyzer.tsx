@@ -164,6 +164,8 @@ const Analyzer = () => {
 
       {pageTab === "JWT Decoder" ? (
         <JwtAnalyzer />
+      ) : pageTab === "HTTP Request" ? (
+        <HttpRequestAnalyzer />
       ) : (
       <>
       {/* Input area */}
