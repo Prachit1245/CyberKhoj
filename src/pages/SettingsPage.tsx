@@ -491,7 +491,7 @@ const SettingsPage = () => {
         ) : (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground font-mono">
-              No API key set. You'll need one to use HackMind.
+              No API key set. You'll need one to use CyberKhoj.
             </p>
             <a
               href="https://aistudio.google.com/apikey"
