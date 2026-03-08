@@ -175,14 +175,14 @@ Format as numbered list with markdown.`;
       {/* Overlay */}
       {open && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          className="fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 md:p-4"
           onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
         >
           {/* Backdrop */}
           <div className="absolute inset-0 bg-background/80 backdrop-blur-sm animate-fade-in" />
 
-          {/* Modal */}
-          <div className="relative w-full max-w-lg bg-card border border-border rounded-2xl shadow-2xl shadow-primary/10 animate-enter z-10">
+          {/* Modal — full-screen on mobile */}
+          <div className="relative w-full md:max-w-lg h-full md:h-auto bg-card border-t md:border border-border md:rounded-2xl shadow-2xl shadow-primary/10 animate-enter z-10 flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-border/50">
               <div className="flex items-center gap-2">
