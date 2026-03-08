@@ -377,7 +377,7 @@ const SettingsPage = () => {
   return (
     <div className="max-w-2xl mx-auto space-y-5">
       {/* ─── API Key Section ─── */}
-      <Section icon={<Key size={16} />} title="API Key">
+      <Section icon={<Key size={16} />} title="Groq API Key">
         {keySet ? (
           <div className="space-y-4">
             {/* Current key display */}
