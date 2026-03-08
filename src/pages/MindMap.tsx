@@ -414,9 +414,17 @@ function MindMapCanvas() {
           {direction === "LR" ? <TreePine className="h-3.5 w-3.5" /> : <Network className="h-3.5 w-3.5" />}
           {direction === "LR" ? "Vertical" : "Horizontal"}
         </button>
-        <button onClick={exportImage} className={btn}>
-          <Download className="h-3.5 w-3.5" />
-          Export
+        <button onClick={exportPng} className={btn} disabled={!hasData}>
+          <Image className="h-3.5 w-3.5" /> PNG
+        </button>
+        <button onClick={exportJson} className={btn} disabled={!hasData}>
+          <FileJson className="h-3.5 w-3.5" /> JSON
+        </button>
+        <button onClick={copyAsText} className={btn} disabled={!hasData}>
+          <ClipboardList className="h-3.5 w-3.5" /> Text
+        </button>
+        <button onClick={saveToHistory} className={btn} disabled={!hasData}>
+          <Save className="h-3.5 w-3.5" /> Save
         </button>
       </div>
 
