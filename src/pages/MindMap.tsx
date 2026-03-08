@@ -629,11 +629,60 @@ function MindMapCanvas() {
         <button onClick={copyAsText} className={btn} disabled={!hasData}>
           <ClipboardList className="h-3.5 w-3.5" /> Text
         </button>
-        <button onClick={saveToHistory} className={btn} disabled={!hasData}>
+        <button onClick={saveToHistory} className={btn} disabled={!hasData} aria-label="Save to history">
           <Save className="h-3.5 w-3.5" /> Save
         </button>
+        {hasData && (
+          <button
+            onClick={() => setShowTextView(!showTextView)}
+            className={`${btn} ${showTextView ? "!text-primary !border-primary/40" : ""}`}
+            aria-label="Toggle accessible text list view"
+          >
+            <List className="h-3.5 w-3.5" /> {showTextView ? "Graph" : "Text List"}
+          </button>
+        )}
       </div>
 
+      {/* Text List View (Screen Reader Friendly) */}
+      {showTextView && hasData ? (
+        <div className="flex-1 overflow-y-auto p-4 md:p-6" role="region" aria-label="Mind map as text list">
+          <h2 className="font-heading text-lg font-bold text-foreground mb-4">Attack Surface — Text View</h2>
+          <p className="text-xs font-mono text-muted-foreground mb-4">Accessible alternative to the visual mind map.</p>
+          <ul className="space-y-1" role="tree">
+            {textListContent.map((item, i) => {
+              const sevColors: Record<string, string> = {
+                critical: "text-[hsl(0,72%,51%)]",
+                high: "text-[hsl(25,95%,53%)]",
+                medium: "text-[hsl(48,96%,53%)]",
+                low: "text-[hsl(217,91%,60%)]",
+              };
+              const sevLabel = item.severity ? ` [${item.severity.toUpperCase()}]` : "";
+              const typeIcon = item.type === "root" ? "🎯" : item.type === "category" ? "📂" : "⚡";
+              return (
+                <li
+                  key={i}
+                  role="treeitem"
+                  aria-level={item.depth + 1}
+                  className="font-mono text-sm"
+                  style={{ paddingLeft: `${item.depth * 1.5}rem` }}
+                >
+                  <span className="text-muted-foreground mr-1">{typeIcon}</span>
+                  <span className="text-foreground">{item.label}</span>
+                  {item.severity && (
+                    <span className={`ml-1.5 text-xs font-bold ${sevColors[item.severity] || "text-muted-foreground"}`}>
+                      {sevLabel}
+                    </span>
+                  )}
+                  {item.description && (
+                    <span className="block text-xs text-muted-foreground ml-6">↳ {item.description}</span>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ) : (
+      <>
       {/* Canvas */}
       <div className="flex-1 relative" ref={canvasRef}>
         <ContextMenu>
