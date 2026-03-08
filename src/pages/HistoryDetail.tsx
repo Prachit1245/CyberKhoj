@@ -248,7 +248,7 @@ export default function HistoryDetail() {
           <ResultsFilterBar paths={attackPaths}>
             {(filtered) =>
               filtered.map((path) => (
-                <AttackPathCard key={path.id} path={path} onChange={updatePath} />
+                <AttackPathCard key={path.id} path={path} onChange={updatePath} beginnerMode={isBeginnerMode()} />
               ))
             }
           </ResultsFilterBar>
