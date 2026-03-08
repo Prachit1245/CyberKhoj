@@ -17,6 +17,7 @@ import Payloads from "./pages/Payloads";
 import CheatSheets from "./pages/CheatSheets";
 import SettingsPage from "./pages/SettingsPage";
 import Findings from "./pages/Findings";
+import OwaspPage from "./pages/OwaspPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
