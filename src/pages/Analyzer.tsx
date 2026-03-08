@@ -163,12 +163,14 @@ const Analyzer = () => {
   }, [loading, target, depth, analysisType, selectedTemplate, beginner]);
 
   const handleAnalyze = async () => {
+    if (loading) return; // Prevent duplicate calls
     const trimmed = target.trim();
     if (!trimmed) {
       setError("Please paste a target to analyze.");
       return;
     }
 
+    abortGeminiRequest();
     setLoading(true);
     setError("");
     setErrorCode(null);
