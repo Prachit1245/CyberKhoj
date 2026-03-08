@@ -613,6 +613,9 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Learning Path */}
+      <LearningPathCard />
+
       {/* Recent Analyses */}
       <div className="space-y-3">
         <h3 className="font-heading text-lg font-bold text-foreground">Recent Analyses</h3>
