@@ -6,6 +6,7 @@ import Features from "@/components/Features";
 import FreeBanner from "@/components/FreeBanner";
 import LandingDemo from "@/components/LandingDemo";
 import SocialProof from "@/components/SocialProof";
+import Footer from "@/components/Footer";
 
 const TRUST_BADGES = [
   "100% Free Forever",
@@ -64,6 +65,7 @@ const Index = () => {
       <HowItWorks />
       <Features />
       <FreeBanner />
+      <Footer />
     </div>
   );
 };
