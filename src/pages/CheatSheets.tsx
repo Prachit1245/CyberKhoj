@@ -1,8 +1,10 @@
 import { useState, useRef, useCallback } from "react";
-import { Copy, Check, Printer, ChevronRight } from "lucide-react";
+import { Copy, Check, Printer, ChevronRight, Bookmark, BookmarkCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CHEAT_SHEETS, type CheatSheet, type Difficulty } from "@/lib/cheatsheets";
+import { toggleBookmark, isBookmarked as isBm } from "@/lib/bookmarks";
+import { toast } from "@/components/Toast";
 
 const DIFF_STYLES: Record<Difficulty, string> = {
   Beginner: "bg-primary/15 text-primary border-primary/30",
