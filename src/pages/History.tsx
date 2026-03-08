@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback, useRef } from "react";
-import { Search, Trash2, Clock, ArrowUpDown, X, Undo2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Search, Trash2, Clock, ArrowUpDown, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
