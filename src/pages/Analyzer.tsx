@@ -266,8 +266,8 @@ const Analyzer = () => {
             setError("");
           }}
           placeholder="https://example.com/api/user?id=45"
-          rows={5}
-          className="w-full rounded-xl border border-border bg-card px-4 py-3 font-mono text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 transition-colors resize-y"
+          rows={4}
+          className="w-full rounded-xl border border-border bg-card px-4 py-3 font-mono text-sm md:text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 transition-colors resize-y min-h-[6rem] md:min-h-0"
         />
         {error && errorCode && (
           <GeminiErrorDisplay code={errorCode} message={error} onRetry={handleAnalyze} />
