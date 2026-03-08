@@ -4,6 +4,7 @@ import Typewriter from "@/components/Typewriter";
 import HowItWorks from "@/components/HowItWorks";
 import Features from "@/components/Features";
 import FreeBanner from "@/components/FreeBanner";
+import LandingDemo from "@/components/LandingDemo";
 
 const TRUST_BADGES = [
   "100% Free Forever",
@@ -39,7 +40,7 @@ const Index = () => {
               Start Hacking Free
             </button>
             <button
-              onClick={() => navigate("/demo")}
+              onClick={() => document.getElementById("demo")?.scrollIntoView({ behavior: "smooth" })}
               className="rounded-lg border border-secondary px-8 py-3.5 font-heading text-base font-bold text-secondary transition-all hover:bg-secondary hover:text-secondary-foreground glow-secondary"
             >
               Watch Demo
@@ -57,6 +58,7 @@ const Index = () => {
         </div>
       </section>
 
+      <LandingDemo />
       <HowItWorks />
       <Features />
       <FreeBanner />
