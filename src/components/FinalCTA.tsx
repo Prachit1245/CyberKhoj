@@ -71,12 +71,12 @@ const FinalCTA = () => {
         </div>
 
         <a
-          href="https://aistudio.google.com/apikey"
+          href="https://console.groq.com"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-block text-xs font-mono text-primary/70 hover:text-primary transition-colors underline underline-offset-4"
         >
-          Don't have a key? Get one free from Google AI Studio →
+          Don't have a key? Get one free at console.groq.com →
         </a>
       </div>
     </section>
