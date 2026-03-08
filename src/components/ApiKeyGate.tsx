@@ -108,6 +108,12 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
             >
               Get Free API Key →
             </a>
+            <button
+              onClick={() => setShowDemo(true)}
+              className="flex items-center justify-center gap-2 w-full rounded-lg border border-primary/30 bg-primary/5 px-5 py-2.5 font-mono text-sm text-primary transition-all hover:bg-primary/10"
+            >
+              <Play size={14} /> Watch Demo
+            </button>
           </div>
 
           {/* Step 2 */}
