@@ -286,7 +286,7 @@ const Dashboard = () => {
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
         {STAT_CARDS.map((card) => (
           <div key={card.key} className="rounded-xl border border-border bg-card p-5 space-y-3 hover:border-primary/30 transition-colors">
             <div className="inline-flex items-center justify-center rounded-lg bg-primary/10 p-2">
