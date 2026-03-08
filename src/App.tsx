@@ -28,6 +28,7 @@ const App = () => (
     <ToastProvider>
     <TooltipProvider>
       <ApiKeyGate>
+        <DailyLimitOverlay />
         <BrowserRouter>
           <Routes>
             {/* Landing page with navbar */}
