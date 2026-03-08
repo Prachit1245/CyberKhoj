@@ -50,6 +50,7 @@ const App = () => (
       <BrowserRouter>
         <PWAInstallPrompt />
         <WhatsNewModal />
+        <FeedbackTab />
         <Routes>
           {/* Public routes — no API key needed */}
           <Route
