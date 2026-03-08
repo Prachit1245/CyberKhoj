@@ -80,7 +80,7 @@ async function callAIRaw(prompt: string, apiKey: string, signal?: AbortSignal): 
       },
       signal,
       body: JSON.stringify({
-        model: 'llama3-70b-8192',
+        model: 'llama-3.3-70b-versatile',
         messages: [
           {
             role: 'system',
@@ -176,7 +176,7 @@ export async function validateApiKey(apiKey: string): Promise<{ ok: boolean; err
         'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'llama3-70b-8192',
+        model: 'llama-3.3-70b-versatile',
         messages: [{ role: 'user', content: 'Say OK' }],
         max_tokens: 5,
       }),
