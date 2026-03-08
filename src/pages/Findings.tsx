@@ -51,6 +51,8 @@ const Findings = () => {
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
+  const [reportFinding, setReportFinding] = useState<Finding | null>(null);
+
   const refresh = () => setFindings(getFindings());
 
   const handleSubmit = () => {
