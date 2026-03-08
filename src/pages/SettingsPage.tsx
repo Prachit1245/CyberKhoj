@@ -29,6 +29,7 @@ interface Prefs {
   autoSaveHistory: boolean;
   showUsageCounter: boolean;
   animations: boolean;
+  typingSound: boolean;
 }
 
 const DEFAULT_PREFS: Prefs = {
@@ -36,6 +37,7 @@ const DEFAULT_PREFS: Prefs = {
   autoSaveHistory: true,
   showUsageCounter: true,
   animations: true,
+  typingSound: false,
 };
 
 const loadPrefs = (): Prefs => {
@@ -558,6 +560,12 @@ const SettingsPage = () => {
             onToggle={() => updatePref("animations", !prefs.animations)}
             label="Animations"
             description="Disable for better performance on low-end devices."
+          />
+          <Toggle
+            enabled={prefs.typingSound}
+            onToggle={() => updatePref("typingSound", !prefs.typingSound)}
+            label="Typing Sound Effect"
+            description="Play subtle keystroke sounds during AI analysis."
           />
         </div>
       </Section>

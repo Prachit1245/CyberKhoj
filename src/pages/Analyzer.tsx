@@ -6,6 +6,7 @@ import GeminiErrorDisplay from "@/components/GeminiErrorDisplay";
 import { addToHistory, incrementStat } from "@/lib/store";
 import { checkAnalysisAchievements, checkDeepAnalysis, checkCriticalFound, checkJwtAnalysis } from "@/lib/achievements";
 import { parseTarget, contextToPromptBlock } from "@/lib/parseTarget";
+import { startTypingSound, stopTypingSound } from "@/lib/sounds";
 import JwtAnalyzer from "@/components/JwtAnalyzer";
 import HttpRequestAnalyzer from "@/components/HttpRequestAnalyzer";
 import BatchAnalyzer from "@/components/BatchAnalyzer";
@@ -143,6 +144,7 @@ const Analyzer = () => {
     setError("");
     setErrorCode(null);
     setResult("");
+    startTypingSound();
 
     try {
       const prompt = buildPrompt(trimmed, depth, analysisType, selectedTemplate?.context);
@@ -192,6 +194,7 @@ const Analyzer = () => {
         setErrorCode("API_ERROR");
       }
     } finally {
+      stopTypingSound();
       setLoading(false);
     }
   };

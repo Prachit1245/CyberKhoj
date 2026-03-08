@@ -71,10 +71,10 @@
     box-shadow: var(--glow-secondary);
   }
   .text-glow-primary {
-    text-shadow: 0 0 10px hsl(110 100% 55% / 0.5);
+    text-shadow: 0 0 8px hsl(110 100% 55% / 0.5);
   }
   .text-glow-secondary {
-    text-shadow: 0 0 10px hsl(185 100% 49% / 0.5);
+    text-shadow: 0 0 8px hsl(185 100% 49% / 0.5);
   }
   .safe-area-pb {
     padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -87,4 +87,58 @@
     background: hsl(var(--muted));
     border-radius: 2px;
   }
+}
+
+/* ── Scanline overlay ── */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    rgba(255, 255, 255, 0.02) 1px,
+    rgba(255, 255, 255, 0.02) 2px
+  );
+}
+
+/* ── Green text glow on primary-colored text ── */
+.text-primary,
+[class*="text-primary"]:not([class*="text-primary-foreground"]):not([class*="text-primary/"]) {
+  text-shadow: 0 0 8px hsl(110 100% 55% / 0.4);
+}
+
+/* ── Card hover glow ── */
+.rounded-lg[class*="border"][class*="bg-card"],
+.rounded-xl[class*="border"][class*="bg-card"] {
+  transition: box-shadow 0.3s ease;
+}
+.rounded-lg[class*="border"][class*="bg-card"]:hover,
+.rounded-xl[class*="border"][class*="bg-card"]:hover {
+  box-shadow: 0 0 15px hsl(110 100% 55% / 0.08);
+}
+
+/* ── Cursor blink on logo ── */
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.logo-cursor::after {
+  content: "▌";
+  animation: cursor-blink 1s step-end infinite;
+  color: hsl(var(--primary));
+  font-size: 0.8em;
+  margin-left: 1px;
+}
+
+/* ── Route fade transition ── */
+@keyframes route-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.route-animate {
+  animation: route-fade-in 0.25s ease-out both;
 }

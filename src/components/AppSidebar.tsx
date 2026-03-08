@@ -228,7 +228,7 @@ const AppSidebar = () => {
         {/* Logo */}
         <div className="flex items-center justify-between h-14 px-4 border-b border-border/50">
           {!collapsed && (
-            <span className="font-heading text-base font-bold text-primary text-glow-primary">
+            <span className="font-heading text-base font-bold text-primary text-glow-primary logo-cursor">
               HackMind
             </span>
           )}
@@ -293,7 +293,7 @@ const AppSidebar = () => {
         {/* Top bar */}
         <header className="h-12 md:h-14 flex items-center px-4 md:px-6 border-b border-border/50 shrink-0 gap-3">
           {/* Mobile logo */}
-          <span className="md:hidden font-heading text-sm font-bold text-primary text-glow-primary mr-1">HM</span>
+          <span className="md:hidden font-heading text-sm font-bold text-primary text-glow-primary logo-cursor mr-1">HM</span>
           <h1 className="font-heading text-base md:text-lg font-bold text-foreground">{pageTitle}</h1>
           {!online && (
             <span className="flex items-center gap-1.5 rounded-full border border-destructive/40 bg-destructive/10 px-2 py-0.5 text-[10px] font-mono text-destructive animate-fade-in">
@@ -304,7 +304,7 @@ const AppSidebar = () => {
 
         {/* Content — extra bottom padding on mobile for tab bar */}
         <main className="flex-1 overflow-y-auto">
-          <div className="p-4 md:p-6 pb-24 md:pb-6">
+          <div className="p-4 md:p-6 pb-24 md:pb-6 route-animate" key={location.pathname}>
             <Outlet />
           </div>
         </main>
