@@ -41,6 +41,8 @@
 
     --glow-primary: 0 0 20px hsl(110 100% 55% / 0.3);
     --glow-secondary: 0 0 20px hsl(185 100% 49% / 0.3);
+
+    color-scheme: dark;
   }
 
   /* Smooth scroll for anchor navigation */
@@ -68,6 +70,126 @@
   }
 }
 
+/* ══════════════════════════════════════════════
+   DARK MODE POLISH — scrollbars, selection,
+   autocomplete, forms, code blocks, noise
+   ══════════════════════════════════════════════ */
+
+/* ── Global scrollbar ── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(0 0% 6%);
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(110 100% 55% / 0.25);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(110 100% 55% / 0.45);
+}
+::-webkit-scrollbar-corner {
+  background: hsl(0 0% 6%);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(110 100% 55% / 0.25) hsl(0 0% 6%);
+}
+
+/* ── Selection highlight ── */
+::selection {
+  background: hsl(110 100% 55% / 0.3);
+  color: hsl(0 0% 95%);
+}
+::-moz-selection {
+  background: hsl(110 100% 55% / 0.3);
+  color: hsl(0 0% 95%);
+}
+
+/* ── Input autocomplete dark override ── */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: hsl(0 0% 90%) !important;
+  -webkit-box-shadow: 0 0 0 1000px hsl(0 0% 8%) inset !important;
+  box-shadow: 0 0 0 1000px hsl(0 0% 8%) inset !important;
+  border-color: hsl(0 0% 15%) !important;
+  caret-color: hsl(110 100% 55%);
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* ── Placeholder text — properly dim ── */
+::placeholder {
+  color: hsl(0 0% 27%) !important;
+  opacity: 1;
+}
+
+/* ── Browser default form elements ── */
+input, textarea, select, button {
+  color-scheme: dark;
+}
+
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="week"],
+input[type="number"],
+input[type="search"] {
+  color: hsl(0 0% 90%);
+  background: hsl(var(--card));
+}
+
+select option {
+  background: hsl(0 0% 7%);
+  color: hsl(0 0% 90%);
+}
+
+/* ── Code blocks ── */
+pre, code {
+  background: hsl(0 0% 5%);
+  color: hsl(0 0% 85%);
+}
+pre {
+  border: 1px solid hsl(0 0% 15%);
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+code {
+  border-radius: 0.25rem;
+  padding: 0.15em 0.35em;
+  font-size: 0.875em;
+}
+pre code {
+  background: transparent;
+  padding: 0;
+  border: none;
+}
+
+/* ── Caret color ── */
+input, textarea {
+  caret-color: hsl(110 100% 55%);
+}
+
+/* ── Noise texture overlay for depth ── */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
 @layer utilities {
   .glow-primary {
     box-shadow: var(--glow-primary);
@@ -89,7 +211,7 @@
     height: 4px;
   }
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: hsl(var(--muted));
+    background: hsl(110 100% 55% / 0.2);
     border-radius: 2px;
   }
 }
@@ -194,22 +316,44 @@ body::after {
   animation: route-fade-in 0.25s ease-out both;
 }
 
+/* ── Ensure modals / dialogs have no white flash ── */
+[data-radix-portal],
+[role="dialog"],
+[role="alertdialog"] {
+  color-scheme: dark;
+}
+[data-radix-portal] [data-state] {
+  background-color: hsl(var(--popover));
+}
+
+/* ── Tooltip dark ── */
+[role="tooltip"] {
+  background: hsl(0 0% 10%) !important;
+  color: hsl(0 0% 90%) !important;
+  border: 1px solid hsl(0 0% 18%) !important;
+}
+
 /* ══════════════════════════════════════════════
-   PRINT STYLES
+   PRINT STYLES — override back to light
    ══════════════════════════════════════════════ */
 @media print {
+  /* Kill overlays */
+  body::before,
+  body::after {
+    display: none !important;
+  }
+
   /* Hide chrome: sidebar, navbar, mobile tab bar, feedback tab, FABs, overlays */
   aside,
   nav,
   .skip-to-content,
   [data-tour],
   button:not(.print-keep),
-  .fixed,
-  body::after {
+  .fixed {
     display: none !important;
   }
 
-  /* Override dark background */
+  /* Override dark to light */
   :root {
     --background: 0 0% 100%;
     --foreground: 0 0% 10%;
@@ -221,6 +365,7 @@ body::after {
     --muted-foreground: 0 0% 40%;
     --border: 0 0% 80%;
     --input: 0 0% 80%;
+    color-scheme: light;
   }
 
   body {
@@ -230,10 +375,17 @@ body::after {
     print-color-adjust: exact;
   }
 
-  /* Remove dark glows & shadows */
+  /* Remove dark glows, shadows, noise */
   * {
     text-shadow: none !important;
     box-shadow: none !important;
+    scrollbar-color: auto;
+  }
+
+  pre, code {
+    background: #f5f5f5 !important;
+    color: #111 !important;
+    border-color: #ddd !important;
   }
 
   /* Reset layout: remove sidebar flex, make main full width */
