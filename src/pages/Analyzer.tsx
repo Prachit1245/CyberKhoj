@@ -221,12 +221,24 @@ const Analyzer = () => {
       setResultTab("Attack Paths");
     } catch (e) {
       if (e instanceof GeminiError) {
-        if (e.code === "ABORTED") return; // silently ignore aborted requests
-        setError(e.message);
-        setErrorCode(e.code);
+        if (e.code === "ABORTED") return;
+        // ── Fallback: run rule-based offline analysis ──
+        const ctx = parseTarget(trimmed);
+        const fallbackResult = fallbackAnalyze(ctx);
+        setResult(fallbackResult);
+        setIsFallback(true);
+        setError("");
+        setErrorCode(null);
+        setResultTab("Attack Paths");
       } else {
-        setError(e instanceof Error ? e.message : "Analysis failed.");
-        setErrorCode("API_ERROR");
+        // Also fallback for non-Gemini errors
+        const ctx = parseTarget(trimmed);
+        const fallbackResult = fallbackAnalyze(ctx);
+        setResult(fallbackResult);
+        setIsFallback(true);
+        setError("");
+        setErrorCode(null);
+        setResultTab("Attack Paths");
       }
     } finally {
       stopTypingSound();
