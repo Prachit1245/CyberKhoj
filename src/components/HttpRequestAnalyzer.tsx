@@ -214,6 +214,11 @@ ${interestingHeaders.length > 0 ? `- ${interestingHeaders.length} interesting he
 ${interestingCookies.length > 0 ? `- ${interestingCookies.length} session/auth cookies detected` : ""}
 ${interestingParams.length > 0 ? `- ${interestingParams.length} interesting parameters (IDs, paths, redirects)` : ""}
 
+STRICT RULES:
+- Do NOT repeat attack paths. Every path must be unique.
+- Do NOT give generic security advice. Every path must reference the actual headers, cookies, parameters, or endpoint shown above.
+- Every payload must use the actual URL, parameters, and header values from this request.
+
 Provide 10-15 attack paths specific to this HTTP request. Focus on:
 1. **Header Injection** — Host header, X-Forwarded-For, Referer manipulation
 2. **Cookie Manipulation** — Session fixation, cookie tampering, missing flags
@@ -227,9 +232,9 @@ Provide 10-15 attack paths specific to this HTTP request. Focus on:
 For each attack path provide:
 1. **Attack Vector Name**
 2. **Severity** (Critical / High / Medium / Low)
-3. **Description**
-4. **Steps to Test** with exact curl/Burp steps
-5. **Example Payload**
+3. **Description** — specific to this request
+4. **Steps to Test** with exact curl/Burp steps using the actual URL
+5. **Example Payload** — using the actual parameters from this request
 6. **Potential Impact**
 
 Format with markdown headers and bullet points.`;
