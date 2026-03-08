@@ -365,7 +365,7 @@ const AttackMode = () => {
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
               <input
                 value={searchQ}
-                onChange={(e) => setSearchQ(e.target.value)}
+                onChange={(e) => handleSearchQ(e.target.value)}
                 placeholder="Search ideas..."
                 className="h-8 w-full rounded-lg bg-card/50 border border-border/30 pl-8 pr-3 text-xs font-mono text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50"
               />
