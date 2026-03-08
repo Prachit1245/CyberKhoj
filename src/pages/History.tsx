@@ -245,7 +245,7 @@ export default function History() {
             return (
               <div
                 key={record.id}
-                onClick={() => setSelectedId(record.id)}
+                onClick={() => navigate(`/history/${record.id}`)}
                 className="group relative rounded-lg border border-border/20 bg-card/50 hover:bg-card/80 hover:border-border/40 p-4 cursor-pointer transition-all space-y-3"
               >
                 {/* Delete button */}
