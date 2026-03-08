@@ -14,11 +14,13 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import Dagre from "@dagrejs/dagre";
-import { ZoomIn, ZoomOut, Maximize, Download, Network, TreePine, Zap, StickyNote, CheckCircle, Copy, Search } from "lucide-react";
+import { ZoomIn, ZoomOut, Maximize, Image, FileJson, ClipboardList, Save, Network, TreePine, Zap, StickyNote, CheckCircle, Copy, Search } from "lucide-react";
+import html2canvas from "html2canvas";
 import { callGemini } from "@/lib/gemini";
 import { buildMindMapPrompt, parseMindMapNodes, type MindMapNode } from "@/lib/prompts";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { addToHistory } from "@/lib/store";
 import MindMapNodeComponent from "@/components/mindmap/MindMapNode";
 import MindMapSidePanel from "@/components/mindmap/MindMapSidePanel";
 import type { MindMapNodeData } from "@/components/mindmap/types";
@@ -247,8 +249,66 @@ function MindMapCanvas() {
     if (rawNodesRef.current.length) applyLayout(rawNodesRef.current, next);
   };
 
-  const exportImage = () => {
-    toast.info("Use your browser's screenshot tool or Ctrl+P to export");
+  const canvasRef = useRef<HTMLDivElement>(null);
+
+  const exportPng = async () => {
+    const el = canvasRef.current?.querySelector(".react-flow") as HTMLElement | null;
+    if (!el) { toast.error("No canvas to capture"); return; }
+    try {
+      toast.info("Capturing...");
+      const canvas = await html2canvas(el, { backgroundColor: "#0a0a0a", scale: 2, useCORS: true });
+      const link = document.createElement("a");
+      const date = new Date().toISOString().slice(0, 10);
+      link.download = `hackmind-mindmap-${domain || "target"}-${date}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+      toast.success("PNG downloaded");
+    } catch { toast.error("Failed to capture PNG"); }
+  };
+
+  const exportJson = () => {
+    if (!rawNodesRef.current.length) { toast.error("No data to export"); return; }
+    const blob = new Blob([JSON.stringify({ nodes: rawNodesRef.current }, null, 2)], { type: "application/json" });
+    const link = document.createElement("a");
+    const date = new Date().toISOString().slice(0, 10);
+    link.download = `hackmind-mindmap-${domain || "target"}-${date}.json`;
+    link.href = URL.createObjectURL(blob);
+    link.click();
+    URL.revokeObjectURL(link.href);
+    toast.success("JSON downloaded");
+  };
+
+  const copyAsText = () => {
+    if (!rawNodesRef.current.length) { toast.error("No data to copy"); return; }
+    const map = new Map(rawNodesRef.current.map((n) => [n.id, n]));
+    const lines: string[] = [];
+    const render = (id: string, depth: number) => {
+      const node = map.get(id);
+      if (!node) return;
+      const prefix = "  ".repeat(depth);
+      const sev = node.severity ? ` [${node.severity.toUpperCase()}]` : "";
+      lines.push(`${prefix}${node.label}${sev}`);
+      if (node.description) lines.push(`${prefix}  ↳ ${node.description}`);
+      node.attackIdeas.forEach((a) => lines.push(`${prefix}    • ${a}`));
+      rawNodesRef.current.filter((c) => c.parentId === id).forEach((c) => render(c.id, depth + 1));
+    };
+    const root = rawNodesRef.current.find((n) => n.type === "root");
+    if (root) render(root.id, 0);
+    navigator.clipboard.writeText(lines.join("\n"));
+    toast.success("Mind map copied as text outline");
+  };
+
+  const saveToHistory = () => {
+    if (!rawNodesRef.current.length) { toast.error("No data to save"); return; }
+    addToHistory({
+      id: `mindmap-${Date.now()}`,
+      target: domain || "unknown",
+      type: "domain",
+      pathsFound: rawNodesRef.current.filter((n) => n.type === "attack").length,
+      date: new Date().toISOString(),
+      result: JSON.stringify({ nodes: rawNodesRef.current }),
+    });
+    toast.success("Mind map saved to history");
   };
 
   // Node click → open side panel
@@ -354,14 +414,22 @@ function MindMapCanvas() {
           {direction === "LR" ? <TreePine className="h-3.5 w-3.5" /> : <Network className="h-3.5 w-3.5" />}
           {direction === "LR" ? "Vertical" : "Horizontal"}
         </button>
-        <button onClick={exportImage} className={btn}>
-          <Download className="h-3.5 w-3.5" />
-          Export
+        <button onClick={exportPng} className={btn} disabled={!hasData}>
+          <Image className="h-3.5 w-3.5" /> PNG
+        </button>
+        <button onClick={exportJson} className={btn} disabled={!hasData}>
+          <FileJson className="h-3.5 w-3.5" /> JSON
+        </button>
+        <button onClick={copyAsText} className={btn} disabled={!hasData}>
+          <ClipboardList className="h-3.5 w-3.5" /> Text
+        </button>
+        <button onClick={saveToHistory} className={btn} disabled={!hasData}>
+          <Save className="h-3.5 w-3.5" /> Save
         </button>
       </div>
 
       {/* Canvas */}
-      <div className="flex-1 relative">
+      <div className="flex-1 relative" ref={canvasRef}>
         <ContextMenu>
           <ContextMenuTrigger asChild>
             <div className="h-full w-full">
