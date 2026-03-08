@@ -1,8 +1,8 @@
 import { useState, useEffect, type ReactNode } from "react";
 import { hasApiKey, saveApiKey } from "@/lib/gemini";
 
-const MODEL_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent";
+const VALIDATE_URL =
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
 const ApiKeyGate = ({ children }: { children: ReactNode }) => {
   const [unlocked, setUnlocked] = useState(hasApiKey());
