@@ -203,7 +203,7 @@ const AppSidebar = () => {
         </nav>
 
         {/* Bottom status */}
-        <div className="border-t border-border/50 p-3 space-y-2">
+        <div className="border-t border-border/50 p-3 space-y-2" data-tour="usage-counter">
         <SidebarUsage collapsed={collapsed} keySet={keySet} />
         </div>
       </aside>

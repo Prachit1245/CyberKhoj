@@ -32,6 +32,7 @@ const App = () => (
     <TooltipProvider>
       <ApiKeyGate>
         <DailyLimitOverlay />
+        <OnboardingTour />
         <BrowserRouter>
           <Routes>
             {/* Landing page with navbar */}
