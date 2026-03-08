@@ -11,6 +11,7 @@ import AnimatedCounter from "@/components/AnimatedCounter";
 import ComparisonTable from "@/components/ComparisonTable";
 import FinalCTA from "@/components/FinalCTA";
 import Footer from "@/components/Footer";
+import EthicalDisclaimer from "@/components/EthicalDisclaimer";
 
 const TRUST_BADGES = [
   "100% Free Forever",
@@ -63,6 +64,10 @@ const Index = () => {
             ))}
           </div>
         </div>
+      </section>
+
+      <section className="max-w-3xl mx-auto px-4 py-8">
+        <EthicalDisclaimer />
       </section>
 
       <LandingDemo />

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
+import EthicalDisclaimer from "@/components/EthicalDisclaimer";
 import {
   Key,
   Eye,
@@ -647,6 +648,11 @@ const SettingsPage = () => {
             </p>
           </div>
         </div>
+      </Section>
+
+      {/* ─── Ethical Use Section ─── */}
+      <Section icon={<Shield size={16} />} title="Ethical Use Policy">
+        <EthicalDisclaimer />
       </Section>
 
       {/* ─── Data Management Section ─── */}

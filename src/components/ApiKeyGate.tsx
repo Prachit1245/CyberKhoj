@@ -1,6 +1,7 @@
 import { useState, useEffect, type ReactNode } from "react";
 import { hasApiKey, saveApiKey } from "@/lib/gemini";
 import { toast } from "@/components/Toast";
+import EthicalDisclaimer from "@/components/EthicalDisclaimer";
 
 const VALIDATE_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent";
@@ -155,6 +156,10 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
         <p className="mt-6 text-center text-xs text-muted-foreground font-mono">
           Your key is stored only in your browser. We never see it.
         </p>
+
+        <div className="mt-4">
+          <EthicalDisclaimer compact />
+        </div>
       </div>
 
       <style>{`
