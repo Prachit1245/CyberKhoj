@@ -34,6 +34,7 @@ interface Prefs {
   animations: boolean;
   typingSound: boolean;
   beginnerMode: boolean;
+  reduceMotion: boolean;
 }
 
 const DEFAULT_PREFS: Prefs = {
@@ -43,6 +44,7 @@ const DEFAULT_PREFS: Prefs = {
   animations: true,
   typingSound: false,
   beginnerMode: false,
+  reduceMotion: false,
 };
 
 const loadPrefs = (): Prefs => {
