@@ -348,12 +348,12 @@ const Analyzer = () => {
       </div>
 
       {/* Action buttons */}
-      <div className="flex gap-3">
+      <div className="flex flex-col sm:flex-row gap-3">
         <button
           onClick={handleAnalyze}
           disabled={loading || !online}
           title={!online ? "Requires internet for AI analysis" : "Ctrl+Enter"}
-          className="flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-heading text-sm font-bold text-primary-foreground hover:brightness-110 transition-all disabled:opacity-60 disabled:cursor-not-allowed glow-primary"
+          className="flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3.5 md:py-3 font-heading text-sm font-bold text-primary-foreground hover:brightness-110 transition-all disabled:opacity-60 disabled:cursor-not-allowed glow-primary min-h-[2.75rem]"
         >
           {loading ? (
             <>
@@ -377,7 +377,7 @@ const Analyzer = () => {
             setError("");
           }}
           title="Ctrl+L"
-          className="flex items-center gap-2 rounded-lg border border-border px-5 py-3 font-heading text-sm font-bold text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all"
+          className="flex items-center justify-center gap-2 rounded-lg border border-border px-5 py-3.5 md:py-3 font-heading text-sm font-bold text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all min-h-[2.75rem]"
         >
           <Trash2 size={16} /> Clear
           <kbd className="hidden sm:inline-flex ml-1 px-1.5 py-0.5 rounded border border-border text-[10px] font-mono opacity-50">⌘L</kbd>
