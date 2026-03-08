@@ -1,9 +1,14 @@
 const STORAGE_KEY = "hackmind_gemini_key";
 const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models";
-const MODEL_CANDIDATES = ["gemini-2.5-flash-lite", "gemini-2.5-flash"] as const;
+const MODEL_CANDIDATES = [
+  "gemini-2.5-flash-lite",
+  "gemini-2.5-flash",
+  "gemini-2.0-flash",
+  "gemini-2.0-flash-lite",
+] as const;
 
 const IS_DEV = import.meta.env.DEV;
-const MIN_REQUEST_INTERVAL_MS = 1200;
+const MIN_REQUEST_INTERVAL_MS = 6500;
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
