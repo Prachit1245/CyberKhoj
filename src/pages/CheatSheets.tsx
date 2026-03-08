@@ -26,6 +26,33 @@ function CopyButton({ text }: { text: string }) {
   );
 }
 
+function CheatSheetBookmarkBtn({ sheetName, sectionHeading, sectionDescription }: { sheetName: string; sectionHeading: string; sectionDescription?: string }) {
+  const key = `${sheetName} — ${sectionHeading}`;
+  const [bookmarked, setBookmarked] = useState(() => isBm("cheatsheet", key));
+  return (
+    <button
+      onClick={() => {
+        const { added } = toggleBookmark({
+          type: "cheatsheet",
+          title: key,
+          description: sectionDescription || sectionHeading,
+          sourceContext: sheetName,
+        });
+        setBookmarked(added);
+        toast[added ? "success" : "info"](added ? "Section bookmarked ✓" : "Bookmark removed");
+      }}
+      className={`shrink-0 p-1.5 rounded-md border transition-colors cursor-pointer ${
+        bookmarked
+          ? "bg-primary/15 border-primary/30 text-primary"
+          : "bg-muted/60 border-border/30 text-muted-foreground hover:text-primary"
+      }`}
+      title={bookmarked ? "Remove bookmark" : "Bookmark section"}
+    >
+      {bookmarked ? <BookmarkCheck className="h-3.5 w-3.5" /> : <Bookmark className="h-3.5 w-3.5" />}
+    </button>
+  );
+}
+
 function SheetContent({ sheet }: { sheet: CheatSheet }) {
   const contentRef = useRef<HTMLDivElement>(null);
 
