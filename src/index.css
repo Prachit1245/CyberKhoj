@@ -45,9 +45,18 @@
     color-scheme: dark;
   }
 
-  /* Smooth scroll for anchor navigation */
+  /* Smooth scroll for anchor navigation — with Safari fallback */
   html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%; /* iOS Safari: prevent font size adjustment on rotation */
+    -moz-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* iOS Safari: prevent overscroll bounce on body */
+  body {
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch; /* iOS smooth scroll */
   }
 }
 
