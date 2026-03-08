@@ -60,9 +60,14 @@ export const abortGeminiRequest = (): void => {
 };
 
 /* ─── Core fetch helper (single attempt) ─── */
-const fetchGeminiOnce = async (prompt: string, key: string, signal?: AbortSignal): Promise<Response> => {
+const fetchGeminiOnce = async (
+  prompt: string,
+  key: string,
+  model: (typeof MODEL_CANDIDATES)[number],
+  signal?: AbortSignal,
+): Promise<Response> => {
   try {
-    return await fetch(`${MODEL_URL}?key=${key}`, {
+    return await fetch(`${GEMINI_BASE_URL}/${model}:generateContent?key=${key}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       signal,
@@ -71,6 +76,7 @@ const fetchGeminiOnce = async (prompt: string, key: string, signal?: AbortSignal
         generationConfig: {
           temperature: 0.7,
           topP: 0.95,
+          maxOutputTokens: 1400,
         },
       }),
     });
