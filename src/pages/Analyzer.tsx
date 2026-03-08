@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Trash2, ArrowRight, Loader2 } from "lucide-react";
+import { Trash2, ArrowRight, Loader2, WifiOff } from "lucide-react";
+import useOnline from "@/hooks/useOnline";
 import { callGemini, GeminiError, type GeminiErrorCode } from "@/lib/gemini";
 import GeminiErrorDisplay from "@/components/GeminiErrorDisplay";
 import { addToHistory, incrementStat } from "@/lib/store";
