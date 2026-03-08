@@ -334,13 +334,8 @@ const AttackMode = () => {
         <h1 className="text-3xl font-heading font-bold tracking-tight text-foreground">ATTACK MODE</h1>
       </div>
 
-      {/* Warning */}
-      <div className="flex items-start gap-3 rounded-lg border border-yellow-500/30 bg-yellow-500/5 p-3">
-        <AlertTriangle className="h-5 w-5 text-yellow-500 shrink-0 mt-0.5" />
-        <p className="text-xs font-mono text-yellow-500/90">
-          Only test systems you own or have explicit written permission to test.
-        </p>
-      </div>
+      {/* Ethical disclaimer */}
+      <EthicalDisclaimer compact />
 
       {/* Quick Templates */}
       <div className="space-y-2">

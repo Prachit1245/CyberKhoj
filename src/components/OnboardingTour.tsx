@@ -22,15 +22,15 @@ const STEPS: TourStep[] = [
   },
   {
     target: "[data-tour='depth-selector']",
-    title: "Choose how thorough",
-    description: "Quick scans are fast, Deep scans explore every edge case and hidden parameter.",
+    title: "Choose analysis depth",
+    description: "Quick scans take ~10 seconds. Deep scans are thorough and explore every edge case.",
     route: "/analyzer",
     position: "bottom",
   },
   {
     target: "[data-tour='nav-attack']",
     title: "Generate 100+ attack ideas",
-    description: "Attack Mode creates a comprehensive mind dump of potential vulnerabilities for any domain.",
+    description: "Attack Mode creates a comprehensive checklist of potential vulnerabilities for any domain.",
     position: "right",
   },
   {
@@ -42,7 +42,7 @@ const STEPS: TourStep[] = [
   {
     target: "[data-tour='usage-counter']",
     title: "Track your daily usage",
-    description: "Monitor your API usage. The counter resets daily at midnight.",
+    description: "You get 1,000 free analyses per day. The counter resets automatically at midnight UTC.",
     position: "top",
   },
 ];
