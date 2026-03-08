@@ -21,6 +21,7 @@ import VulnCategories from "./pages/VulnCategories";
 import NotFound from "./pages/NotFound";
 import Bookmarks from "./pages/Bookmarks";
 import Achievements from "./pages/Achievements";
+import OnboardingTour from "./components/OnboardingTour";
 import DailyLimitOverlay from "@/components/DailyLimitOverlay";
 
 const queryClient = new QueryClient();
