@@ -163,6 +163,7 @@ function CustomPayloadCard({
     await navigator.clipboard.writeText(payload.code);
     setCopied(true);
     incrementStat("payloadsCopied");
+    import("@/lib/xp").then(m => m.awardXp(m.XP_REWARDS.payloadCopied));
     setTimeout(() => setCopied(false), 1500);
   };
 
