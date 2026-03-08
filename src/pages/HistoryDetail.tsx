@@ -161,6 +161,29 @@ export default function HistoryDetail() {
     setAttackPaths((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
   };
 
+  const handleShare = async () => {
+    if (attackPaths.length === 0) {
+      toast.error("No attack paths to share");
+      return;
+    }
+    const { url, truncated, tooLarge } = compressForShare({
+      target: record.target,
+      type: record.type,
+      date: record.date,
+      paths: attackPaths,
+    });
+    if (tooLarge) {
+      toast.error("Results too large to share via URL even after truncation. Export as JSON instead.");
+      return;
+    }
+    await navigator.clipboard.writeText(url);
+    toast.success(
+      truncated
+        ? `Share link copied! (Truncated to top 10 paths by severity)`
+        : "Share link copied to clipboard!"
+    );
+  };
+
   return (
     <div className="space-y-5">
       {/* Breadcrumb */}
