@@ -429,7 +429,7 @@ function MindMapCanvas() {
       </div>
 
       {/* Canvas */}
-      <div className="flex-1 relative">
+      <div className="flex-1 relative" ref={canvasRef}>
         <ContextMenu>
           <ContextMenuTrigger asChild>
             <div className="h-full w-full">
