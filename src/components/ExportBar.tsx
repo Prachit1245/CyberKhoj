@@ -77,7 +77,7 @@ export default function ExportBar({ paths, input }: Props) {
   };
 
   const dlMd = () => {
-    downloadFile(pathsToMarkdown(paths, input), `hackmind-${domain}-${date}.md`, "text/markdown");
+    downloadFile(pathsToMarkdown(paths, input), `cyberkhoj-${domain}-${date}.md`, "text/markdown");
     toast.success("Markdown downloaded ✓");
   };
 
