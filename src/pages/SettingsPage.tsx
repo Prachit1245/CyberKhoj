@@ -603,6 +603,12 @@ const SettingsPage = () => {
             label="Typing Sound Effect"
             description="Play subtle keystroke sounds during AI analysis."
           />
+          <Toggle
+            enabled={prefs.beginnerMode}
+            onToggle={() => updatePref("beginnerMode", !prefs.beginnerMode)}
+            label="Beginner Mode"
+            description="Show simplified explanations and glossary tooltips for technical terms."
+          />
         </div>
       </Section>
 
