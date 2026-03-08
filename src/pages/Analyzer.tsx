@@ -177,6 +177,7 @@ const Analyzer = () => {
     setError("");
     setErrorCode(null);
     setResult("");
+    setIsFallback(false);
     startTypingSound();
 
     try {
