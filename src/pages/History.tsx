@@ -439,11 +439,34 @@ export default function History() {
 
       {/* Cards */}
       {filtered.length === 0 ? (
-        <div className="text-center py-16 space-y-3">
+        <div className="text-center py-16 space-y-4">
           <Clock className="h-12 w-12 text-muted-foreground/20 mx-auto" />
-          <p className="text-sm font-mono text-muted-foreground/50">
-            {records.length === 0 ? "No analyses yet" : "No results match your filters"}
-          </p>
+          <div className="space-y-1">
+            <p className="text-sm font-mono text-muted-foreground/50">
+              {records.length === 0 ? "No analyses saved yet" : "No results match your filters"}
+            </p>
+            {records.length === 0 && (
+              <p className="text-xs font-mono text-muted-foreground/40">
+                Your analysis history will appear here for quick reference and comparison
+              </p>
+            )}
+          </div>
+          {records.length === 0 && (
+            <button
+              onClick={() => navigate("/analyzer")}
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 font-heading text-sm font-bold text-primary-foreground hover:brightness-110 transition-all"
+            >
+              Run Your First Analysis
+            </button>
+          )}
+          {records.length > 0 && (
+            <button
+              onClick={() => { setFilter("all"); setSearch(""); }}
+              className="text-xs font-mono text-primary hover:text-primary/80 transition-colors"
+            >
+              Clear filters
+            </button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
