@@ -1,17 +1,7 @@
 import { type TargetContext, contextToPromptBlock } from "./parseTarget";
+import type { AttackPath, AnalysisDepth } from "@/types";
 
-export type AnalysisDepth = "quick" | "standard" | "deep";
-
-export interface AttackPath {
-  id: number;
-  title: string;
-  category: string;
-  severity: "Critical" | "High" | "Medium" | "Low" | "Info";
-  description: string;
-  payloadExample: string;
-  steps: string[];
-  references: string[];
-}
+export type { AttackPath, AnalysisDepth };
 
 const DEPTH_CONFIG: Record<AnalysisDepth, { count: number; instruction: string }> = {
   quick: {
@@ -76,19 +66,27 @@ Return ONLY the JSON array. No additional text.`;
   return { system, user };
 };
 
-const VALID_SEVERITIES = ["Critical", "High", "Medium", "Low", "Info"] as const;
+const VALID_SEVERITIES = ["critical", "high", "medium", "low"] as const;
+
+const normalizeSeverity = (val: unknown): AttackPath["severity"] => {
+  if (typeof val !== "string") return "medium";
+  const lower = val.toLowerCase();
+  if (VALID_SEVERITIES.includes(lower as typeof VALID_SEVERITIES[number])) return lower as AttackPath["severity"];
+  return "medium";
+};
 
 const sanitizePath = (item: Record<string, unknown>, index: number): AttackPath => ({
   id: typeof item.id === "number" ? item.id : index + 1,
   title: typeof item.title === "string" && item.title ? item.title : `Attack Path ${index + 1}`,
-  category: typeof item.category === "string" && item.category ? item.category : "Unknown",
-  severity: VALID_SEVERITIES.includes(item.severity as typeof VALID_SEVERITIES[number])
-    ? (item.severity as AttackPath["severity"])
-    : "Medium",
+  category: typeof item.category === "string" && item.category ? item.category : "Other",
+  severity: normalizeSeverity(item.severity),
   description: typeof item.description === "string" && item.description ? item.description : "No description provided.",
   payloadExample: typeof item.payloadExample === "string" ? item.payloadExample : "",
   steps: Array.isArray(item.steps) ? item.steps.map(String) : [],
   references: Array.isArray(item.references) ? item.references.map(String) : [],
+  isBookmarked: false,
+  isTested: false,
+  userNotes: "",
 });
 
 const extractJsonArray = (text: string): unknown[] | null => {
