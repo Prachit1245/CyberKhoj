@@ -203,7 +203,7 @@ const fetchGemini = async (prompt: string, key: string, signal?: AbortSignal): P
         const hasFallbackModel = modelIndex < MODEL_CANDIDATES.length - 1;
         if (hasFallbackModel) {
           if (IS_DEV) {
-            console.warn(`[HackMind] ${model} stayed rate-limited, switching model…`);
+            console.warn(`[CyberKhoj] ${model} stayed rate-limited, switching model…`);
           }
           await sleep(MODEL_SWITCH_DELAY_MS);
           break;
