@@ -17,6 +17,7 @@ import {
   ToggleLeft,
   ToggleRight,
   Smartphone,
+  Accessibility,
 } from "lucide-react";
 import { toast } from "@/components/Toast";
 import { getApiKey, saveApiKey, removeApiKey, hasApiKey } from "@/lib/gemini";
