@@ -116,6 +116,7 @@ const Navbar = () => {
               href="https://github.com/hackmind-app/hackmind"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Star HackMind on GitHub"
               className="flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 text-xs font-mono text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all"
             >
               <Github size={13} /> Star
