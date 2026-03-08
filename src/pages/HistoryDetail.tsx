@@ -57,7 +57,10 @@ function parseResultData(record: AnalysisRecord): { paths: AttackPath[]; isMindM
   }
 }
 
-function exportMarkdown(record: AnalysisRecord, paths: AttackPath[]): string {
+function exportMarkdown(record: AnalysisRecord, paths: AttackPath[], includeNotes: boolean): string {
+  const domain = extractDomain(record.target);
+  const notesMd = includeNotes ? exportNoteMarkdown(domain) : "";
+
   const lines: string[] = [
     `# Security Analysis: ${record.target}`,
     ``,
@@ -68,6 +71,13 @@ function exportMarkdown(record: AnalysisRecord, paths: AttackPath[]): string {
     `---`,
     ``,
   ];
+
+  if (notesMd) {
+    lines.push(notesMd);
+    lines.push(`---`);
+    lines.push(``);
+  }
+
   for (const p of paths) {
     lines.push(`## [${p.severity.toUpperCase()}] ${p.title}`);
     lines.push(`**Category:** ${p.category}`);
