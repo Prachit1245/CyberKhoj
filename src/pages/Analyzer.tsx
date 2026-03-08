@@ -259,6 +259,7 @@ const Analyzer = () => {
           Paste Your Target
         </label>
         <textarea
+          data-tour="analyzer-input"
           value={target}
           onChange={(e) => {
             setTarget(e.target.value);
