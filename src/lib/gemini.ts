@@ -1,9 +1,14 @@
 const STORAGE_KEY = "hackmind_gemini_key";
 const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models";
-const MODEL_CANDIDATES = ["gemini-2.5-flash-lite", "gemini-2.5-flash"] as const;
+const MODEL_CANDIDATES = [
+  "gemini-2.5-flash-lite",
+  "gemini-2.5-flash",
+  "gemini-2.0-flash",
+  "gemini-2.0-flash-lite",
+] as const;
 
 const IS_DEV = import.meta.env.DEV;
-const MIN_REQUEST_INTERVAL_MS = 1200;
+const MIN_REQUEST_INTERVAL_MS = 6500;
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -137,6 +142,18 @@ const MODEL_SWITCH_DELAY_MS = 1200;
 
 const buildRateLimitMessage = (errText: string): string => {
   const text = errText.toLowerCase();
+
+  const zeroFreeQuota =
+    text.includes("limit: 0") ||
+    text.includes("generate_content_free_tier_requests") ||
+    text.includes("free_tier") ||
+    text.includes("free tier") ||
+    text.includes("no quota");
+
+  if (zeroFreeQuota) {
+    return "This API project currently has 0 free Gemini quota. In AI Studio, open the same project used by this key and enable billing to move to a usable tier.";
+  }
+
   const dailyOrQuotaExhausted =
     text.includes("per day") ||
     text.includes("daily") ||
@@ -147,7 +164,7 @@ const buildRateLimitMessage = (errText: string): string => {
     text.includes("insufficient");
 
   if (dailyOrQuotaExhausted) {
-    return "Gemini quota is exhausted for this Google project (often project-level, not key-level). Check quota/billing in AI Studio, or wait for daily reset.";
+    return "Gemini quota is exhausted for this AI Studio project (often project-level, not key-level). Check quota/billing in AI Studio, or wait for daily reset.";
   }
 
   return "Gemini rate limit reached. The app retried automatically, but the API is still busy. Please wait about a minute and try again.";
@@ -165,12 +182,13 @@ const fetchGemini = async (prompt: string, key: string, signal?: AbortSignal): P
       if (response.status === 429) {
         let errText = "";
         try {
-          errText = (await response.text()).toLowerCase();
+          errText = await response.text();
         } catch {
           // ignore
         }
 
-        lastRateLimitText = errText;
+        const normalizedErrText = errText.toLowerCase();
+        lastRateLimitText = normalizedErrText;
         const hasRetryLeft = attempt < MAX_RETRIES;
 
         if (hasRetryLeft) {
