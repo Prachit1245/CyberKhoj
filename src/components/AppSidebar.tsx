@@ -169,6 +169,7 @@ const AppSidebar = () => {
               <NavLink
                 key={item.to}
                 to={item.to}
+                data-tour={item.tourId}
                 className={`sidebar-item group flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-mono transition-all relative ${
                   isActive
                     ? "bg-primary/10 text-primary"
