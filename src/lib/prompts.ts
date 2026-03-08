@@ -116,7 +116,7 @@ const sanitizePath = (item: Record<string, unknown>, index: number): AttackPath 
   userNotes: "",
 });
 
-/** Strip all markdown code fences from Gemini responses */
+/** Strip all markdown code fences from AI responses */
 const stripAllFences = (text: string): string =>
   text.replace(/```(?:json)?\s*/gi, "").trim();
 
