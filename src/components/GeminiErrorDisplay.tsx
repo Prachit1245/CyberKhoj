@@ -21,12 +21,10 @@ interface GeminiErrorDisplayProps {
 const RateLimitTerminal = () => {
   const lines = [
     "$ cyberkhoj --analyze",
-    "> Connecting to Gemini API...",
-    "> ERROR 429: Quota/Rate limit reached",
-    "> Auto-retried 3x with backoff.",
-    "> Limits are often project-level, not key-level.",
-    "> Check quota/billing in AI Studio.",
-    "> If daily cap is hit, wait for reset.",
+    "> Connecting to Groq API...",
+    "> ERROR 429: Rate limit reached",
+    "> Daily limit reached. Groq gives 1000 free",
+    "> requests per day. Resets at midnight.",
     "> _",
   ];
 

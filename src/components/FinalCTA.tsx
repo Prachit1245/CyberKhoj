@@ -8,7 +8,7 @@ const FinalCTA = () => {
 
   const handleGo = () => {
     if (apiKey.trim()) {
-      localStorage.setItem("gemini_api_key", apiKey.trim());
+      localStorage.setItem("cyberkhoj_groq_key", apiKey.trim());
     }
     navigate("/analyzer");
   };
@@ -32,7 +32,7 @@ const FinalCTA = () => {
         </h2>
 
         <p className="text-sm md:text-base font-mono text-muted-foreground max-w-lg mx-auto">
-          Paste your free Gemini API key below, or skip to explore first.
+          Paste your free Groq API key below, or skip to explore first.
           Zero signup. Zero cost. Full power.
         </p>
 
@@ -48,8 +48,8 @@ const FinalCTA = () => {
               type="password"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
-              placeholder="Paste Gemini API key (optional)"
-              aria-label="Gemini API key"
+              placeholder="Paste Groq API key (optional)"
+              aria-label="Groq API key"
               className="w-full rounded-lg border border-border bg-card pl-10 pr-4 py-3.5 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               onKeyDown={(e) => e.key === "Enter" && handleGo()}
             />
@@ -71,12 +71,12 @@ const FinalCTA = () => {
         </div>
 
         <a
-          href="https://aistudio.google.com/apikey"
+          href="https://console.groq.com"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-block text-xs font-mono text-primary/70 hover:text-primary transition-colors underline underline-offset-4"
         >
-          Don't have a key? Get one free from Google AI Studio →
+          Don't have a key? Get one free at console.groq.com →
         </a>
       </div>
     </section>

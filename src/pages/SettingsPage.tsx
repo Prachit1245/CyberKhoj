@@ -243,7 +243,7 @@ const SettingsPage = () => {
 
   /* ── Data Management ── */
   const storageKeys = [
-    "hackmind_gemini_key",
+    "cyberkhoj_groq_key",
     "hackmind_history",
     "hackmind_findings",
     "hackmind_owasp_coverage",
@@ -330,7 +330,7 @@ const SettingsPage = () => {
           hackmind_prefs: "preferences",
           hackmind_stats: "stats",
           hackmind_usage: "usage data",
-          hackmind_gemini_key: "API key",
+          cyberkhoj_groq_key: "API key",
         };
 
         Object.entries(data).forEach(([key, value]) => {
@@ -370,14 +370,14 @@ const SettingsPage = () => {
 
   const clearStorage = (key: string, label: string) => {
     localStorage.removeItem(key);
-    if (key === "hackmind_gemini_key") setKeySet(false);
+    if (key === "cyberkhoj_groq_key") setKeySet(false);
     toast.success(`${label} cleared`);
   };
 
   return (
     <div className="max-w-2xl mx-auto space-y-5">
       {/* ─── API Key Section ─── */}
-      <Section icon={<Key size={16} />} title="API Key">
+      <Section icon={<Key size={16} />} title="Groq API Key">
         {keySet ? (
           <div className="space-y-4">
             {/* Current key display */}
@@ -473,27 +473,27 @@ const SettingsPage = () => {
             </div>
 
             <a
-              href="https://aistudio.google.com/apikey"
+              href="https://console.groq.com"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 text-xs font-mono text-primary hover:underline"
             >
               <ExternalLink size={11} />
-              Get a new API key from Google AI Studio
+              Get a new API key from console.groq.com
             </a>
           </div>
         ) : (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground font-mono">
-              No API key set. You'll need one to use CyberKhoj.
+              CyberKhoj uses Groq AI (free) to generate attack paths. Get your free key at console.groq.com
             </p>
             <a
-              href="https://aistudio.google.com/apikey"
+              href="https://console.groq.com"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 justify-center w-full rounded-lg bg-primary px-4 py-2.5 font-heading font-bold text-primary-foreground hover:brightness-110 transition-all text-sm"
             >
-              Get Free API Key →
+              Get Free Groq Key →
             </a>
           </div>
         )}

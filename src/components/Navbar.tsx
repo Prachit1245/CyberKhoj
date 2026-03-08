@@ -192,7 +192,7 @@ const Navbar = () => {
             <div className="flex items-center justify-between">
               <h2 className="font-heading text-xl font-bold text-foreground">
                 <Key size={16} className="inline mr-2 text-primary" />
-                API Key
+                Groq API Key
               </h2>
               <button
                 onClick={() => setModalOpen(false)}
