@@ -259,6 +259,7 @@ const Analyzer = () => {
           Paste Your Target
         </label>
         <textarea
+          data-tour="analyzer-input"
           value={target}
           onChange={(e) => {
             setTarget(e.target.value);
@@ -306,7 +307,7 @@ const Analyzer = () => {
       {/* Options row */}
       <div className="flex flex-col sm:flex-row gap-4">
         {/* Depth toggle */}
-        <div className="space-y-1.5">
+        <div className="space-y-1.5" data-tour="depth-selector">
           <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Depth</p>
           <div className="flex rounded-lg border border-border overflow-hidden">
             {DEPTHS.map((d) => (

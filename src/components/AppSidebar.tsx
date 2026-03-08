@@ -34,10 +34,10 @@ const NEEDS_AI = new Set(["/analyzer", "/attack", "/mindmap"]);
 const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/analyzer", label: "URL Analyzer", icon: Link2 },
-  { to: "/attack", label: "Attack Mode", icon: Swords },
+  { to: "/attack", label: "Attack Mode", icon: Swords, tourId: "nav-attack" },
   { to: "/mindmap", label: "Mind Map", icon: Network },
   { to: "/history", label: "History", icon: Clock },
-  { to: "/payloads", label: "Payload Library", icon: Code2 },
+  { to: "/payloads", label: "Payload Library", icon: Code2, tourId: "nav-payloads" },
   { to: "/cheatsheets", label: "Cheat Sheets", icon: BookOpen },
   { to: "/owasp", label: "OWASP Top 10", icon: ShieldAlert },
   { to: "/vuln-categories", label: "Vuln Categories", icon: Layers },
@@ -169,6 +169,7 @@ const AppSidebar = () => {
               <NavLink
                 key={item.to}
                 to={item.to}
+                data-tour={item.tourId}
                 className={`sidebar-item group flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-mono transition-all relative ${
                   isActive
                     ? "bg-primary/10 text-primary"
@@ -202,7 +203,7 @@ const AppSidebar = () => {
         </nav>
 
         {/* Bottom status */}
-        <div className="border-t border-border/50 p-3 space-y-2">
+        <div className="border-t border-border/50 p-3 space-y-2" data-tour="usage-counter">
         <SidebarUsage collapsed={collapsed} keySet={keySet} />
         </div>
       </aside>
