@@ -1,8 +1,9 @@
-import { useState, memo } from "react";
-import { Bookmark, BookmarkCheck, CheckSquare, Square, StickyNote, Copy, Check, ChevronDown, ChevronRight, ExternalLink, HelpCircle } from "lucide-react";
+import { useState, memo, useMemo } from "react";
+import { Bookmark, BookmarkCheck, CheckSquare, Square, StickyNote, Copy, Check, ChevronDown, ChevronRight, ExternalLink, HelpCircle, Shield } from "lucide-react";
 import { toggleBookmark, isBookmarked } from "@/lib/bookmarks";
 import { toast } from "@/components/Toast";
 import GlossaryText from "@/components/GlossaryText";
+import { getWafBypasses, hasWafBypasses, type WafBypassVariant } from "@/lib/wafBypasses";
 import type { AttackPath, Severity } from "@/types";
 
 const SEVERITY_STYLES: Record<Severity, { border: string; badge: string; label: string }> = {
@@ -12,7 +13,6 @@ const SEVERITY_STYLES: Record<Severity, { border: string; badge: string; label: 
   low: { border: "border-l-blue-500", badge: "bg-blue-500/15 text-blue-400", label: "LOW" },
 };
 
-/** Simple beginner explanations by severity */
 const SEVERITY_EXPLAIN: Record<Severity, string> = {
   critical: "This is extremely dangerous — an attacker could take full control or steal all data.",
   high: "This is serious — an attacker could access sensitive data or bypass security controls.",
@@ -26,6 +26,59 @@ interface Props {
   beginnerMode?: boolean;
 }
 
+/* ── WAF Bypass Sub-component ── */
+const WafBypassSection = memo(({ variants }: { variants: WafBypassVariant[] }) => {
+  const [open, setOpen] = useState(false);
+  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+
+  const copyVariant = async (payload: string, idx: number) => {
+    await navigator.clipboard.writeText(payload);
+    setCopiedIdx(idx);
+    setTimeout(() => setCopiedIdx(null), 1500);
+  };
+
+  return (
+    <div>
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-1.5 text-xs font-mono text-orange-400 hover:text-orange-300 transition-colors"
+      >
+        <Shield size={13} />
+        {open ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+        WAF Bypass Techniques ({variants.length})
+      </button>
+      <div
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${
+          open ? "max-h-[800px] opacity-100 mt-2" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="space-y-2 rounded-lg bg-orange-500/5 border border-orange-500/20 p-3">
+          {variants.map((v, i) => (
+            <div key={i} className="space-y-1">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[10px] font-mono font-bold text-orange-400/80 uppercase tracking-wider">
+                  {v.label}
+                </span>
+                <button
+                  onClick={() => copyVariant(v.payload, i)}
+                  className="flex items-center gap-1 rounded bg-muted/50 px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground hover:text-foreground transition-colors shrink-0"
+                >
+                  {copiedIdx === i ? <><Check size={10} className="text-primary" /> Copied</> : <><Copy size={10} /> Copy</>}
+                </button>
+              </div>
+              <pre className="text-[11px] font-mono text-foreground/80 whitespace-pre-wrap break-all bg-muted/30 rounded px-2 py-1.5 border border-border/30">
+                {v.payload}
+              </pre>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+});
+WafBypassSection.displayName = "WafBypassSection";
+
+/* ── Main Card ── */
 const AttackPathCard = memo(({ path, onChange, beginnerMode = false }: Props) => {
   const [payloadOpen, setPayloadOpen] = useState(false);
   const [stepsOpen, setStepsOpen] = useState(false);
@@ -34,6 +87,11 @@ const AttackPathCard = memo(({ path, onChange, beginnerMode = false }: Props) =>
   const [copied, setCopied] = useState(false);
 
   const sev = SEVERITY_STYLES[path.severity] || SEVERITY_STYLES.medium;
+
+  const wafVariants = useMemo(
+    () => getWafBypasses(path.category, path.title, path.payloadExample),
+    [path.category, path.title, path.payloadExample]
+  );
 
   const update = (partial: Partial<AttackPath>) => {
     onChange?.({ ...path, ...partial });
@@ -63,6 +121,11 @@ const AttackPathCard = memo(({ path, onChange, beginnerMode = false }: Props) =>
           <span className="inline-block rounded bg-secondary/15 px-2 py-0.5 text-[10px] font-mono text-secondary uppercase tracking-wider">
             {path.category}
           </span>
+          {wafVariants && (
+            <span className="inline-block rounded bg-orange-500/10 px-2 py-0.5 text-[10px] font-mono text-orange-400 uppercase tracking-wider">
+              WAF Bypasses
+            </span>
+          )}
           {beginnerMode && (
             <span className="inline-block rounded bg-primary/10 px-2 py-0.5 text-[10px] font-mono text-primary uppercase tracking-wider">
               Beginner
@@ -144,6 +207,9 @@ const AttackPathCard = memo(({ path, onChange, beginnerMode = false }: Props) =>
             </div>
           </div>
         )}
+
+        {/* WAF Bypass Techniques — auto-shown for SQLi, XSS, Command Injection */}
+        {wafVariants && <WafBypassSection variants={wafVariants} />}
 
         {/* Steps to Test */}
         {path.steps.length > 0 && (
