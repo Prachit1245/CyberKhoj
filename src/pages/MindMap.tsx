@@ -16,7 +16,7 @@ import "@xyflow/react/dist/style.css";
 import Dagre from "@dagrejs/dagre";
 import { ZoomIn, ZoomOut, Maximize, Image, FileJson, ClipboardList, Save, Network, TreePine, Zap, StickyNote, CheckCircle, Copy, Search } from "lucide-react";
 import html2canvas from "html2canvas";
-import { callGemini } from "@/lib/gemini";
+import { callGemini, GeminiError } from "@/lib/gemini";
 import { buildMindMapPrompt, parseMindMapNodes, type MindMapNode } from "@/lib/prompts";
 import { toast } from "@/components/Toast";
 import { useNavigate } from "react-router-dom";
