@@ -163,10 +163,10 @@ Format as numbered list with markdown.`;
 
   return (
     <>
-      {/* FAB */}
+      {/* FAB — bottom-center on mobile (above tab bar), bottom-right on desktop */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:scale-110 transition-all duration-200 glow-primary"
+        className="fixed z-50 w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:scale-110 transition-all duration-200 glow-primary bottom-20 left-1/2 -translate-x-1/2 md:bottom-6 md:right-6 md:left-auto md:translate-x-0"
         title="Quick Analyze (Ctrl+K)"
       >
         <Zap size={24} />
