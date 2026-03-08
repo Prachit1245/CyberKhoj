@@ -234,7 +234,7 @@ const Navbar = () => {
                     setNewKey(e.target.value);
                     setKeyError("");
                   }}
-                  placeholder="Paste your Gemini API key..."
+                  placeholder="Paste your Groq API key..."
                   className="w-full rounded-lg border border-border bg-muted/50 px-4 py-3 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 transition-colors"
                 />
                 {keyError && (
