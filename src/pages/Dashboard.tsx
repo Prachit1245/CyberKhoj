@@ -454,15 +454,21 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Analyses per day sparkline */}
+          {/* Severity Donut Chart */}
           <div className="rounded-xl border border-border bg-card p-4 space-y-3">
-            <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Analyses · Last 7 Days</p>
-            <Sparkline data={perDay} />
+            <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Severity Distribution</p>
+            <DonutChart data={sevData} />
           </div>
 
-          {/* Vuln category breakdown */}
+          {/* Analyses per day bar chart */}
           <div className="rounded-xl border border-border bg-card p-4 space-y-3">
-            <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Most Tested Vulnerability Categories</p>
+            <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Analyses · Last 7 Days</p>
+            <WeekBarChart data={perDay} />
+          </div>
+
+          {/* Top 5 vuln category breakdown */}
+          <div className="rounded-xl border border-border bg-card p-4 space-y-3">
+            <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Top 5 Vulnerability Categories</p>
             <VulnBarChart data={vulnFreq} />
           </div>
 
