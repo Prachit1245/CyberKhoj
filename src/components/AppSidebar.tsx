@@ -105,9 +105,30 @@ const SidebarUsage = ({ collapsed, keySet }: { collapsed: boolean; keySet: boole
 
 const AppSidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const [bmCount, setBmCount] = useState(getBookmarkCount());
   const location = useLocation();
+  const navigate = useNavigate();
   const keySet = hasApiKey();
   const online = useOnline();
+
+  // Listen for bookmark changes
+  useEffect(() => {
+    const refresh = () => setBmCount(getBookmarkCount());
+    window.addEventListener("hackmind:bookmarks-changed", refresh);
+    return () => window.removeEventListener("hackmind:bookmarks-changed", refresh);
+  }, []);
+
+  // Ctrl+B shortcut
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "b") {
+        e.preventDefault();
+        navigate("/bookmarks");
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [navigate]);
 
   const pageTitle = PAGE_TITLES[location.pathname] || "HackMind";
 
