@@ -60,10 +60,9 @@ export const abortGeminiRequest = (): void => {
 };
 
 /* ─── Core fetch helper (single attempt) ─── */
-const fetchGemini = async (prompt: string, key: string, signal?: AbortSignal): Promise<string> => {
-  let response: Response;
+const fetchGeminiOnce = async (prompt: string, key: string, signal?: AbortSignal): Promise<Response> => {
   try {
-    response = await fetch(`${MODEL_URL}?key=${key}`, {
+    return await fetch(`${MODEL_URL}?key=${key}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       signal,
@@ -84,7 +83,9 @@ const fetchGemini = async (prompt: string, key: string, signal?: AbortSignal): P
       "No internet connection. Check your connection and try again."
     );
   }
+};
 
+const parseGeminiResponse = async (response: Response): Promise<string> => {
   if (!response.ok) {
     let errText = "";
     try {
@@ -101,21 +102,9 @@ const fetchGemini = async (prompt: string, key: string, signal?: AbortSignal): P
       throw new GeminiError("FORBIDDEN", "API key is restricted or Gemini API is not enabled for this project.", 403);
     }
     if (response.status === 429) {
-      const details = errText.toLowerCase();
-      const quotaLike =
-        details.includes("quota") ||
-        details.includes("resource_exhausted") ||
-        details.includes("exceeded") ||
-        details.includes("per minute") ||
-        details.includes("per day");
-
-      throw new GeminiError(
-        "RATE_LIMIT",
-        quotaLike
-          ? "Gemini quota/rate limit reached for this key. Wait 30–60s and try again. If it keeps failing, check quota/billing in Google AI Studio."
-          : "Too many requests in a short time. Wait a few seconds and try again.",
-        429
-      );
+      // Throw a special marker so the retry loop can catch it
+      const err = new GeminiError("RATE_LIMIT", errText, 429);
+      throw err;
     }
     throw new GeminiError("API_ERROR", `Gemini API error (${response.status}): ${errText.slice(0, 200)}`, response.status);
   }
@@ -133,6 +122,50 @@ const fetchGemini = async (prompt: string, key: string, signal?: AbortSignal): P
   }
 
   return text;
+};
+
+/* ─── Fetch with automatic retry on 429 (exponential backoff) ─── */
+const MAX_RETRIES = 3;
+const BASE_DELAY_MS = 4000; // 4s, 8s, 16s
+
+const fetchGemini = async (prompt: string, key: string, signal?: AbortSignal): Promise<string> => {
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    const response = await fetchGeminiOnce(prompt, key, signal);
+
+    if (response.status === 429) {
+      if (attempt === MAX_RETRIES) {
+        // Final attempt failed — throw a user-friendly error
+        let errText = "";
+        try { errText = (await response.text()).toLowerCase(); } catch { /* ignore */ }
+        const quotaLike =
+          errText.includes("quota") ||
+          errText.includes("resource_exhausted") ||
+          errText.includes("exceeded") ||
+          errText.includes("per day");
+
+        throw new GeminiError(
+          "RATE_LIMIT",
+          quotaLike
+            ? "Gemini quota exhausted for this key. Try again in a few minutes, or check your quota at aistudio.google.com."
+            : "Gemini rate limit reached. The app retried automatically but the API is still busy. Wait 1–2 minutes and try again.",
+          429
+        );
+      }
+
+      // Exponential backoff: 4s → 8s → 16s
+      const delayMs = BASE_DELAY_MS * Math.pow(2, attempt);
+      if (IS_DEV) {
+        console.warn(`[HackMind] 429 on attempt ${attempt + 1}, retrying in ${delayMs}ms…`);
+      }
+      await sleep(delayMs);
+      continue;
+    }
+
+    return parseGeminiResponse(response);
+  }
+
+  // Should never reach here
+  throw new GeminiError("API_ERROR", "Unexpected retry loop exit.");
 };
 
 /* ─── JSON helpers ─── */
