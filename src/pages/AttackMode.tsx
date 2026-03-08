@@ -152,6 +152,7 @@ const AttackMode = () => {
   const [sortMode, setSortMode] = useState<"priority" | "difficulty" | "category">("priority");
   const [untestedOnly, setUntestedOnly] = useState(false);
   const [shuffleSeed, setShuffleSeed] = useState(0);
+  const [showRecon, setShowRecon] = useState(false);
   const streamRef = useRef<ReturnType<typeof setInterval>>();
 
   useEffect(() => () => { if (streamRef.current) clearInterval(streamRef.current); }, []);
