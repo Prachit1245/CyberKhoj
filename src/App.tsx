@@ -57,6 +57,7 @@ const App = () => (
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/findings" element={<Findings />} />
               <Route path="/owasp" element={<OwaspPage />} />
+              <Route path="/vuln-categories" element={<VulnCategories />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
