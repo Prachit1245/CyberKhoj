@@ -165,7 +165,7 @@ export default function HistoryDetail() {
 
   const handleExportJson = () => {
     const date = new Date(record.date).toISOString().slice(0, 10);
-    downloadFile(record.result, `hackmind-${record.target.replace(/[^a-z0-9]/gi, "-")}-${date}.json`, "application/json");
+    downloadFile(record.result, `cyberkhoj-${record.target.replace(/[^a-z0-9]/gi, "-")}-${date}.json`, "application/json");
     toast.success("JSON exported");
   };
 
