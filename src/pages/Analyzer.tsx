@@ -144,6 +144,7 @@ const Analyzer = () => {
     setError("");
     setErrorCode(null);
     setResult("");
+    startTypingSound();
 
     try {
       const prompt = buildPrompt(trimmed, depth, analysisType, selectedTemplate?.context);
