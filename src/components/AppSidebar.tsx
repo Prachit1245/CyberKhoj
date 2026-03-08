@@ -241,7 +241,7 @@ const AppSidebar = () => {
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 overflow-y-auto py-3 space-y-0.5 px-2">
+        <nav className="flex-1 overflow-y-auto py-3 space-y-0.5 px-2" aria-label="Main navigation">
           {NAV_ITEMS.map((item) => {
             const isActive = location.pathname === item.to;
             const isOfflineOk = OFFLINE_OK.has(item.to);
