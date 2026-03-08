@@ -1,7 +1,8 @@
 import { useState, memo } from "react";
-import { Bookmark, BookmarkCheck, CheckSquare, Square, StickyNote, Copy, Check, ChevronDown, ChevronRight, ExternalLink } from "lucide-react";
+import { Bookmark, BookmarkCheck, CheckSquare, Square, StickyNote, Copy, Check, ChevronDown, ChevronRight, ExternalLink, HelpCircle } from "lucide-react";
 import { toggleBookmark, isBookmarked } from "@/lib/bookmarks";
 import { toast } from "@/components/Toast";
+import GlossaryText from "@/components/GlossaryText";
 import type { AttackPath, Severity } from "@/types";
 
 const SEVERITY_STYLES: Record<Severity, { border: string; badge: string; label: string }> = {
@@ -11,15 +12,25 @@ const SEVERITY_STYLES: Record<Severity, { border: string; badge: string; label: 
   low: { border: "border-l-blue-500", badge: "bg-blue-500/15 text-blue-400", label: "LOW" },
 };
 
+/** Simple beginner explanations by severity */
+const SEVERITY_EXPLAIN: Record<Severity, string> = {
+  critical: "This is extremely dangerous — an attacker could take full control or steal all data.",
+  high: "This is serious — an attacker could access sensitive data or bypass security controls.",
+  medium: "This is moderately risky — it could be exploited under certain conditions.",
+  low: "This is a minor issue — limited impact but still worth fixing.",
+};
+
 interface Props {
   path: AttackPath;
   onChange?: (updated: AttackPath) => void;
+  beginnerMode?: boolean;
 }
 
-const AttackPathCard = memo(({ path, onChange }: Props) => {
+const AttackPathCard = memo(({ path, onChange, beginnerMode = false }: Props) => {
   const [payloadOpen, setPayloadOpen] = useState(false);
   const [stepsOpen, setStepsOpen] = useState(false);
   const [notesOpen, setNotesOpen] = useState(false);
+  const [explainOpen, setExplainOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const sev = SEVERITY_STYLES[path.severity] || SEVERITY_STYLES.medium;
@@ -34,6 +45,13 @@ const AttackPathCard = memo(({ path, onChange }: Props) => {
     setTimeout(() => setCopied(false), 1500);
   };
 
+  const TextRenderer = ({ text, className }: { text: string; className?: string }) =>
+    beginnerMode ? (
+      <GlossaryText text={text} className={className} />
+    ) : (
+      <span className={className}>{text}</span>
+    );
+
   return (
     <div className={`rounded-xl border border-border bg-card border-l-4 ${sev.border} overflow-hidden transition-all`}>
       <div className="p-5 space-y-3">
@@ -45,17 +63,57 @@ const AttackPathCard = memo(({ path, onChange }: Props) => {
           <span className="inline-block rounded bg-secondary/15 px-2 py-0.5 text-[10px] font-mono text-secondary uppercase tracking-wider">
             {path.category}
           </span>
+          {beginnerMode && (
+            <span className="inline-block rounded bg-primary/10 px-2 py-0.5 text-[10px] font-mono text-primary uppercase tracking-wider">
+              Beginner
+            </span>
+          )}
         </div>
 
         {/* Title */}
         <h4 className="font-heading text-base font-bold text-foreground leading-snug">
-          {path.title}
+          <TextRenderer text={path.title} />
         </h4>
 
         {/* Description */}
         <p className="text-sm font-mono text-muted-foreground leading-relaxed">
-          {path.description}
+          <TextRenderer text={path.description} />
         </p>
+
+        {/* Beginner: "What does this mean?" */}
+        {beginnerMode && (
+          <div>
+            <button
+              onClick={() => setExplainOpen(!explainOpen)}
+              className="flex items-center gap-1.5 text-xs font-mono text-primary hover:text-primary/80 transition-colors"
+            >
+              <HelpCircle size={14} />
+              {explainOpen ? "Hide explanation" : "What does this mean?"}
+            </button>
+            <div
+              className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                explainOpen ? "max-h-[300px] opacity-100 mt-2" : "max-h-0 opacity-0"
+              }`}
+            >
+              <div className="rounded-lg bg-primary/5 border border-primary/20 p-3 space-y-2">
+                <p className="text-xs font-mono text-primary/80 leading-relaxed">
+                  <span className="font-bold text-primary">Severity:</span> {SEVERITY_EXPLAIN[path.severity]}
+                </p>
+                <p className="text-xs font-mono text-foreground/80 leading-relaxed">
+                  <span className="font-bold text-primary">In simple terms:</span>{" "}
+                  {(path as any).beginnerExplanation ||
+                    `This attack targets ${path.category} vulnerabilities. ${path.description.split('.')[0]}.`}
+                </p>
+                <p className="text-xs font-mono text-muted-foreground leading-relaxed">
+                  <span className="font-bold text-primary">What to do:</span>{" "}
+                  {path.steps.length > 0
+                    ? `Start by: ${path.steps[0]}`
+                    : "Follow the steps listed above to test for this vulnerability."}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Payload Example */}
         {path.payloadExample && (
@@ -106,7 +164,7 @@ const AttackPathCard = memo(({ path, onChange }: Props) => {
                 {path.steps.map((step, i) => (
                   <li key={i} className="flex gap-2 text-xs font-mono text-muted-foreground">
                     <span className="text-primary/60 shrink-0 w-5 text-right">{i + 1}.</span>
-                    <span>{step}</span>
+                    <TextRenderer text={step} />
                   </li>
                 ))}
               </ol>
