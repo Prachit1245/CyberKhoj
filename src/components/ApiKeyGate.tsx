@@ -147,7 +147,7 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
                   Validating…
                 </>
               ) : (
-                "Start HackMind"
+                "Start CyberKhoj"
               )}
             </button>
           </div>

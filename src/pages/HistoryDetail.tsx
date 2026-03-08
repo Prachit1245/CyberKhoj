@@ -200,7 +200,7 @@ export default function HistoryDetail() {
     <div className="space-y-5">
       {/* Print Header — hidden on screen, shown in print */}
       <div className="print-header hidden">
-        <h1>HackMind Security Analysis Report</h1>
+        <h1>CyberKhoj Security Analysis Report</h1>
         <p>{record.target} — {new Date(record.date).toLocaleDateString()} {new Date(record.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</p>
       </div>
       {/* Breadcrumb */}

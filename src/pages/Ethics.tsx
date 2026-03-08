@@ -36,7 +36,7 @@ const Ethics = () => (
     </div>
 
     <p className="text-sm font-mono text-muted-foreground leading-relaxed">
-      HackMind is a powerful tool. With that comes responsibility. The difference between a security researcher and an attacker is <span className="text-primary font-bold">permission</span>.
+      CyberKhoj is a powerful tool. With that comes responsibility. The difference between a security researcher and an attacker is <span className="text-primary font-bold">permission</span>.
     </p>
 
     {/* Do */}

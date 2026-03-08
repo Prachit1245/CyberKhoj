@@ -1,5 +1,5 @@
 /**
- * Full-screen loading screen with HackMind branding.
+ * Full-screen loading screen with CyberKhoj branding.
  * Used during initial app load and route transitions.
  */
 import HackMindLogo from "@/components/HackMindLogo";

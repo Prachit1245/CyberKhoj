@@ -58,7 +58,7 @@ export default function SharedView() {
       {/* Header */}
       <div className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground">
         <button onClick={() => navigate("/")} className="hover:text-foreground cursor-pointer flex items-center gap-1">
-          <ArrowLeft className="h-3 w-3" /> HackMind
+          <ArrowLeft className="h-3 w-3" /> CyberKhoj
         </button>
       </div>
 

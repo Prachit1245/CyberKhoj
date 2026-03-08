@@ -551,7 +551,7 @@ const SettingsPage = () => {
             </>
           ) : (
             <p className="text-sm text-muted-foreground font-mono">
-              Open HackMind in Chrome or Safari on mobile to install it as an app. On desktop, look for the install icon in your browser's address bar.
+              Open CyberKhoj in Chrome or Safari on mobile to install it as an app. On desktop, look for the install icon in your browser's address bar.
             </p>
           )}
         </div>

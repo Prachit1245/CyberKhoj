@@ -65,7 +65,7 @@ export default function Changelog() {
         {/* Log content */}
         <div className="p-4 space-y-0.5 max-h-[70vh] overflow-y-auto font-mono text-sm leading-relaxed">
           {/* Boot sequence */}
-          <p className="text-muted-foreground">$ cat /var/log/hackmind/changelog.log</p>
+          <p className="text-muted-foreground">$ cat /var/log/cyberkhoj/changelog.log</p>
           <p className="text-muted-foreground mb-4">---</p>
 
           {formattedLog.map((line, i) => {

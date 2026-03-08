@@ -281,7 +281,7 @@ export const callGemini = async (prompt: string, expectJson = false): Promise<st
     text = await fetchGemini(prompt, key, controller.signal);
 
     if (IS_DEV) {
-      console.group("[HackMind] Gemini Response");
+      console.group("[CyberKhoj] Gemini Response");
       console.log("Response length:", text.length);
       console.log("Response (first 500 chars):", text.slice(0, 500));
       console.groupEnd();

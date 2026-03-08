@@ -82,7 +82,7 @@ export default function ExportBar({ paths, input }: Props) {
   };
 
   const dlJson = () => {
-    downloadFile(JSON.stringify(paths, null, 2), `hackmind-${domain}-${date}.json`, "application/json");
+    downloadFile(JSON.stringify(paths, null, 2), `cyberkhoj-${domain}-${date}.json`, "application/json");
     toast.success("JSON downloaded ✓");
   };
 

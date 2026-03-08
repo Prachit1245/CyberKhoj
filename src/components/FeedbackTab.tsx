@@ -22,7 +22,7 @@ export default function FeedbackTab() {
   const handleCopy = () => {
     const stars = "★".repeat(rating) + "☆".repeat(5 - rating);
     const formatted = [
-      "── HackMind Feedback ──",
+      "── CyberKhoj Feedback ──",
       `Rating: ${stars} (${rating}/5)`,
       `Type: ${type.charAt(0).toUpperCase() + type.slice(1)}`,
       `Date: ${new Date().toISOString()}`,

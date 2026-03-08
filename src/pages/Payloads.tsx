@@ -437,7 +437,7 @@ export default function Payloads() {
     const json = exportCustomPayloadsJson();
     const blob = new Blob([json], { type: "application/json" });
     const link = document.createElement("a");
-    link.download = `hackmind-custom-payloads-${new Date().toISOString().slice(0, 10)}.json`;
+    link.download = `cyberkhoj-custom-payloads-${new Date().toISOString().slice(0, 10)}.json`;
     link.href = URL.createObjectURL(blob);
     link.click();
     URL.revokeObjectURL(link.href);
