@@ -227,7 +227,7 @@ const Analyzer = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-4xl">
+    <div className="space-y-6 max-w-4xl mx-auto">
       {/* Page-level tabs */}
       <div className="flex border-b border-border/50 mb-2">
         {PAGE_TABS.map((tab) => (
