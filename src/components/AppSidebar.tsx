@@ -81,7 +81,7 @@ const SidebarUsage = ({ collapsed, keySet }: { collapsed: boolean; keySet: boole
   );
 };
 
-
+const AppSidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const keySet = hasApiKey();
