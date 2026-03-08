@@ -5,6 +5,7 @@ import { addToHistory, incrementStat } from "@/lib/store";
 import { parseTarget, contextToPromptBlock } from "@/lib/parseTarget";
 import JwtAnalyzer from "@/components/JwtAnalyzer";
 import HttpRequestAnalyzer from "@/components/HttpRequestAnalyzer";
+import BatchAnalyzer from "@/components/BatchAnalyzer";
 
 const DEPTHS = ["Quick", "Standard", "Deep"] as const;
 const TYPES = ["URL", "HTTP Request", "JWT Token", "GraphQL"] as const;
