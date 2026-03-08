@@ -192,6 +192,7 @@ function buildFlowElements(
 /* ── Canvas component ── */
 function MindMapCanvas() {
   const navigate = useNavigate();
+  const online = useOnline();
   const [domain, setDomain] = useState("");
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
