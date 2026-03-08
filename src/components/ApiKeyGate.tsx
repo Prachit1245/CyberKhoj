@@ -1,12 +1,9 @@
 import { useState, useEffect, type ReactNode } from "react";
 import { Play, X } from "lucide-react";
-import { hasApiKey, saveApiKey } from "@/lib/gemini";
+import { hasApiKey, saveApiKey, validateApiKey } from "@/lib/ai";
 import { toast } from "@/components/Toast";
 import EthicalDisclaimer from "@/components/EthicalDisclaimer";
 import HackMindLogo from "@/components/HackMindLogo";
-
-const VALIDATE_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent";
 
 const ApiKeyGate = ({ children }: { children: ReactNode }) => {
   const [unlocked, setUnlocked] = useState(hasApiKey());
