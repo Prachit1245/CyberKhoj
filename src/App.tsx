@@ -19,6 +19,7 @@ import Findings from "./pages/Findings";
 import OwaspPage from "./pages/OwaspPage";
 import VulnCategories from "./pages/VulnCategories";
 import NotFound from "./pages/NotFound";
+import DailyLimitOverlay from "@/components/DailyLimitOverlay";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
     <ToastProvider>
     <TooltipProvider>
       <ApiKeyGate>
+        <DailyLimitOverlay />
         <BrowserRouter>
           <Routes>
             {/* Landing page with navbar */}
