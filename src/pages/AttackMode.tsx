@@ -74,7 +74,7 @@ const AttackMode = () => {
   useEffect(() => {
     if (checklistMode && allIdeas.length > 0 && checked.size === allIdeas.length && !celebrated) {
       setCelebrated(true);
-      toast.success("Attack surface fully tested! 🎯", { duration: 5000 });
+      toast.success("Attack surface fully tested! 🎯");
     }
   }, [checked.size, allIdeas.length, checklistMode, celebrated]);
 
