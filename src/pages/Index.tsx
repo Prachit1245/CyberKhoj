@@ -66,6 +66,10 @@ const Index = () => {
         </div>
       </section>
 
+      <section className="max-w-3xl mx-auto px-4 py-8">
+        <EthicalDisclaimer />
+      </section>
+
       <LandingDemo />
       <AnimatedCounter />
       <SocialProof />
