@@ -98,9 +98,9 @@ export default function History() {
     // Filter by type
     if (filter !== "all") list = list.filter((r) => r.type === filter);
 
-    // Search
-    if (search.trim()) {
-      const q = search.toLowerCase();
+    // Search (uses debounced value)
+    if (debouncedSearch.trim()) {
+      const q = debouncedSearch.toLowerCase();
       list = list.filter((r) => r.target.toLowerCase().includes(q));
     }
 
