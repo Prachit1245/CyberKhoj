@@ -31,6 +31,7 @@ const Achievements = lazy(() => import("./pages/Achievements"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Ethics = lazy(() => import("./pages/Ethics"));
+const SharedView = lazy(() => import("./pages/SharedView"));
 
 const queryClient = new QueryClient();
 
@@ -87,6 +88,17 @@ const App = () => (
                 <Navbar />
                 <div className="pt-14 px-4 py-10">
                   <Ethics />
+                </div>
+              </Suspense>
+            }
+          />
+          <Route
+            path="/share"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Navbar />
+                <div className="pt-14">
+                  <SharedView />
                 </div>
               </Suspense>
             }

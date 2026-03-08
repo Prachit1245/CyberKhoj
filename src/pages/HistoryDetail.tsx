@@ -1,9 +1,10 @@
 import { useState, useMemo } from "react";
 import { isBeginnerMode } from "@/lib/beginnerMode";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, RefreshCw, FileJson, FileText, Trash2, ChevronRight, Calendar, Target, Layers, Clock, Hash } from "lucide-react";
+import { ArrowLeft, RefreshCw, FileJson, FileText, Trash2, ChevronRight, Calendar, Target, Layers, Clock, Hash, Share2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { compressForShare } from "@/lib/shareResults";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -160,6 +161,29 @@ export default function HistoryDetail() {
     setAttackPaths((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
   };
 
+  const handleShare = async () => {
+    if (attackPaths.length === 0) {
+      toast.error("No attack paths to share");
+      return;
+    }
+    const { url, truncated, tooLarge } = compressForShare({
+      target: record.target,
+      type: record.type,
+      date: record.date,
+      paths: attackPaths,
+    });
+    if (tooLarge) {
+      toast.error("Results too large to share via URL even after truncation. Export as JSON instead.");
+      return;
+    }
+    await navigator.clipboard.writeText(url);
+    toast.success(
+      truncated
+        ? `Share link copied! (Truncated to top 10 paths by severity)`
+        : "Share link copied to clipboard!"
+    );
+  };
+
   return (
     <div className="space-y-5">
       {/* Breadcrumb */}
@@ -209,6 +233,9 @@ export default function HistoryDetail() {
           </Button>
           <Button variant="outline" size="sm" onClick={handleExportJson} className="text-xs font-mono cursor-pointer">
             <FileJson className="h-3.5 w-3.5 mr-1" /> Export JSON
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleShare} className="text-xs font-mono cursor-pointer">
+            <Share2 className="h-3.5 w-3.5 mr-1" /> Share
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
