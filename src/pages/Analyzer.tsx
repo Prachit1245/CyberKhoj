@@ -3,7 +3,7 @@ import { Trash2, ArrowRight, Loader2, WifiOff, GraduationCap } from "lucide-reac
 import { extractDomain } from "@/lib/targetNotes";
 import TargetNotesPanel from "@/components/TargetNotesPanel";
 import useOnline from "@/hooks/useOnline";
-import { callGemini, GeminiError, type GeminiErrorCode } from "@/lib/gemini";
+import { callGemini, GeminiError, abortGeminiRequest, type GeminiErrorCode } from "@/lib/gemini";
 import GeminiErrorDisplay from "@/components/GeminiErrorDisplay";
 import { addToHistory, incrementStat } from "@/lib/store";
 import { checkAnalysisAchievements, checkDeepAnalysis, checkCriticalFound, checkJwtAnalysis } from "@/lib/achievements";
