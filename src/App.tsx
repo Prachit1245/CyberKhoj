@@ -32,6 +32,7 @@ const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Ethics = lazy(() => import("./pages/Ethics"));
 const SharedView = lazy(() => import("./pages/SharedView"));
+const Changelog = lazy(() => import("./pages/Changelog"));
 
 const queryClient = new QueryClient();
 
