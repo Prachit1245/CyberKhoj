@@ -8,6 +8,7 @@ import GeminiErrorDisplay from "@/components/GeminiErrorDisplay";
 import { addToHistory, incrementStat } from "@/lib/store";
 import { checkAnalysisAchievements, checkDeepAnalysis, checkCriticalFound, checkJwtAnalysis } from "@/lib/achievements";
 import { parseTarget, contextToPromptBlock } from "@/lib/parseTarget";
+import { fallbackAnalyze } from "@/lib/fallbackAnalyze";
 import { startTypingSound, stopTypingSound } from "@/lib/sounds";
 import { isBeginnerMode, setBeginnerMode } from "@/lib/beginnerMode";
 import { analyzeTarget } from "@/lib/targetIntelligence";
