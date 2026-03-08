@@ -487,7 +487,8 @@ const Dashboard = () => {
           </div>
         ) : (
           <div className="rounded-xl border border-border bg-card overflow-hidden">
-            <table className="w-full text-sm">
+            {/* Desktop table */}
+            <table className="hidden md:table w-full text-sm">
               <thead>
                 <tr className="border-b border-border/50">
                   <th className="text-left px-4 py-3 font-mono text-xs text-muted-foreground uppercase tracking-wider">Target</th>
@@ -515,6 +516,24 @@ const Dashboard = () => {
                 ))}
               </tbody>
             </table>
+
+            {/* Mobile card list */}
+            <div className="md:hidden divide-y divide-border/30">
+              {recent.map((record) => (
+                <div
+                  key={record.id}
+                  onClick={() => setSelectedRecord(record)}
+                  className="p-4 hover:bg-primary/5 cursor-pointer transition-colors active:bg-primary/10 min-h-[3.5rem]"
+                >
+                  <p className="font-mono text-sm text-foreground truncate">{record.target}</p>
+                  <div className="flex items-center gap-3 mt-1.5">
+                    <span className="inline-block rounded bg-primary/10 px-2 py-0.5 text-[10px] font-mono text-primary">{record.type}</span>
+                    <span className="text-[10px] font-mono text-muted-foreground">{record.pathsFound} paths</span>
+                    <span className="text-[10px] font-mono text-muted-foreground ml-auto">{record.date}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
