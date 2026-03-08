@@ -1,14 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { AlertTriangle, Zap, ShoppingCart, LogIn, Server, Shield, Upload } from "lucide-react";
 import { callGemini } from "@/lib/gemini";
+import { buildAttackModePrompt, parseAttackIdeas, type AttackIdea } from "@/lib/prompts";
 import { toast } from "sonner";
-
-interface AttackIdea {
-  id: number;
-  title: string;
-  category: string;
-  detail: string;
-}
 
 const TEMPLATES = [
   { label: "E-commerce Site", icon: ShoppingCart, context: "e-commerce web application with cart, checkout, payments" },
@@ -17,12 +11,6 @@ const TEMPLATES = [
   { label: "Admin Panel", icon: Shield, context: "admin dashboard with user management, settings, logs" },
   { label: "File Upload", icon: Upload, context: "file upload feature accepting images, documents, media" },
 ];
-
-const PROMPT_TEMPLATE = (domain: string, context: string) => `You are a senior penetration tester. Generate exactly 100 unique attack test ideas for the target: "${domain}"${context ? ` (context: ${context})` : ""}.
-
-Return ONLY a JSON array of objects with keys: "title" (short name), "category" (e.g. XSS, SQLi, IDOR, Auth, SSRF, Logic, etc.), "detail" (one sentence describing the test).
-
-No markdown, no explanation, just the JSON array.`;
 
 const AttackMode = () => {
   const [domain, setDomain] = useState("");
