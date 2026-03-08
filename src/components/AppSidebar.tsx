@@ -274,9 +274,10 @@ const AppSidebar = () => {
         {/* Logo */}
         <div className="flex items-center justify-between h-14 px-4 border-b border-border/50">
           {!collapsed && (
-            <span className="font-heading text-base font-bold text-primary text-glow-primary logo-cursor">
-              HackMind
-            </span>
+            <HackMindLogo size="sm" showText={true} />
+          )}
+          {collapsed && (
+            <HackMindLogo size="sm" showText={false} />
           )}
           <button
             onClick={() => setCollapsed(!collapsed)}
