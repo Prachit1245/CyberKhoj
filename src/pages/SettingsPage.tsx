@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
+import EthicalDisclaimer from "@/components/EthicalDisclaimer";
 import {
   Key,
   Eye,
