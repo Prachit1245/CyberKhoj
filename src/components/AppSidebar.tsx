@@ -14,13 +14,18 @@ import {
   Bug,
   ShieldAlert,
   Layers,
+  WifiOff,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { hasApiKey } from "@/lib/gemini";
 import { getUsageCount, DAILY_LIMIT } from "@/lib/usage";
+import useOnline from "@/hooks/useOnline";
 import QuickAnalyze from "@/components/QuickAnalyze";
 import CommandPalette from "@/components/CommandPalette";
 import ShortcutsModal from "@/components/ShortcutsModal";
+
+const OFFLINE_OK = new Set(["/history", "/payloads", "/cheatsheets", "/findings"]);
+const NEEDS_AI = new Set(["/analyzer", "/attack", "/mindmap"]);
 
 const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -97,6 +102,7 @@ const AppSidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const keySet = hasApiKey();
+  const online = useOnline();
 
   const pageTitle = PAGE_TITLES[location.pathname] || "HackMind";
 
@@ -128,6 +134,8 @@ const AppSidebar = () => {
         <nav className="flex-1 overflow-y-auto py-3 space-y-0.5 px-2">
           {NAV_ITEMS.map((item) => {
             const isActive = location.pathname === item.to;
+            const isOfflineOk = OFFLINE_OK.has(item.to);
+            const isAiPage = NEEDS_AI.has(item.to);
             return (
               <NavLink
                 key={item.to}
@@ -143,7 +151,17 @@ const AppSidebar = () => {
                   <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-primary rounded-r" />
                 )}
                 <item.icon size={18} className={isActive ? "text-primary" : ""} />
-                {!collapsed && <span>{item.label}</span>}
+                {!collapsed && (
+                  <span className="flex-1 flex items-center justify-between">
+                    {item.label}
+                    {!online && isOfflineOk && (
+                      <span className="text-[9px] font-mono text-primary bg-primary/10 border border-primary/30 rounded px-1 py-0.5 leading-none">✓</span>
+                    )}
+                    {!online && isAiPage && (
+                      <span className="text-[9px] font-mono text-destructive bg-destructive/10 border border-destructive/30 rounded px-1 py-0.5 leading-none">AI</span>
+                    )}
+                  </span>
+                )}
               </NavLink>
             );
           })}
@@ -158,8 +176,13 @@ const AppSidebar = () => {
       {/* Main content */}
       <div className="flex-1 flex flex-col min-h-screen overflow-hidden" style={{ background: "#0f0f0f" }}>
         {/* Top bar */}
-        <header className="h-14 flex items-center px-6 border-b border-border/50 shrink-0">
+        <header className="h-14 flex items-center px-6 border-b border-border/50 shrink-0 gap-3">
           <h1 className="font-heading text-lg font-bold text-foreground">{pageTitle}</h1>
+          {!online && (
+            <span className="flex items-center gap-1.5 rounded-full border border-destructive/40 bg-destructive/10 px-2.5 py-1 text-[10px] font-mono text-destructive animate-fade-in">
+              <WifiOff size={12} /> Offline
+            </span>
+          )}
         </header>
 
         {/* Content */}

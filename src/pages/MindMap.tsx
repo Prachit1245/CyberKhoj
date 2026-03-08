@@ -14,12 +14,13 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import Dagre from "@dagrejs/dagre";
-import { ZoomIn, ZoomOut, Maximize, Image, FileJson, ClipboardList, Save, Network, TreePine, Zap, StickyNote, CheckCircle, Copy, Search } from "lucide-react";
+import { ZoomIn, ZoomOut, Maximize, Image, FileJson, ClipboardList, Save, Network, TreePine, Zap, StickyNote, CheckCircle, Copy, Search, WifiOff } from "lucide-react";
 import html2canvas from "html2canvas";
 import { callGemini, GeminiError } from "@/lib/gemini";
 import { buildMindMapPrompt, parseMindMapNodes, type MindMapNode } from "@/lib/prompts";
 import { toast } from "@/components/Toast";
 import { useNavigate } from "react-router-dom";
+import useOnline from "@/hooks/useOnline";
 import { addToHistory } from "@/lib/store";
 import MindMapNodeComponent from "@/components/mindmap/MindMapNode";
 import MindMapSidePanel from "@/components/mindmap/MindMapSidePanel";
@@ -192,6 +193,7 @@ function buildFlowElements(
 /* ── Canvas component ── */
 function MindMapCanvas() {
   const navigate = useNavigate();
+  const online = useOnline();
   const [domain, setDomain] = useState("");
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -418,11 +420,12 @@ function MindMapCanvas() {
         />
         <button
           onClick={generate}
-          disabled={loading}
+          disabled={loading || !online}
+          title={!online ? "Requires internet for AI analysis" : undefined}
           className="h-9 px-4 rounded-lg font-mono font-bold text-xs bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
         >
-          <Zap className="h-3.5 w-3.5" />
-          {loading ? "Generating..." : "Generate Mind Map"}
+          {!online ? <WifiOff className="h-3.5 w-3.5" /> : <Zap className="h-3.5 w-3.5" />}
+          {!online ? "Offline" : loading ? "Generating..." : "Generate Mind Map"}
         </button>
 
         <div className="flex-1" />

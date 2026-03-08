@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Trash2, ArrowRight, Loader2 } from "lucide-react";
+import { Trash2, ArrowRight, Loader2, WifiOff } from "lucide-react";
+import useOnline from "@/hooks/useOnline";
 import { callGemini, GeminiError, type GeminiErrorCode } from "@/lib/gemini";
 import GeminiErrorDisplay from "@/components/GeminiErrorDisplay";
 import { addToHistory, incrementStat } from "@/lib/store";
@@ -73,6 +74,7 @@ Format your response clearly with markdown headers and bullet points.`;
 };
 
 const Analyzer = () => {
+  const online = useOnline();
   const [pageTab, setPageTab] = useState<(typeof PAGE_TABS)[number]>("URL Analyzer");
   const [target, setTarget] = useState("");
   const [depth, setDepth] = useState<Depth>("Standard");
@@ -343,13 +345,17 @@ const Analyzer = () => {
       <div className="flex gap-3">
         <button
           onClick={handleAnalyze}
-          disabled={loading}
-          title="Ctrl+Enter"
+          disabled={loading || !online}
+          title={!online ? "Requires internet for AI analysis" : "Ctrl+Enter"}
           className="flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-heading text-sm font-bold text-primary-foreground hover:brightness-110 transition-all disabled:opacity-60 disabled:cursor-not-allowed glow-primary"
         >
           {loading ? (
             <>
               <Loader2 size={16} className="animate-spin" /> Analyzing…
+            </>
+          ) : !online ? (
+            <>
+              <WifiOff size={16} /> Offline
             </>
           ) : (
             <>

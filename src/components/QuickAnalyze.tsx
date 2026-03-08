@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Zap, X, ArrowRight, Loader2, ExternalLink, Save } from "lucide-react";
+import { Zap, X, ArrowRight, Loader2, ExternalLink, Save, WifiOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { callGemini, GeminiError, type GeminiErrorCode } from "@/lib/gemini";
 import { addToHistory, incrementStat } from "@/lib/store";
 import { parseTarget, contextToPromptBlock } from "@/lib/parseTarget";
 import { Badge } from "@/components/ui/badge";
+import useOnline from "@/hooks/useOnline";
 
 interface QuickPath {
   title: string;
@@ -48,6 +49,7 @@ const parseQuickPaths = (raw: string): QuickPath[] => {
 };
 
 const QuickAnalyze = () => {
+  const online = useOnline();
   const [open, setOpen] = useState(false);
   const [target, setTarget] = useState("");
   const [loading, setLoading] = useState(false);
@@ -207,11 +209,12 @@ Format as numbered list with markdown.`;
                 />
                 <button
                   onClick={handleAnalyze}
-                  disabled={loading}
+                  disabled={loading || !online}
+                  title={!online ? "Requires internet for AI analysis" : undefined}
                   className="shrink-0 flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2.5 font-heading text-xs font-bold text-primary-foreground hover:brightness-110 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {loading ? <Loader2 size={14} className="animate-spin" /> : <ArrowRight size={14} />}
-                  {loading ? "Scanning" : "Analyze"}
+                  {loading ? <Loader2 size={14} className="animate-spin" /> : !online ? <WifiOff size={14} /> : <ArrowRight size={14} />}
+                  {loading ? "Scanning" : !online ? "Offline" : "Analyze"}
                 </button>
               </div>
 

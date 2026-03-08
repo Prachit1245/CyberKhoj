@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { AlertTriangle, Zap, ShoppingCart, LogIn, Server, Shield, Upload, ListChecks, Download, CheckSquare, XSquare, Copy, Search, Shuffle } from "lucide-react";
+import { AlertTriangle, Zap, ShoppingCart, LogIn, Server, Shield, Upload, ListChecks, Download, CheckSquare, XSquare, Copy, Search, Shuffle, WifiOff } from "lucide-react";
+import useOnline from "@/hooks/useOnline";
 import { callGemini, GeminiError } from "@/lib/gemini";
 import { buildAttackModePrompt, parseAttackIdeas, type AttackIdea } from "@/lib/prompts";
 import { toast } from "@/components/Toast";
@@ -26,6 +27,7 @@ const saveChecked = (domain: string, checked: Set<number>) => {
 };
 
 const AttackMode = () => {
+  const online = useOnline();
   const [domain, setDomain] = useState("");
   const [templateContext, setTemplateContext] = useState("");
   const [allIdeas, setAllIdeas] = useState<AttackIdea[]>([]);
@@ -260,15 +262,15 @@ const AttackMode = () => {
         />
         <button
           onClick={generate}
-          disabled={loading || streaming}
-          title="Ctrl+Enter"
+          disabled={loading || streaming || !online}
+          title={!online ? "Requires internet for AI analysis" : "Ctrl+Enter"}
           className="h-12 px-6 rounded-lg font-heading font-bold text-sm text-white transition-all disabled:opacity-50 cursor-pointer"
-          style={{ background: "linear-gradient(135deg, hsl(0 80% 50%), hsl(25 95% 53%))" }}
+          style={{ background: !online ? undefined : "linear-gradient(135deg, hsl(0 80% 50%), hsl(25 95% 53%))" }}
         >
           <span className="flex items-center gap-2">
-            <Zap className="h-4 w-4" />
-            {loading ? "GENERATING..." : streaming ? "STREAMING..." : "GENERATE 100 ATTACK IDEAS"}
-            <kbd className="hidden sm:inline-flex px-1.5 py-0.5 rounded border border-white/30 text-[10px] font-mono opacity-70">⌘↵</kbd>
+            {!online ? <WifiOff className="h-4 w-4" /> : <Zap className="h-4 w-4" />}
+            {!online ? "OFFLINE" : loading ? "GENERATING..." : streaming ? "STREAMING..." : "GENERATE 100 ATTACK IDEAS"}
+            {online && <kbd className="hidden sm:inline-flex px-1.5 py-0.5 rounded border border-white/30 text-[10px] font-mono opacity-70">⌘↵</kbd>}
           </span>
         </button>
       </div>
