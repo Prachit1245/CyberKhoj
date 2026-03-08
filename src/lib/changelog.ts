@@ -20,7 +20,7 @@ export const CHANGELOG: VersionEntry[] = [
     version: "1.0.0",
     date: "2026-03-08",
     changes: [
-      { type: "new", text: "AI-powered vulnerability analysis using Gemini API" },
+      { type: "new", text: "AI-powered vulnerability analysis using Groq API" },
       { type: "new", text: "Attack Mode for raw HTTP request analysis" },
       { type: "new", text: "Mind Map visualization for domain reconnaissance" },
       { type: "new", text: "JWT token analyzer and decoder" },
