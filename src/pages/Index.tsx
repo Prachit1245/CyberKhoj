@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import MatrixRain from "@/components/MatrixRain";
 import Typewriter from "@/components/Typewriter";
 import HowItWorks from "@/components/HowItWorks";
+import Features from "@/components/Features";
 
 const TRUST_BADGES = [
   "100% Free Forever",
