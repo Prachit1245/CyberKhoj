@@ -4,6 +4,7 @@ import useOnline from "@/hooks/useOnline";
 import { callGemini, GeminiError } from "@/lib/gemini";
 import { buildAttackModePrompt, parseAttackIdeas, type AttackIdea } from "@/lib/prompts";
 import { toast } from "@/components/Toast";
+import { useDebouncedCallback } from "@/hooks/useDebounce";
 
 const TEMPLATES = [
   { label: "E-commerce Site", icon: ShoppingCart, context: "e-commerce web application with cart, checkout, payments" },
