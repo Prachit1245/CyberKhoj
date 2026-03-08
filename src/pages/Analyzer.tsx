@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Trash2, ArrowRight, Loader2, WifiOff } from "lucide-react";
+import { Trash2, ArrowRight, Loader2, WifiOff, GraduationCap } from "lucide-react";
 import useOnline from "@/hooks/useOnline";
 import { callGemini, GeminiError, type GeminiErrorCode } from "@/lib/gemini";
 import GeminiErrorDisplay from "@/components/GeminiErrorDisplay";
@@ -7,6 +7,7 @@ import { addToHistory, incrementStat } from "@/lib/store";
 import { checkAnalysisAchievements, checkDeepAnalysis, checkCriticalFound, checkJwtAnalysis } from "@/lib/achievements";
 import { parseTarget, contextToPromptBlock } from "@/lib/parseTarget";
 import { startTypingSound, stopTypingSound } from "@/lib/sounds";
+import { isBeginnerMode, setBeginnerMode } from "@/lib/beginnerMode";
 import JwtAnalyzer from "@/components/JwtAnalyzer";
 import HttpRequestAnalyzer from "@/components/HttpRequestAnalyzer";
 import BatchAnalyzer from "@/components/BatchAnalyzer";
