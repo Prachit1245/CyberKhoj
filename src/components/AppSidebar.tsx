@@ -11,6 +11,7 @@ import {
   Key,
   ChevronLeft,
   ChevronRight,
+  Bug,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { hasApiKey } from "@/lib/gemini";
