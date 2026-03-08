@@ -31,6 +31,7 @@ const SEV_RANK: Record<string, number> = { critical: 0, high: 1, medium: 2, low:
 
 function PayloadCard({ payload, isFav, onToggleFav }: { payload: Payload; isFav: boolean; onToggleFav: () => void }) {
   const [copied, setCopied] = useState(false);
+  const [bookmarked, setBookmarked] = useState(() => isBm("payload", payload.description));
 
   const copy = async () => {
     await navigator.clipboard.writeText(payload.code);
