@@ -557,15 +557,15 @@ const Dashboard = () => {
       {/* Result Modal */}
       {selectedRecord && (
         <div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-background/80 backdrop-blur-sm px-4"
+          className="fixed inset-0 z-[60] flex items-end md:items-center justify-center bg-background/80 backdrop-blur-sm px-0 md:px-4"
           onClick={(e) => { if (e.target === e.currentTarget) setSelectedRecord(null); }}
         >
-          <div className="w-full max-w-2xl max-h-[80vh] rounded-xl border border-primary/30 bg-card p-6 overflow-y-auto animate-scale-in gate-card">
+          <div className="w-full md:max-w-2xl h-full md:h-auto md:max-h-[80vh] rounded-t-xl md:rounded-xl border-t md:border border-primary/30 bg-card p-4 md:p-6 overflow-y-auto animate-scale-in gate-card flex flex-col">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-heading text-lg font-bold text-foreground">
-                Analysis: <span className="text-primary">{selectedRecord.target}</span>
+              <h3 className="font-heading text-base md:text-lg font-bold text-foreground">
+                Analysis: <span className="text-primary truncate">{selectedRecord.target}</span>
               </h3>
-              <button onClick={() => setSelectedRecord(null)} className="text-muted-foreground hover:text-foreground text-sm font-mono">✕</button>
+              <button onClick={() => setSelectedRecord(null)} className="text-muted-foreground hover:text-foreground text-sm font-mono p-2 min-w-[2.75rem] min-h-[2.75rem] flex items-center justify-center">✕</button>
             </div>
             <div className="flex gap-3 mb-4 text-xs font-mono">
               <span className="rounded bg-primary/10 px-2 py-0.5 text-primary">{selectedRecord.type}</span>
