@@ -59,6 +59,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/vuln-categories": "Vuln Categories",
   "/findings": "Findings",
   "/bookmarks": "Bookmarks",
+  "/achievements": "Achievements",
   "/settings": "Settings",
 };
 
