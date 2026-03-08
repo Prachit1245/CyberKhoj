@@ -228,7 +228,7 @@ const AttackMode = () => {
     if (streamRef.current) clearInterval(streamRef.current);
 
     try {
-      const raw = await callGemini(buildAttackModePrompt(domain, templateContext || undefined));
+      const raw = await callGemini(buildAttackModePrompt(domain, templateContext || undefined), true);
       const parsed = parseAttackIdeas(raw);
       setAllIdeas(parsed);
       setChecked(loadChecked(domain));
