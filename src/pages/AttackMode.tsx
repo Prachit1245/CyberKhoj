@@ -38,6 +38,9 @@ const AttackMode = () => {
   const [checked, setChecked] = useState<Set<number>>(new Set());
   const [celebrated, setCelebrated] = useState(false);
   const [searchQ, setSearchQ] = useState("");
+  const [debouncedSearchQ, setDebouncedSearchQ] = useState("");
+  const applySearchQ = useDebouncedCallback((val: string) => setDebouncedSearchQ(val), 200);
+  const handleSearchQ = (val: string) => { setSearchQ(val); applySearchQ(val); };
   const [catFilter, setCatFilter] = useState<string | null>(null);
   const [diffFilter, setDiffFilter] = useState<string>("all");
   const [prioFilter, setPrioFilter] = useState<string>("all");
