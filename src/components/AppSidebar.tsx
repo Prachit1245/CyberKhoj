@@ -16,6 +16,7 @@ import {
   Layers,
   WifiOff,
   Bookmark,
+  Trophy,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
