@@ -27,6 +27,7 @@ const saveChecked = (domain: string, checked: Set<number>) => {
 };
 
 const AttackMode = () => {
+  const online = useOnline();
   const [domain, setDomain] = useState("");
   const [templateContext, setTemplateContext] = useState("");
   const [allIdeas, setAllIdeas] = useState<AttackIdea[]>([]);
