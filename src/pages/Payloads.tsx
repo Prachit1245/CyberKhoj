@@ -1,9 +1,10 @@
 import { useState, useMemo, useRef, useCallback } from "react";
-import { Search, Copy, Check, ChevronRight, Heart, X, ArrowUpDown } from "lucide-react";
+import { Search, Copy, Check, ChevronRight, Heart, X, ArrowUpDown, Bookmark, BookmarkCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/components/Toast";
 import { PAYLOAD_CATEGORIES, TOTAL_PAYLOADS, type Payload } from "@/lib/payloads";
 import { incrementStat } from "@/lib/store";
+import { toggleBookmark, isBookmarked as isBm } from "@/lib/bookmarks";
 
 const SEV_STYLES: Record<string, string> = {
   critical: "bg-destructive/15 text-destructive border-destructive/30",
