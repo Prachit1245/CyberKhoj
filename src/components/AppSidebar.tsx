@@ -16,6 +16,7 @@ import { useState, useEffect } from "react";
 import { hasApiKey } from "@/lib/gemini";
 import { getUsageCount, DAILY_LIMIT } from "@/lib/usage";
 import QuickAnalyze from "@/components/QuickAnalyze";
+import CommandPalette from "@/components/CommandPalette";
 
 const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -161,6 +162,7 @@ const AppSidebar = () => {
 
       {/* Quick Analyze FAB + Modal */}
       <QuickAnalyze />
+      <CommandPalette />
     </div>
   );
 };
