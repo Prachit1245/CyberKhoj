@@ -353,6 +353,10 @@ const Analyzer = () => {
             <>
               <Loader2 size={16} className="animate-spin" /> Analyzing…
             </>
+          ) : !online ? (
+            <>
+              <WifiOff size={16} /> Offline
+            </>
           ) : (
             <>
               Analyze <ArrowRight size={16} />
