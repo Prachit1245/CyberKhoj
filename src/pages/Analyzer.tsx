@@ -51,6 +51,7 @@ ${target}
 
 ${contextBlock}
 
+${templateContext ? `## Target Type Context\n${templateContext}\n` : ""}
 ${depthInstruction}
 
 For each attack path, provide:
