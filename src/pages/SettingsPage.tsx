@@ -237,7 +237,17 @@ const SettingsPage = () => {
     "hackmind_owasp_coverage",
     "hackmind_usage",
     "hackmind_prefs",
+    "hackmind_stats",
+    "hackmind_bookmarked_payloads",
   ];
+
+  const ARRAY_KEYS: Record<string, string> = {
+    hackmind_history: "id",
+    hackmind_findings: "id",
+    hackmind_bookmarked_payloads: "id",
+  };
+
+  const [importSummary, setImportSummary] = useState<string | null>(null);
 
   const storageSize = useMemo(() => {
     let total = 0;
@@ -251,22 +261,18 @@ const SettingsPage = () => {
   }, []);
 
   const formatBytes = (chars: number) => {
-    const bytes = chars * 2; // UTF-16
+    const bytes = chars * 2;
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
   };
 
   const exportData = () => {
-    const data: Record<string, unknown> = {};
+    const data: Record<string, unknown> = { _version: 1, _exportedAt: new Date().toISOString() };
     storageKeys.forEach((key) => {
       const val = localStorage.getItem(key);
       if (val) {
-        try {
-          data[key] = JSON.parse(val);
-        } catch {
-          data[key] = val;
-        }
+        try { data[key] = JSON.parse(val); } catch { data[key] = val; }
       }
     });
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
@@ -279,6 +285,17 @@ const SettingsPage = () => {
     toast.success("Backup exported successfully");
   };
 
+  const mergeArrayById = (existing: unknown[], incoming: unknown[], idField: string): { merged: unknown[]; newCount: number } => {
+    const existingIds = new Set(
+      existing.filter((e): e is Record<string, unknown> => !!e && typeof e === "object")
+        .map((e) => e[idField])
+    );
+    const newItems = (incoming as Record<string, unknown>[]).filter(
+      (item) => item && typeof item === "object" && !existingIds.has(item[idField])
+    );
+    return { merged: [...existing, ...newItems], newCount: newItems.length };
+  };
+
   const importData = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -287,22 +304,51 @@ const SettingsPage = () => {
       try {
         const data = JSON.parse(ev.target?.result as string);
         if (typeof data !== "object" || !data) throw new Error("Invalid format");
-        let imported = 0;
+
+        const summary: string[] = [];
+        const labels: Record<string, string> = {
+          hackmind_history: "analyses",
+          hackmind_findings: "findings",
+          hackmind_bookmarked_payloads: "bookmarks",
+          hackmind_owasp_coverage: "OWASP coverage",
+          hackmind_prefs: "preferences",
+          hackmind_stats: "stats",
+          hackmind_usage: "usage data",
+          hackmind_gemini_key: "API key",
+        };
+
         Object.entries(data).forEach(([key, value]) => {
-          if (storageKeys.includes(key)) {
+          if (key.startsWith("_") || !storageKeys.includes(key)) return;
+
+          const idField = ARRAY_KEYS[key];
+          if (idField && Array.isArray(value)) {
+            const existingRaw = localStorage.getItem(key);
+            const existing = existingRaw ? JSON.parse(existingRaw) : [];
+            const { merged, newCount } = mergeArrayById(
+              Array.isArray(existing) ? existing : [],
+              value,
+              idField
+            );
+            localStorage.setItem(key, JSON.stringify(merged));
+            if (newCount > 0) summary.push(`${newCount} ${labels[key] || key}`);
+          } else {
             localStorage.setItem(key, typeof value === "string" ? value : JSON.stringify(value));
-            imported++;
+            summary.push(labels[key] || key);
           }
         });
+
         setKeySet(hasApiKey());
         setPrefs(loadPrefs());
-        toast.success(`Imported ${imported} data entries`);
+        const msg = summary.length > 0
+          ? `Imported ${summary.join(", ")}.`
+          : "Backup applied — no new data to merge.";
+        setImportSummary(msg);
+        toast.success(msg);
       } catch {
-        toast.error("Invalid backup file");
+        toast.error("Invalid backup file — could not parse JSON");
       }
     };
     reader.readAsText(file);
-    // Reset input
     if (fileRef.current) fileRef.current.value = "";
   };
 
@@ -505,28 +551,39 @@ const SettingsPage = () => {
           </div>
 
           {/* Export / Import */}
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={exportData}
-              className="flex items-center gap-1.5 rounded-md border border-primary/40 px-3 py-2 text-xs font-mono text-primary hover:bg-primary/10 transition-all"
-            >
-              <Download size={13} />
-              Export Backup
-            </button>
-            <button
-              onClick={() => fileRef.current?.click()}
-              className="flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-xs font-mono text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all"
-            >
-              <Upload size={13} />
-              Import Backup
-            </button>
-            <input
-              ref={fileRef}
-              type="file"
-              accept=".json"
-              className="hidden"
-              onChange={importData}
-            />
+          <div className="space-y-3">
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={exportData}
+                className="flex items-center gap-1.5 rounded-md border border-primary/40 px-3 py-2 text-xs font-mono text-primary hover:bg-primary/10 transition-all"
+              >
+                <Download size={13} />
+                Export Everything
+              </button>
+              <button
+                onClick={() => fileRef.current?.click()}
+                className="flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-xs font-mono text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all"
+              >
+                <Upload size={13} />
+                Import Backup
+              </button>
+              <input
+                ref={fileRef}
+                type="file"
+                accept=".json"
+                className="hidden"
+                onChange={importData}
+              />
+            </div>
+            <p className="text-[10px] text-muted-foreground font-mono">
+              Export includes: history, findings, bookmarks, settings, OWASP checklist & stats.
+            </p>
+            {importSummary && (
+              <div className="flex items-center gap-2 text-xs font-mono px-3 py-2 rounded-md bg-primary/10 text-primary border border-primary/20">
+                <Check size={13} />
+                {importSummary}
+              </div>
+            )}
           </div>
 
           {/* Clear actions */}
