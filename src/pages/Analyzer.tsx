@@ -261,7 +261,10 @@ const Analyzer = () => {
           rows={5}
           className="w-full rounded-xl border border-border bg-card px-4 py-3 font-mono text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 transition-colors resize-y"
         />
-        {error && <p className="text-xs text-destructive font-mono">{error}</p>}
+        {error && errorCode && (
+          <GeminiErrorDisplay code={errorCode} message={error} onRetry={handleAnalyze} />
+        )}
+        {error && !errorCode && <p className="text-xs text-destructive font-mono">{error}</p>}
       </div>
 
       {/* Target Templates */}
