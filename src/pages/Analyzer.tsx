@@ -99,6 +99,34 @@ const Analyzer = () => {
     }
   }, []);
 
+  // Keyboard shortcuts: Ctrl+Enter = run, Ctrl+L = clear
+  // Keyboard shortcuts: Ctrl+Enter = run, Ctrl+L = clear
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        if (!loading && pageTab === "URL Analyzer") {
+          document.dispatchEvent(new CustomEvent("hackmind:run-analysis"));
+        }
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === "l") {
+        e.preventDefault();
+        setTarget("");
+        setResult("");
+        setError("");
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [loading, pageTab]);
+
+  // Listen for keyboard shortcut event
+  useEffect(() => {
+    const run = () => { if (!loading) handleAnalyze(); };
+    document.addEventListener("hackmind:run-analysis", run);
+    return () => document.removeEventListener("hackmind:run-analysis", run);
+  });
+
   const handleAnalyze = async () => {
     const trimmed = target.trim();
     if (!trimmed) {
@@ -304,6 +332,7 @@ const Analyzer = () => {
         <button
           onClick={handleAnalyze}
           disabled={loading}
+          title="Ctrl+Enter"
           className="flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-heading text-sm font-bold text-primary-foreground hover:brightness-110 transition-all disabled:opacity-60 disabled:cursor-not-allowed glow-primary"
         >
           {loading ? (
@@ -313,6 +342,7 @@ const Analyzer = () => {
           ) : (
             <>
               Analyze <ArrowRight size={16} />
+              <kbd className="hidden sm:inline-flex ml-1 px-1.5 py-0.5 rounded border border-primary-foreground/30 text-[10px] font-mono opacity-70">⌘↵</kbd>
             </>
           )}
         </button>
@@ -322,9 +352,11 @@ const Analyzer = () => {
             setResult("");
             setError("");
           }}
+          title="Ctrl+L"
           className="flex items-center gap-2 rounded-lg border border-border px-5 py-3 font-heading text-sm font-bold text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all"
         >
           <Trash2 size={16} /> Clear
+          <kbd className="hidden sm:inline-flex ml-1 px-1.5 py-0.5 rounded border border-border text-[10px] font-mono opacity-50">⌘L</kbd>
         </button>
       </div>
 

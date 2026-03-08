@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import {
   ReactFlow,
   Background,
@@ -207,6 +207,28 @@ function MindMapCanvas() {
   const [checkedIdeas, setCheckedIdeas] = useState<Record<string, boolean>>({});
   const [nodeMetadata, setNodeMetadata] = useState<Record<string, { tested?: boolean; note?: string }>>({});
   const [contextNodeId, setContextNodeId] = useState<string | null>(null);
+
+  // Keyboard shortcuts: F = fit, +/= = zoom in, - = zoom out
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      if (e.key === "f" && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        fitView({ padding: 0.15, duration: 600 });
+      }
+      if ((e.key === "+" || e.key === "=") && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        zoomIn();
+      }
+      if (e.key === "-" && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        zoomOut();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [fitView, zoomIn, zoomOut]);
 
   const applyLayout = useCallback(
     (data: MindMapNode[], dir: "LR" | "TB", collapsed?: Set<string>, meta?: Record<string, { tested?: boolean; note?: string }>) => {
