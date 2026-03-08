@@ -1,11 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import MatrixRain from "@/components/MatrixRain";
+import ParticleField from "@/components/ParticleField";
 import Typewriter from "@/components/Typewriter";
 import HowItWorks from "@/components/HowItWorks";
 import Features from "@/components/Features";
 import FreeBanner from "@/components/FreeBanner";
 import LandingDemo from "@/components/LandingDemo";
 import SocialProof from "@/components/SocialProof";
+import AnimatedCounter from "@/components/AnimatedCounter";
+import ComparisonTable from "@/components/ComparisonTable";
+import FinalCTA from "@/components/FinalCTA";
 import Footer from "@/components/Footer";
 
 const TRUST_BADGES = [
@@ -19,9 +23,10 @@ const Index = () => {
   const navigate = useNavigate();
 
   return (
-    <div>
+    <div className="scroll-smooth">
       <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background px-4">
         <MatrixRain />
+        <ParticleField />
 
         <div className="relative z-10 text-center max-w-3xl mx-auto space-y-8">
           <div className="min-h-[4rem] md:min-h-[5rem] flex items-center justify-center">
@@ -61,10 +66,13 @@ const Index = () => {
       </section>
 
       <LandingDemo />
+      <AnimatedCounter />
       <SocialProof />
       <HowItWorks />
       <Features />
+      <ComparisonTable />
       <FreeBanner />
+      <FinalCTA />
       <Footer />
     </div>
   );
