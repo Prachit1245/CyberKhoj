@@ -44,6 +44,7 @@ const App = () => (
     <ToastProvider>
     <TooltipProvider>
       <BrowserRouter>
+        <PWAInstallPrompt />
         <Routes>
           {/* Public routes — no API key needed */}
           <Route
