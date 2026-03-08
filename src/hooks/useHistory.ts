@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import type { AnalysisResult } from "@/types";
 import { toast } from "@/components/Toast";
 import { incrementStat } from "@/lib/store";
+import { awardXp, XP_REWARDS } from "@/lib/xp";
 
 const HISTORY_KEY = "hackmind_history";
 const MAX_ITEMS = 100;
@@ -34,6 +35,9 @@ export function useHistory() {
     setHistory(updated);
     incrementStat("totalAnalyses");
     incrementStat("attackPaths", result.paths.length);
+    // Award XP based on depth
+    const xpAmount = result.depth === "deep" ? XP_REWARDS.deepAnalysis : XP_REWARDS.analysis;
+    awardXp(xpAmount);
     toast.success("Analysis saved locally ✓");
   }, []);
 

@@ -11,6 +11,8 @@ import WhatsNewModal from "./components/WhatsNewModal";
 import DailyLimitOverlay from "@/components/DailyLimitOverlay";
 import FeedbackTab from "@/components/FeedbackTab";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
+import AchievementOverlay from "@/components/AchievementOverlay";
+import LevelUpOverlay from "@/components/LevelUpOverlay";
 import { SkeletonDashboard, SkeletonAnalyzer, SkeletonPage } from "@/components/Skeletons";
 
 /* ── Lazy-loaded pages ── */
@@ -52,6 +54,8 @@ const App = () => (
         <PWAInstallPrompt />
         <WhatsNewModal />
         <FeedbackTab />
+        <AchievementOverlay />
+        <LevelUpOverlay />
         <Routes>
           {/* Public routes — no API key needed */}
           <Route

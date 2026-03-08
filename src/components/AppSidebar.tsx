@@ -29,6 +29,7 @@ import useOnline from "@/hooks/useOnline";
 import QuickAnalyze from "@/components/QuickAnalyze";
 import CommandPalette from "@/components/CommandPalette";
 import ShortcutsModal from "@/components/ShortcutsModal";
+import { getXp, getLevel } from "@/lib/xp";
 
 const OFFLINE_OK = new Set(["/history", "/payloads", "/cheatsheets", "/findings", "/bookmarks"]);
 const NEEDS_AI = new Set(["/analyzer", "/attack", "/mindmap"]);
@@ -71,6 +72,50 @@ const PAGE_TITLES: Record<string, string> = {
   "/bookmarks": "Bookmarks",
   "/achievements": "Achievements",
   "/settings": "Settings",
+};
+
+/* ── XP / Level display ── */
+const SidebarLevel = ({ collapsed }: { collapsed: boolean }) => {
+  const [xp, setXp] = useState(getXp());
+
+  useEffect(() => {
+    const handler = (e: Event) => setXp((e as CustomEvent).detail.xp);
+    window.addEventListener("hackmind:xp-changed", handler);
+    return () => window.removeEventListener("hackmind:xp-changed", handler);
+  }, []);
+
+  const level = getLevel(xp);
+
+  if (collapsed) {
+    return (
+      <div className="flex flex-col items-center gap-0.5">
+        <span className="text-[10px] font-mono font-bold text-primary">L{level.index + 1}</span>
+        <span className="text-[9px] font-mono text-muted-foreground">{xp.toLocaleString()}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between">
+        <span className="text-[11px] font-mono font-bold text-primary">
+          Level {level.index + 1} — {xp.toLocaleString()} XP
+        </span>
+      </div>
+      <p className="text-[10px] font-mono text-muted-foreground">{level.title}</p>
+      <div className="h-1 w-full rounded-full bg-muted overflow-hidden">
+        <div
+          className="h-full rounded-full bg-primary transition-all duration-700"
+          style={{ width: `${level.progress}%` }}
+        />
+      </div>
+      {level.nextXp && (
+        <p className="text-[9px] font-mono text-muted-foreground text-right">
+          {level.nextXp - xp} XP to next level
+        </p>
+      )}
+    </div>
+  );
 };
 
 const SidebarUsage = ({ collapsed, keySet }: { collapsed: boolean; keySet: boolean }) => {
@@ -284,7 +329,8 @@ const AppSidebar = () => {
         </nav>
 
         {/* Bottom status */}
-        <div className="border-t border-border/50 p-3 space-y-2" data-tour="usage-counter">
+        <div className="border-t border-border/50 p-3 space-y-3" data-tour="usage-counter">
+          <SidebarLevel collapsed={collapsed} />
           <SidebarUsage collapsed={collapsed} keySet={keySet} />
         </div>
       </aside>
