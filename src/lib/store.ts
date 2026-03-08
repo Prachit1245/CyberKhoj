@@ -66,3 +66,16 @@ export const addToHistory = (record: AnalysisRecord): void => {
 export const getHistoryById = (id: string): AnalysisRecord | undefined => {
   return getHistory().find((r) => r.id === id);
 };
+
+export const deleteFromHistory = (id: string): void => {
+  const history = getHistory().filter((r) => r.id !== id);
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+};
+
+export const clearHistory = (): void => {
+  localStorage.setItem(HISTORY_KEY, JSON.stringify([]));
+};
+
+export const setHistory = (records: AnalysisRecord[]): void => {
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(records));
+};
