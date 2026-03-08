@@ -1,7 +1,8 @@
 import { useState, useMemo, useCallback, useRef } from "react";
 import { useDebouncedCallback } from "@/hooks/useDebounce";
 import { useNavigate } from "react-router-dom";
-import { Search, Trash2, Clock, ArrowUpDown, X } from "lucide-react";
+import { Search, Trash2, Clock, ArrowUpDown, X, StickyNote } from "lucide-react";
+import { extractDomain, hasNote } from "@/lib/targetNotes";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
