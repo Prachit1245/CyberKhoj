@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Zap, X, ArrowRight, Loader2, ExternalLink, Save } from "lucide-react";
+import { Zap, X, ArrowRight, Loader2, ExternalLink, Save, WifiOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { callGemini, GeminiError, type GeminiErrorCode } from "@/lib/gemini";
 import { addToHistory, incrementStat } from "@/lib/store";
 import { parseTarget, contextToPromptBlock } from "@/lib/parseTarget";
 import { Badge } from "@/components/ui/badge";
+import useOnline from "@/hooks/useOnline";
 
 interface QuickPath {
   title: string;
