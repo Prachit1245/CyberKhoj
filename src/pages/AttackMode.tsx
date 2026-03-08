@@ -37,17 +37,13 @@ const AttackMode = () => {
     }, 180);
 
     try {
-      const raw = await callGemini(PROMPT_TEMPLATE(domain, templateContext));
+      const raw = await callGemini(buildAttackModePrompt(domain, templateContext || undefined));
       if (counterRef.current) clearInterval(counterRef.current);
 
-      // Parse JSON from response
-      const match = raw.match(/\[[\s\S]*\]/);
-      if (!match) throw new Error("Invalid response format");
-      const parsed: Omit<AttackIdea, "id">[] = JSON.parse(match[0]);
-      const withIds = parsed.map((item, i) => ({ ...item, id: i + 1 }));
-      setIdeas(withIds);
-      setCounter(withIds.length);
-      toast.success(`Generated ${withIds.length} attack ideas ✓`);
+      const parsed = parseAttackIdeas(raw);
+      setIdeas(parsed);
+      setCounter(parsed.length);
+      toast.success(`Generated ${parsed.length} attack ideas ✓`);
     } catch (err: any) {
       if (counterRef.current) clearInterval(counterRef.current);
       setCounter(0);
