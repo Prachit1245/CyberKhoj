@@ -76,27 +76,72 @@ Return ONLY the JSON array. No additional text.`;
   return { system, user };
 };
 
-export const parseAnalysisResponse = (raw: string): AttackPath[] => {
-  // Strip markdown code fences if present
-  let cleaned = raw.trim();
-  cleaned = cleaned.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+const VALID_SEVERITIES = ["Critical", "High", "Medium", "Low", "Info"] as const;
 
+const sanitizePath = (item: Record<string, unknown>, index: number): AttackPath => ({
+  id: typeof item.id === "number" ? item.id : index + 1,
+  title: typeof item.title === "string" && item.title ? item.title : `Attack Path ${index + 1}`,
+  category: typeof item.category === "string" && item.category ? item.category : "Unknown",
+  severity: VALID_SEVERITIES.includes(item.severity as typeof VALID_SEVERITIES[number])
+    ? (item.severity as AttackPath["severity"])
+    : "Medium",
+  description: typeof item.description === "string" && item.description ? item.description : "No description provided.",
+  payloadExample: typeof item.payloadExample === "string" ? item.payloadExample : "",
+  steps: Array.isArray(item.steps) ? item.steps.map(String) : [],
+  references: Array.isArray(item.references) ? item.references.map(String) : [],
+});
+
+const extractJsonArray = (text: string): unknown[] | null => {
+  // 1. Strip markdown code fences
+  let cleaned = text.trim();
+  cleaned = cleaned.replace(/^```(?:json)?\s*/im, "").replace(/\s*```\s*$/m, "");
+
+  // 2. Try direct parse
   try {
     const parsed = JSON.parse(cleaned);
-    if (Array.isArray(parsed)) return parsed as AttackPath[];
-    if (parsed.paths && Array.isArray(parsed.paths)) return parsed.paths;
-    if (parsed.attack_paths && Array.isArray(parsed.attack_paths)) return parsed.attack_paths;
-    return [];
-  } catch {
-    // Try to extract JSON array from the response
-    const match = cleaned.match(/\[[\s\S]*\]/);
-    if (match) {
-      try {
-        return JSON.parse(match[0]) as AttackPath[];
-      } catch {
-        return [];
-      }
+    if (Array.isArray(parsed)) return parsed;
+    // Handle wrapped objects
+    for (const key of ["paths", "attack_paths", "results", "attackPaths", "data"]) {
+      if (parsed[key] && Array.isArray(parsed[key])) return parsed[key];
     }
-    return [];
+  } catch { /* continue */ }
+
+  // 3. Extract first JSON array from text
+  const match = cleaned.match(/\[[\s\S]*\]/);
+  if (match) {
+    try {
+      return JSON.parse(match[0]);
+    } catch { /* continue */ }
   }
+
+  return null;
+};
+
+export const parseAnalysisResponse = (raw: string): AttackPath[] => {
+  if (!raw || !raw.trim()) {
+    console.error("[parseAnalysisResponse] Empty response from Gemini");
+    return [sanitizePath({ title: "Analysis returned empty response", severity: "Info", description: "The AI returned an empty response. Try again or adjust your target." }, 0)];
+  }
+
+  const arr = extractJsonArray(raw);
+
+  if (!arr || arr.length === 0) {
+    console.error("[parseAnalysisResponse] Failed to parse JSON from response:", raw.slice(0, 200));
+    return [sanitizePath({
+      title: "Parse Error — Raw Response Available",
+      severity: "Info",
+      category: "Error",
+      description: `Could not parse structured attack paths. Raw AI response:\n\n${raw.slice(0, 2000)}`,
+    }, 0)];
+  }
+
+  const results = arr.map((item, i) => {
+    if (typeof item !== "object" || item === null) {
+      console.warn(`[parseAnalysisResponse] Item ${i} is not an object, skipping`);
+      return sanitizePath({ title: `Invalid item ${i + 1}` }, i);
+    }
+    return sanitizePath(item as Record<string, unknown>, i);
+  });
+
+  return results;
 };
