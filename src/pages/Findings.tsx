@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Plus, Download, Trash2, ChevronDown, ChevronUp, X, DollarSign, Target, Shield, Bug, FileText } from "lucide-react";
+import { Plus, Download, Trash2, ChevronDown, ChevronUp, X, DollarSign, Target, Shield, Bug, FileText, Printer } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import ReportWriterModal from "@/components/ReportWriterModal";
 import {
@@ -157,12 +157,20 @@ const Findings = () => {
           {showForm ? "Cancel" : "New Finding"}
         </button>
         {findings.length > 0 && (
-          <button
-            onClick={handleExport}
-            className="flex items-center gap-2 rounded-lg border border-border px-5 py-2.5 font-heading text-sm font-bold text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all"
-          >
-            <Download size={16} /> Export Markdown
-          </button>
+          <>
+            <button
+              onClick={handleExport}
+              className="flex items-center gap-2 rounded-lg border border-border px-5 py-2.5 font-heading text-sm font-bold text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all"
+            >
+              <Download size={16} /> Export Markdown
+            </button>
+            <button
+              onClick={() => window.print()}
+              className="flex items-center gap-2 rounded-lg border border-border px-5 py-2.5 font-heading text-sm font-bold text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all"
+            >
+              <Printer size={16} /> Print
+            </button>
+          </>
         )}
       </div>
 

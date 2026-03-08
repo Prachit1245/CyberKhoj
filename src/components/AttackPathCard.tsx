@@ -6,11 +6,11 @@ import GlossaryText from "@/components/GlossaryText";
 import { getWafBypasses, hasWafBypasses, type WafBypassVariant } from "@/lib/wafBypasses";
 import type { AttackPath, Severity } from "@/types";
 
-const SEVERITY_STYLES: Record<Severity, { border: string; badge: string; label: string }> = {
-  critical: { border: "border-l-red-500", badge: "bg-red-500/15 text-red-400", label: "CRITICAL" },
-  high: { border: "border-l-orange-500", badge: "bg-orange-500/15 text-orange-400", label: "HIGH" },
-  medium: { border: "border-l-yellow-500", badge: "bg-yellow-500/15 text-yellow-400", label: "MEDIUM" },
-  low: { border: "border-l-blue-500", badge: "bg-blue-500/15 text-blue-400", label: "LOW" },
+const SEVERITY_STYLES: Record<Severity, { border: string; badge: string; label: string; printClass: string }> = {
+  critical: { border: "border-l-red-500", badge: "bg-red-500/15 text-red-400", label: "CRITICAL", printClass: "print-sev-critical" },
+  high: { border: "border-l-orange-500", badge: "bg-orange-500/15 text-orange-400", label: "HIGH", printClass: "print-sev-high" },
+  medium: { border: "border-l-yellow-500", badge: "bg-yellow-500/15 text-yellow-400", label: "MEDIUM", printClass: "print-sev-medium" },
+  low: { border: "border-l-blue-500", badge: "bg-blue-500/15 text-blue-400", label: "LOW", printClass: "print-sev-low" },
 };
 
 const SEVERITY_EXPLAIN: Record<Severity, string> = {
@@ -111,7 +111,7 @@ const AttackPathCard = memo(({ path, onChange, beginnerMode = false }: Props) =>
     );
 
   return (
-    <div className={`rounded-xl border border-border bg-card border-l-4 ${sev.border} overflow-hidden transition-all`}>
+    <div className={`rounded-xl border border-border bg-card border-l-4 ${sev.border} ${sev.printClass} overflow-hidden transition-all print-break-inside-avoid`}>
       <div className="p-5 space-y-3">
         {/* Top row: badges */}
         <div className="flex flex-wrap items-center gap-2">
