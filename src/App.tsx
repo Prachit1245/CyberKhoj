@@ -63,7 +63,7 @@ const App = () => (
         </BrowserRouter>
       </ApiKeyGate>
     </TooltipProvider>
-  </QueryClientProvider>
+    </ToastProvider>
 );
 
 export default App;
