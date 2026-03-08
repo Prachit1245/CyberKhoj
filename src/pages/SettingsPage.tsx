@@ -485,15 +485,15 @@ const SettingsPage = () => {
         ) : (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground font-mono">
-              No API key set. You'll need one to use CyberKhoj.
+              CyberKhoj uses Groq AI (free) to generate attack paths. Get your free key at console.groq.com
             </p>
             <a
-              href="https://aistudio.google.com/apikey"
+              href="https://console.groq.com"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 justify-center w-full rounded-lg bg-primary px-4 py-2.5 font-heading font-bold text-primary-foreground hover:brightness-110 transition-all text-sm"
             >
-              Get Free API Key →
+              Get Free Groq Key →
             </a>
           </div>
         )}
