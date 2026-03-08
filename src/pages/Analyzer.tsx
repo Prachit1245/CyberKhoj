@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Trash2, ArrowRight, Loader2, WifiOff, GraduationCap } from "lucide-react";
 import useOnline from "@/hooks/useOnline";
 import { callGemini, GeminiError, type GeminiErrorCode } from "@/lib/gemini";
@@ -8,6 +8,8 @@ import { checkAnalysisAchievements, checkDeepAnalysis, checkCriticalFound, check
 import { parseTarget, contextToPromptBlock } from "@/lib/parseTarget";
 import { startTypingSound, stopTypingSound } from "@/lib/sounds";
 import { isBeginnerMode, setBeginnerMode } from "@/lib/beginnerMode";
+import { analyzeTarget } from "@/lib/targetIntelligence";
+import TargetIntelligenceCard from "@/components/TargetIntelligenceCard";
 import JwtAnalyzer from "@/components/JwtAnalyzer";
 import HttpRequestAnalyzer from "@/components/HttpRequestAnalyzer";
 import BatchAnalyzer from "@/components/BatchAnalyzer";
