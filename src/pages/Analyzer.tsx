@@ -125,6 +125,12 @@ const Analyzer = () => {
     return () => window.removeEventListener("keydown", handler);
   }, [loading, pageTab]);
 
+  // Listen for keyboard shortcut event
+  useEffect(() => {
+    const run = () => { if (!loading) handleAnalyze(); };
+    document.addEventListener("hackmind:run-analysis", run);
+    return () => document.removeEventListener("hackmind:run-analysis", run);
+  });
 
   const handleAnalyze = async () => {
     const trimmed = target.trim();
