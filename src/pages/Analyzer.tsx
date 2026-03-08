@@ -99,6 +99,26 @@ const Analyzer = () => {
     }
   }, []);
 
+  // Keyboard shortcuts: Ctrl+Enter = run, Ctrl+L = clear
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        if (!loading && pageTab === "URL Analyzer") handleAnalyzeRef.current?.();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === "l") {
+        e.preventDefault();
+        setTarget("");
+        setResult("");
+        setError("");
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [loading, pageTab]);
+
+  const handleAnalyzeRef = { current: null as (() => void) | null };
+
   const handleAnalyze = async () => {
     const trimmed = target.trim();
     if (!trimmed) {
