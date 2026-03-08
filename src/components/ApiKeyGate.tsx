@@ -156,6 +156,10 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
         <p className="mt-6 text-center text-xs text-muted-foreground font-mono">
           Your key is stored only in your browser. We never see it.
         </p>
+
+        <div className="mt-4">
+          <EthicalDisclaimer compact />
+        </div>
       </div>
 
       <style>{`
