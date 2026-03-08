@@ -178,7 +178,6 @@ const AttackMode = () => {
                   }`}>{idea.priority}</span>
                 </div>
               </div>
-              </div>
             </div>
           ))}
         </div>
