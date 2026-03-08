@@ -7,6 +7,7 @@ import {
 import { getStats, getHistory, type AnalysisRecord } from "@/lib/store";
 import { getFindings } from "@/lib/findings";
 import { toast } from "@/components/Toast";
+import LearningPathCard from "@/components/LearningPathCard";
 
 /* ── Constants ── */
 const GOALS_KEY = "hackmind_monthly_goal";
