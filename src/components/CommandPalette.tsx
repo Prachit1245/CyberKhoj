@@ -3,19 +3,24 @@ import { useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, Link2, Swords, Network, Clock, Code2,
   BookOpen, Settings, Search, ArrowRight, CornerDownLeft,
+  Bug, Bookmark, Shield, Layers, ShieldAlert, Lightbulb,
 } from "lucide-react";
 import { getHistory, type AnalysisRecord } from "@/lib/store";
 import { PAYLOAD_CATEGORIES } from "@/lib/payloads";
 import { CHEAT_SHEETS } from "@/lib/cheatsheets";
+import { getFindings, type Finding } from "@/lib/findings";
+import { getBookmarks, type Bookmark as BookmarkItem } from "@/lib/bookmarks";
 
 const RECENT_KEY = "hackmind_cmd_recent";
 const MAX_RECENT = 8;
+const MAX_PER_GROUP = 6;
 
 interface CmdItem {
   id: string;
   label: string;
   sublabel?: string;
   group: string;
+  groupOrder: number;
   icon: React.ReactNode;
   action: () => void;
 }
@@ -35,7 +40,7 @@ const pushRecent = (query: string) => {
   localStorage.setItem(RECENT_KEY, JSON.stringify(list));
 };
 
-const iconClass = "shrink-0 text-muted-foreground";
+const ic = "shrink-0 text-muted-foreground";
 
 const CommandPalette = () => {
   const [open, setOpen] = useState(false);
@@ -58,7 +63,6 @@ const CommandPalette = () => {
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
-  // Focus + reset on open
   useEffect(() => {
     if (open) {
       setQuery("");
@@ -73,59 +77,119 @@ const CommandPalette = () => {
     navigate(path);
   }, [navigate]);
 
-  // Build all items
+  // Build all searchable items
   const allItems = useMemo((): CmdItem[] => {
     const items: CmdItem[] = [];
 
-    // Navigation
+    // 1. Navigation
     const navItems = [
-      { to: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={16} className={iconClass} /> },
-      { to: "/analyzer", label: "URL Analyzer", icon: <Link2 size={16} className={iconClass} /> },
-      { to: "/attack", label: "Attack Mode", icon: <Swords size={16} className={iconClass} /> },
-      { to: "/mindmap", label: "Mind Map", icon: <Network size={16} className={iconClass} /> },
-      { to: "/history", label: "History", icon: <Clock size={16} className={iconClass} /> },
-      { to: "/payloads", label: "Payload Library", icon: <Code2 size={16} className={iconClass} /> },
-      { to: "/cheatsheets", label: "Cheat Sheets", icon: <BookOpen size={16} className={iconClass} /> },
-      { to: "/settings", label: "Settings", icon: <Settings size={16} className={iconClass} /> },
+      { to: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={16} className={ic} /> },
+      { to: "/analyzer", label: "URL Analyzer", icon: <Link2 size={16} className={ic} /> },
+      { to: "/attack", label: "Attack Mode", icon: <Swords size={16} className={ic} /> },
+      { to: "/mindmap", label: "Mind Map", icon: <Network size={16} className={ic} /> },
+      { to: "/history", label: "History", icon: <Clock size={16} className={ic} /> },
+      { to: "/payloads", label: "Payload Library", icon: <Code2 size={16} className={ic} /> },
+      { to: "/cheatsheets", label: "Cheat Sheets", icon: <BookOpen size={16} className={ic} /> },
+      { to: "/owasp", label: "OWASP Top 10", icon: <ShieldAlert size={16} className={ic} /> },
+      { to: "/vuln-categories", label: "Vuln Categories", icon: <Layers size={16} className={ic} /> },
+      { to: "/findings", label: "Findings", icon: <Bug size={16} className={ic} /> },
+      { to: "/bookmarks", label: "Bookmarks", icon: <Bookmark size={16} className={ic} /> },
+      { to: "/settings", label: "Settings", icon: <Settings size={16} className={ic} /> },
     ];
     for (const n of navItems) {
-      items.push({ id: `nav-${n.to}`, label: n.label, sublabel: `Go to ${n.label}`, group: "Navigation", icon: n.icon, action: () => go(n.to) });
+      items.push({ id: `nav-${n.to}`, label: n.label, sublabel: `Go to ${n.label}`, group: "Navigation", groupOrder: 0, icon: n.icon, action: () => go(n.to) });
     }
 
-    // History
-    const history = getHistory().slice(0, 20);
+    // 2. History — search by URL and finding type
+    const history = getHistory();
     for (const h of history) {
       items.push({
         id: `hist-${h.id}`,
         label: h.target,
         sublabel: `${h.type} · ${h.pathsFound} paths · ${h.date}`,
         group: "History",
-        icon: <Clock size={16} className={iconClass} />,
+        groupOrder: 1,
+        icon: <Clock size={16} className={ic} />,
         action: () => go(`/history/${h.id}`),
       });
     }
 
-    // Payloads
+    // 3. Payloads — individual payloads searchable by code + description
     for (const cat of PAYLOAD_CATEGORIES) {
+      // Category-level
       items.push({
-        id: `payload-${cat.id}`,
+        id: `pcat-${cat.id}`,
         label: cat.name,
         sublabel: `${cat.payloads.length} payloads · ${cat.description.slice(0, 60)}`,
         group: "Payloads",
-        icon: <Code2 size={16} className={iconClass} />,
+        groupOrder: 2,
+        icon: <Code2 size={16} className={ic} />,
         action: () => go("/payloads"),
       });
+      // Individual payloads
+      for (const p of cat.payloads) {
+        items.push({
+          id: `pay-${p.id}`,
+          label: p.description,
+          sublabel: `${p.code.slice(0, 60)} · ${p.severity} · ${p.category || cat.name}`,
+          group: "Payloads",
+          groupOrder: 2,
+          icon: <Code2 size={16} className={ic} />,
+          action: () => go("/payloads"),
+        });
+      }
     }
 
-    // Cheat sheets
+    // 4. Cheat sheets — sections searchable by heading + content
     for (const cs of CHEAT_SHEETS) {
       items.push({
-        id: `cheat-${cs.id}`,
+        id: `cs-${cs.id}`,
         label: cs.name,
         sublabel: `${cs.difficulty} · ${cs.sections.length} sections`,
         group: "Cheat Sheets",
-        icon: <BookOpen size={16} className={iconClass} />,
+        groupOrder: 3,
+        icon: <BookOpen size={16} className={ic} />,
         action: () => go("/cheatsheets"),
+      });
+      for (const sec of cs.sections) {
+        const codeSnippet = sec.blocks.map(b => b.code).join(" ").slice(0, 60);
+        items.push({
+          id: `css-${cs.id}-${sec.heading}`,
+          label: sec.heading,
+          sublabel: `${cs.name} · ${codeSnippet}`,
+          group: "Cheat Sheets",
+          groupOrder: 3,
+          icon: <BookOpen size={16} className={ic} />,
+          action: () => go("/cheatsheets"),
+        });
+      }
+    }
+
+    // 5. Findings
+    const findings = getFindings();
+    for (const f of findings) {
+      items.push({
+        id: `find-${f.id}`,
+        label: f.title,
+        sublabel: `${f.targetDomain} · ${f.vulnType} · ${f.severity} · ${f.status}`,
+        group: "Findings",
+        groupOrder: 4,
+        icon: <Bug size={16} className={ic} />,
+        action: () => go("/findings"),
+      });
+    }
+
+    // 6. Bookmarks
+    const bookmarks = getBookmarks();
+    for (const b of bookmarks) {
+      items.push({
+        id: `bm-${b.id}`,
+        label: b.title,
+        sublabel: `${b.type.replace("_", " ")} · ${b.sourceContext}`,
+        group: "Bookmarks",
+        groupOrder: 5,
+        icon: <Bookmark size={16} className={ic} />,
+        action: () => go("/bookmarks"),
       });
     }
 
@@ -136,26 +200,49 @@ const CommandPalette = () => {
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
     if (!q) return [];
-    return allItems.filter((item) =>
-      item.label.toLowerCase().includes(q) ||
-      (item.sublabel && item.sublabel.toLowerCase().includes(q))
-    ).slice(0, 20);
+
+    const words = q.split(/\s+/);
+    return allItems
+      .filter((item) => {
+        const text = `${item.label} ${item.sublabel || ""}`.toLowerCase();
+        return words.every((w) => text.includes(w));
+      })
+      .slice(0, 30);
   }, [query, allItems]);
 
-  // Recent analyses for empty state
+  // Group results and cap per group
+  const grouped = useMemo(() => {
+    const groups: Record<string, CmdItem[]> = {};
+    const groupOrder: Record<string, number> = {};
+    for (const item of filtered) {
+      if (!groups[item.group]) {
+        groups[item.group] = [];
+        groupOrder[item.group] = item.groupOrder;
+      }
+      if (groups[item.group].length < MAX_PER_GROUP) {
+        groups[item.group].push(item);
+      }
+    }
+    return Object.entries(groups)
+      .sort(([a], [b]) => (groupOrder[a] ?? 99) - (groupOrder[b] ?? 99));
+  }, [filtered]);
+
+  const displayItems = useMemo(() => grouped.flatMap(([, items]) => items), [grouped]);
+
+  // Recent for empty state
   const recentAnalyses = useMemo(() => getHistory().slice(0, 5), []);
   const recentSearches = useMemo(() => getRecent(), []);
 
-  const displayItems = query.trim() ? filtered : [];
   const showEmpty = !query.trim();
+  const emptyTotal = recentSearches.length + recentAnalyses.length;
 
   // Clamp index
   useEffect(() => {
-    const max = displayItems.length || (showEmpty ? recentAnalyses.length + recentSearches.length : 0);
+    const max = showEmpty ? emptyTotal : displayItems.length;
     if (selectedIdx >= max) setSelectedIdx(Math.max(0, max - 1));
-  }, [displayItems, selectedIdx, showEmpty, recentAnalyses, recentSearches]);
+  }, [displayItems, selectedIdx, showEmpty, emptyTotal]);
 
-  // Scroll selected into view
+  // Scroll into view
   useEffect(() => {
     if (!listRef.current) return;
     const el = listRef.current.querySelector(`[data-idx="${selectedIdx}"]`);
@@ -165,55 +252,38 @@ const CommandPalette = () => {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      setSelectedIdx((prev) => {
-        const max = query.trim() ? displayItems.length : recentAnalyses.length + recentSearches.length;
-        return Math.min(prev + 1, max - 1);
-      });
+      const max = showEmpty ? emptyTotal : displayItems.length;
+      setSelectedIdx((prev) => Math.min(prev + 1, max - 1));
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setSelectedIdx((prev) => Math.max(prev - 1, 0));
     } else if (e.key === "Enter") {
       e.preventDefault();
-      if (query.trim() && displayItems[selectedIdx]) {
+      if (!showEmpty && displayItems[selectedIdx]) {
         pushRecent(query);
         displayItems[selectedIdx].action();
       } else if (showEmpty) {
-        // Execute from empty-state items
         if (selectedIdx < recentSearches.length) {
           setQuery(recentSearches[selectedIdx]);
         } else {
           const histIdx = selectedIdx - recentSearches.length;
-          if (recentAnalyses[histIdx]) {
-            go(`/history/${recentAnalyses[histIdx].id}`);
-          }
+          if (recentAnalyses[histIdx]) go(`/history/${recentAnalyses[histIdx].id}`);
         }
       }
     }
   };
 
-  // Group results
-  const grouped = useMemo(() => {
-    const groups: Record<string, CmdItem[]> = {};
-    for (const item of displayItems) {
-      if (!groups[item.group]) groups[item.group] = [];
-      groups[item.group].push(item);
-    }
-    return groups;
-  }, [displayItems]);
+  if (!open) return null;
 
   let flatIdx = 0;
-
-  if (!open) return null;
 
   return (
     <div
       className="fixed inset-0 z-[200] flex items-start justify-center pt-[15vh] p-4"
       onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
     >
-      {/* Backdrop */}
       <div className="absolute inset-0 bg-background/85 backdrop-blur-sm animate-fade-in" />
 
-      {/* Modal */}
       <div className="relative w-full max-w-xl bg-card border border-border rounded-xl shadow-2xl shadow-primary/5 animate-enter z-10 overflow-hidden">
         {/* Input */}
         <div className="flex items-center border-b border-border/50 px-4">
@@ -223,13 +293,13 @@ const CommandPalette = () => {
             value={query}
             onChange={(e) => { setQuery(e.target.value); setSelectedIdx(0); }}
             onKeyDown={handleKeyDown}
-            placeholder="Type a command or search…"
+            placeholder="Search everything… history, payloads, cheat sheets, findings"
             className="flex-1 bg-transparent border-none outline-none py-4 font-mono text-sm text-foreground placeholder:text-muted-foreground/40"
           />
           <kbd className="text-[9px] font-mono text-muted-foreground/50 bg-muted px-1.5 py-0.5 rounded">ESC</kbd>
         </div>
 
-        {/* Results */}
+        {/* Results area */}
         <div ref={listRef} className="max-h-[50vh] overflow-y-auto">
           {/* Empty state */}
           {showEmpty && (
@@ -237,23 +307,20 @@ const CommandPalette = () => {
               {recentSearches.length > 0 && (
                 <div className="mb-1">
                   <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest px-3 py-2">Recent Searches</p>
-                  {recentSearches.map((s, i) => {
-                    const idx = i;
-                    return (
-                      <button
-                        key={`rs-${i}`}
-                        data-idx={idx}
-                        onClick={() => setQuery(s)}
-                        onMouseEnter={() => setSelectedIdx(idx)}
-                        className={`flex items-center gap-3 w-full text-left px-3 py-2 rounded-lg text-sm font-mono transition-colors ${
-                          selectedIdx === idx ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"
-                        }`}
-                      >
-                        <Search size={14} className="shrink-0" />
-                        <span className="truncate">{s}</span>
-                      </button>
-                    );
-                  })}
+                  {recentSearches.map((s, i) => (
+                    <button
+                      key={`rs-${i}`}
+                      data-idx={i}
+                      onClick={() => setQuery(s)}
+                      onMouseEnter={() => setSelectedIdx(i)}
+                      className={`flex items-center gap-3 w-full text-left px-3 py-2 rounded-lg text-sm font-mono transition-colors ${
+                        selectedIdx === i ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      <Search size={14} className="shrink-0" />
+                      <span className="truncate">{s}</span>
+                    </button>
+                  ))}
                 </div>
               )}
 
@@ -283,22 +350,43 @@ const CommandPalette = () => {
 
               {recentSearches.length === 0 && recentAnalyses.length === 0 && (
                 <p className="text-xs font-mono text-muted-foreground/40 italic px-4 py-6 text-center">
-                  Start typing to search pages, history, payloads & cheat sheets…
+                  Search across history, payloads, cheat sheets, findings & bookmarks…
                 </p>
               )}
             </div>
           )}
 
-          {/* Search results */}
+          {/* No results */}
           {!showEmpty && displayItems.length === 0 && (
-            <p className="text-xs font-mono text-muted-foreground/40 italic px-4 py-6 text-center">
-              No results for "{query}"
-            </p>
+            <div className="px-4 py-8 text-center space-y-3">
+              <Search size={28} className="mx-auto text-muted-foreground/20" />
+              <p className="text-sm font-mono text-muted-foreground/50">
+                No results for "<span className="text-foreground/60">{query}</span>"
+              </p>
+              <div className="space-y-1">
+                <p className="text-[10px] font-mono text-muted-foreground/40 uppercase tracking-widest">Try searching for</p>
+                <div className="flex flex-wrap justify-center gap-1.5">
+                  {["XSS", "SQL injection", "IDOR", "SSRF", "bypass", "token"].map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => { setQuery(s); setSelectedIdx(0); }}
+                      className="px-2 py-1 rounded-md border border-border/30 bg-muted/30 text-[10px] font-mono text-muted-foreground hover:text-primary hover:border-primary/30 transition-colors"
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           )}
 
-          {!showEmpty && Object.entries(grouped).map(([group, items]) => (
+          {/* Grouped results */}
+          {!showEmpty && grouped.map(([group, items]) => (
             <div key={group} className="p-2">
-              <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest px-3 py-1.5">{group}</p>
+              <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest px-3 py-1.5 flex items-center gap-2">
+                {group}
+                <span className="text-muted-foreground/40">({items.length}{items.length >= MAX_PER_GROUP ? "+" : ""})</span>
+              </p>
               {items.map((item) => {
                 const idx = flatIdx++;
                 return (
@@ -313,7 +401,7 @@ const CommandPalette = () => {
                   >
                     {item.icon}
                     <div className="flex-1 min-w-0">
-                      <span className="block truncate">{item.label}</span>
+                      <span className="block truncate">{highlightMatch(item.label, query)}</span>
                       {item.sublabel && (
                         <span className="block text-[10px] text-muted-foreground truncate">{item.sublabel}</span>
                       )}
@@ -335,11 +423,50 @@ const CommandPalette = () => {
             <span className="flex items-center gap-1"><kbd className="bg-muted px-1 rounded">↵</kbd> Select</span>
             <span className="flex items-center gap-1"><kbd className="bg-muted px-1 rounded">Esc</kbd> Close</span>
           </div>
-          <span className="flex items-center gap-1"><kbd className="bg-muted px-1 rounded">Ctrl</kbd>+<kbd className="bg-muted px-1 rounded">Space</kbd></span>
+          <div className="flex items-center gap-2">
+            {!showEmpty && <span>{displayItems.length} result{displayItems.length !== 1 ? "s" : ""}</span>}
+            <span><kbd className="bg-muted px-1 rounded">Ctrl</kbd>+<kbd className="bg-muted px-1 rounded">Space</kbd></span>
+          </div>
         </div>
       </div>
     </div>
   );
 };
+
+/** Highlight matching text portions */
+function highlightMatch(text: string, query: string) {
+  if (!query.trim()) return text;
+  const words = query.trim().toLowerCase().split(/\s+/);
+  // Find the first matching word's position for a simple highlight
+  const lower = text.toLowerCase();
+  const parts: React.ReactNode[] = [];
+  let lastIdx = 0;
+
+  // Simple: highlight first occurrence of each word
+  const ranges: [number, number][] = [];
+  for (const w of words) {
+    const idx = lower.indexOf(w, 0);
+    if (idx !== -1) ranges.push([idx, idx + w.length]);
+  }
+  // Merge overlapping ranges
+  ranges.sort((a, b) => a[0] - b[0]);
+  const merged: [number, number][] = [];
+  for (const r of ranges) {
+    if (merged.length && r[0] <= merged[merged.length - 1][1]) {
+      merged[merged.length - 1][1] = Math.max(merged[merged.length - 1][1], r[1]);
+    } else {
+      merged.push([...r]);
+    }
+  }
+
+  for (const [start, end] of merged) {
+    if (start > lastIdx) parts.push(text.slice(lastIdx, start));
+    parts.push(<span key={start} className="text-primary font-bold">{text.slice(start, end)}</span>);
+    lastIdx = end;
+  }
+  if (lastIdx < text.length) parts.push(text.slice(lastIdx));
+
+  return parts.length > 0 ? <>{parts}</> : text;
+}
 
 export default CommandPalette;
