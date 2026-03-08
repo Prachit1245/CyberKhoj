@@ -48,6 +48,7 @@ const App = () => (
     <ToastProvider>
     <TooltipProvider>
       <BrowserRouter>
+        <a href="#main-content" className="skip-to-content">Skip to content</a>
         <PWAInstallPrompt />
         <WhatsNewModal />
         <FeedbackTab />

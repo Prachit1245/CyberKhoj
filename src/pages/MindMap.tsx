@@ -524,6 +524,33 @@ function MindMapCanvas() {
   const btn =
     "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono border border-border/30 bg-card/80 text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors cursor-pointer backdrop-blur-sm";
 
+  const [showTextView, setShowTextView] = useState(false);
+
+  // Build text list for screen reader alternative
+  const textListContent = useMemo(() => {
+    if (!rawNodesRef.current.length) return [];
+    const items: { label: string; severity?: string; type: string; depth: number; description?: string }[] = [];
+    const buildList = (parentId: string | undefined, depth: number) => {
+      const children = rawNodesRef.current.filter((n) => n.parentId === parentId);
+      for (const child of children) {
+        items.push({
+          label: child.label,
+          severity: child.severity,
+          type: child.type,
+          depth,
+          description: child.description,
+        });
+        buildList(child.id, depth + 1);
+      }
+    };
+    const root = rawNodesRef.current.find((n) => n.type === "root");
+    if (root) {
+      items.push({ label: root.label, type: "root", depth: 0 });
+      buildList(root.id, 1);
+    }
+    return items;
+  }, [nodes]); // re-derive when nodes change
+
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)]">
       {/* Control Bar */}
