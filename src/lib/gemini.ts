@@ -1,6 +1,6 @@
 const STORAGE_KEY = "hackmind_gemini_key";
-const MODEL_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent";
+const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models";
+const MODEL_CANDIDATES = ["gemini-2.5-flash-lite", "gemini-2.5-flash"] as const;
 
 const IS_DEV = import.meta.env.DEV;
 const MIN_REQUEST_INTERVAL_MS = 1200;
@@ -60,9 +60,14 @@ export const abortGeminiRequest = (): void => {
 };
 
 /* ─── Core fetch helper (single attempt) ─── */
-const fetchGeminiOnce = async (prompt: string, key: string, signal?: AbortSignal): Promise<Response> => {
+const fetchGeminiOnce = async (
+  prompt: string,
+  key: string,
+  model: (typeof MODEL_CANDIDATES)[number],
+  signal?: AbortSignal,
+): Promise<Response> => {
   try {
-    return await fetch(`${MODEL_URL}?key=${key}`, {
+    return await fetch(`${GEMINI_BASE_URL}/${model}:generateContent?key=${key}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       signal,
@@ -71,6 +76,7 @@ const fetchGeminiOnce = async (prompt: string, key: string, signal?: AbortSignal
         generationConfig: {
           temperature: 0.7,
           topP: 0.95,
+          maxOutputTokens: 1400,
         },
       }),
     });
@@ -127,45 +133,72 @@ const parseGeminiResponse = async (response: Response): Promise<string> => {
 /* ─── Fetch with automatic retry on 429 (exponential backoff) ─── */
 const MAX_RETRIES = 3;
 const BASE_DELAY_MS = 4000; // 4s, 8s, 16s
+const MODEL_SWITCH_DELAY_MS = 1200;
 
-const fetchGemini = async (prompt: string, key: string, signal?: AbortSignal): Promise<string> => {
-  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-    const response = await fetchGeminiOnce(prompt, key, signal);
+const buildRateLimitMessage = (errText: string): string => {
+  const text = errText.toLowerCase();
+  const dailyOrQuotaExhausted =
+    text.includes("per day") ||
+    text.includes("daily") ||
+    text.includes("quota") ||
+    text.includes("resource_exhausted") ||
+    text.includes("exceeded") ||
+    text.includes("billing") ||
+    text.includes("insufficient");
 
-    if (response.status === 429) {
-      if (attempt === MAX_RETRIES) {
-        // Final attempt failed — throw a user-friendly error
-        let errText = "";
-        try { errText = (await response.text()).toLowerCase(); } catch { /* ignore */ }
-        const quotaLike =
-          errText.includes("quota") ||
-          errText.includes("resource_exhausted") ||
-          errText.includes("exceeded") ||
-          errText.includes("per day");
-
-        throw new GeminiError(
-          "RATE_LIMIT",
-          quotaLike
-            ? "Gemini quota exhausted for this key. Try again in a few minutes, or check your quota at aistudio.google.com."
-            : "Gemini rate limit reached. The app retried automatically but the API is still busy. Wait 1–2 minutes and try again.",
-          429
-        );
-      }
-
-      // Exponential backoff: 4s → 8s → 16s
-      const delayMs = BASE_DELAY_MS * Math.pow(2, attempt);
-      if (IS_DEV) {
-        console.warn(`[HackMind] 429 on attempt ${attempt + 1}, retrying in ${delayMs}ms…`);
-      }
-      await sleep(delayMs);
-      continue;
-    }
-
-    return parseGeminiResponse(response);
+  if (dailyOrQuotaExhausted) {
+    return "Gemini quota is exhausted for this Google project (often project-level, not key-level). Check quota/billing in AI Studio, or wait for daily reset.";
   }
 
-  // Should never reach here
-  throw new GeminiError("API_ERROR", "Unexpected retry loop exit.");
+  return "Gemini rate limit reached. The app retried automatically, but the API is still busy. Please wait about a minute and try again.";
+};
+
+const fetchGemini = async (prompt: string, key: string, signal?: AbortSignal): Promise<string> => {
+  let lastRateLimitText = "";
+
+  for (let modelIndex = 0; modelIndex < MODEL_CANDIDATES.length; modelIndex++) {
+    const model = MODEL_CANDIDATES[modelIndex];
+
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+      const response = await fetchGeminiOnce(prompt, key, model, signal);
+
+      if (response.status === 429) {
+        let errText = "";
+        try {
+          errText = (await response.text()).toLowerCase();
+        } catch {
+          // ignore
+        }
+
+        lastRateLimitText = errText;
+        const hasRetryLeft = attempt < MAX_RETRIES;
+
+        if (hasRetryLeft) {
+          const delayMs = BASE_DELAY_MS * Math.pow(2, attempt);
+          if (IS_DEV) {
+            console.warn(`[HackMind] 429 on ${model} attempt ${attempt + 1}, retrying in ${delayMs}ms…`);
+          }
+          await sleep(delayMs);
+          continue;
+        }
+
+        const hasFallbackModel = modelIndex < MODEL_CANDIDATES.length - 1;
+        if (hasFallbackModel) {
+          if (IS_DEV) {
+            console.warn(`[HackMind] ${model} stayed rate-limited, switching model…`);
+          }
+          await sleep(MODEL_SWITCH_DELAY_MS);
+          break;
+        }
+
+        throw new GeminiError("RATE_LIMIT", buildRateLimitMessage(errText), 429);
+      }
+
+      return parseGeminiResponse(response);
+    }
+  }
+
+  throw new GeminiError("RATE_LIMIT", buildRateLimitMessage(lastRateLimitText), 429);
 };
 
 /* ─── JSON helpers ─── */

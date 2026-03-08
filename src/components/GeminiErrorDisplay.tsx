@@ -22,11 +22,11 @@ const RateLimitTerminal = () => {
   const lines = [
     "$ hackmind --analyze",
     "> Connecting to Gemini API...",
-    "> ERROR 429: Rate limit reached",
+    "> ERROR 429: Quota/Rate limit reached",
     "> Auto-retried 3x with backoff.",
-    "> Gemini free tier: ~15 req/min.",
-    "> Fix: Wait 1-2 min, then retry.",
-    "> Or: Check quota at aistudio.google.com",
+    "> Limits are often project-level, not key-level.",
+    "> Check quota/billing in AI Studio.",
+    "> If daily cap is hit, wait for reset.",
     "> _",
   ];
 
