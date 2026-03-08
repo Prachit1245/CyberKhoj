@@ -2,6 +2,8 @@ const STORAGE_KEY = "hackmind_gemini_key";
 const MODEL_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent";
 
+const IS_DEV = import.meta.env.DEV;
+
 export const saveApiKey = (key: string): void => {
   localStorage.setItem(STORAGE_KEY, key);
 };
@@ -41,21 +43,8 @@ export class GeminiError extends Error {
   }
 }
 
-export const callGemini = async (prompt: string): Promise<string> => {
-  const key = getApiKey();
-  if (!key) {
-    throw new GeminiError("NO_KEY", "No API key set. Add one in Settings to start analyzing.");
-  }
-
-  const { incrementUsage, isOverLimit, DAILY_LIMIT } = await import("./usage");
-
-  if (isOverLimit()) {
-    throw new GeminiError(
-      "DAILY_LIMIT",
-      `Daily limit of ${DAILY_LIMIT} analyses reached. Resets at midnight. Come back tomorrow!`
-    );
-  }
-
+/* ─── Core fetch helper (single attempt) ─── */
+const fetchGemini = async (prompt: string, key: string): Promise<string> => {
   let response: Response;
   try {
     response = await fetch(`${MODEL_URL}?key=${key}`, {
@@ -63,10 +52,13 @@ export const callGemini = async (prompt: string): Promise<string> => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          temperature: 0.7,
+          topP: 0.95,
+        },
       }),
     });
   } catch (err) {
-    // Network failure — no internet, DNS error, CORS, etc.
     throw new GeminiError(
       "NETWORK_ERROR",
       "No internet connection. Check your connection and try again."
@@ -77,47 +69,93 @@ export const callGemini = async (prompt: string): Promise<string> => {
     let errText = "";
     try {
       errText = await response.text();
-    } catch {
-      // Ignore text parse failure
-    }
+    } catch { /* ignore */ }
 
     if (response.status === 400 && errText.includes("API_KEY_INVALID")) {
-      throw new GeminiError(
-        "INVALID_KEY",
-        "Your API key is invalid. Please update it in Settings.",
-        400
-      );
+      throw new GeminiError("INVALID_KEY", "Your API key is invalid. Please update it in Settings.", 400);
     }
-
     if (response.status === 401) {
-      throw new GeminiError(
-        "INVALID_KEY",
-        "Your API key is invalid or expired. Please update it in Settings.",
-        401
-      );
+      throw new GeminiError("INVALID_KEY", "Your API key is invalid or expired. Please update it in Settings.", 401);
     }
-
     if (response.status === 403) {
-      throw new GeminiError(
-        "FORBIDDEN",
-        "API key is restricted or Gemini API is not enabled for this project. Check API key settings in Google AI Studio.",
-        403
-      );
+      throw new GeminiError("FORBIDDEN", "API key is restricted or Gemini API is not enabled for this project.", 403);
     }
-
     if (response.status === 429) {
-      throw new GeminiError(
-        "RATE_LIMIT",
-        "Rate limit hit. Too many requests — wait a moment and try again, or upgrade your quota in Google AI Studio.",
-        429
-      );
+      throw new GeminiError("RATE_LIMIT", "Rate limit hit. Wait a moment and try again.", 429);
     }
+    throw new GeminiError("API_ERROR", `Gemini API error (${response.status}): ${errText.slice(0, 200)}`, response.status);
+  }
 
+  let data: unknown;
+  try {
+    data = await response.json();
+  } catch {
+    throw new GeminiError("PARSE_ERROR", "AI returned an unexpected response. Try again.");
+  }
+
+  const text = (data as any)?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+  if (!text) {
+    throw new GeminiError("PARSE_ERROR", "AI returned an empty response. Try again.");
+  }
+
+  return text;
+};
+
+/* ─── JSON validation helper ─── */
+const looksLikeJson = (text: string): boolean => {
+  const trimmed = text.trim()
+    .replace(/^```(?:json)?\s*/im, "")
+    .replace(/\s*```\s*$/m, "")
+    .trim();
+  return trimmed.startsWith("{") || trimmed.startsWith("[");
+};
+
+/* ─── Main API call with retry for invalid JSON ─── */
+export const callGemini = async (prompt: string, expectJson = false): Promise<string> => {
+  const key = getApiKey();
+  if (!key) {
+    throw new GeminiError("NO_KEY", "No API key set. Add one in Settings to start analyzing.");
+  }
+
+  const { incrementUsage, isOverLimit, DAILY_LIMIT } = await import("./usage");
+
+  if (isOverLimit()) {
     throw new GeminiError(
-      "API_ERROR",
-      `Gemini API error (${response.status}): ${errText.slice(0, 200)}`,
-      response.status
+      "DAILY_LIMIT",
+      `Daily limit of ${DAILY_LIMIT} analyses reached. Resets at midnight.`
     );
+  }
+
+  if (IS_DEV) {
+    console.group("[HackMind] Gemini Request");
+    console.log("Prompt length:", prompt.length);
+    console.log("Expect JSON:", expectJson);
+    console.log("Prompt (first 500 chars):", prompt.slice(0, 500));
+    console.groupEnd();
+  }
+
+  let text = await fetchGemini(prompt, key);
+
+  if (IS_DEV) {
+    console.group("[HackMind] Gemini Response");
+    console.log("Response length:", text.length);
+    console.log("Response (first 500 chars):", text.slice(0, 500));
+    console.groupEnd();
+  }
+
+  // Retry once if we expected JSON but got something else
+  if (expectJson && !looksLikeJson(text)) {
+    if (IS_DEV) {
+      console.warn("[HackMind] Response is not valid JSON, retrying once...");
+    }
+    text = await fetchGemini(prompt, key);
+
+    if (IS_DEV) {
+      console.group("[HackMind] Gemini Retry Response");
+      console.log("Response length:", text.length);
+      console.log("Response (first 500 chars):", text.slice(0, 500));
+      console.groupEnd();
+    }
   }
 
   const count = incrementUsage();
@@ -126,26 +164,6 @@ export const callGemini = async (prompt: string): Promise<string> => {
   if (count === 900 || count === 950 || count === 990) {
     const { toast } = await import("@/components/Toast");
     toast.warning(`You've used ${count} / ${DAILY_LIMIT} analyses today.`);
-  }
-
-  let data: unknown;
-  try {
-    data = await response.json();
-  } catch {
-    throw new GeminiError(
-      "PARSE_ERROR",
-      "AI returned an unexpected response. Try again."
-    );
-  }
-
-  const text =
-    (data as any)?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
-
-  if (!text) {
-    throw new GeminiError(
-      "PARSE_ERROR",
-      "AI returned an empty response. Try rephrasing your input or try again."
-    );
   }
 
   return text;
