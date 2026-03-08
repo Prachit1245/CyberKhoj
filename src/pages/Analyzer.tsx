@@ -79,6 +79,7 @@ const Analyzer = () => {
   const [result, setResult] = useState("");
   const [error, setError] = useState("");
   const [resultTab, setResultTab] = useState<(typeof RESULT_TABS)[number]>("Attack Paths");
+  const [selectedTemplate, setSelectedTemplate] = useState<TargetTemplate | null>(null);
 
   const handleAnalyze = async () => {
     const trimmed = target.trim();
