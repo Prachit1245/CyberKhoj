@@ -249,6 +249,109 @@ const SettingsPage = () => {
 
   const [importSummary, setImportSummary] = useState<string | null>(null);
 
+  const storageSize = useMemo(() => {
+    let total = 0;
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key) {
+        total += key.length + (localStorage.getItem(key)?.length || 0);
+      }
+    }
+    return total;
+  }, []);
+
+  const formatBytes = (chars: number) => {
+    const bytes = chars * 2;
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+  };
+
+  const exportData = () => {
+    const data: Record<string, unknown> = { _version: 1, _exportedAt: new Date().toISOString() };
+    storageKeys.forEach((key) => {
+      const val = localStorage.getItem(key);
+      if (val) {
+        try { data[key] = JSON.parse(val); } catch { data[key] = val; }
+      }
+    });
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `hackmind-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("Backup exported successfully");
+  };
+
+  const mergeArrayById = (existing: unknown[], incoming: unknown[], idField: string): { merged: unknown[]; newCount: number } => {
+    const existingIds = new Set(
+      existing.filter((e): e is Record<string, unknown> => !!e && typeof e === "object")
+        .map((e) => e[idField])
+    );
+    const newItems = (incoming as Record<string, unknown>[]).filter(
+      (item) => item && typeof item === "object" && !existingIds.has(item[idField])
+    );
+    return { merged: [...existing, ...newItems], newCount: newItems.length };
+  };
+
+  const importData = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target?.result as string);
+        if (typeof data !== "object" || !data) throw new Error("Invalid format");
+
+        const summary: string[] = [];
+        const labels: Record<string, string> = {
+          hackmind_history: "analyses",
+          hackmind_findings: "findings",
+          hackmind_bookmarked_payloads: "bookmarks",
+          hackmind_owasp_coverage: "OWASP coverage",
+          hackmind_prefs: "preferences",
+          hackmind_stats: "stats",
+          hackmind_usage: "usage data",
+          hackmind_gemini_key: "API key",
+        };
+
+        Object.entries(data).forEach(([key, value]) => {
+          if (key.startsWith("_") || !storageKeys.includes(key)) return;
+
+          const idField = ARRAY_KEYS[key];
+          if (idField && Array.isArray(value)) {
+            const existingRaw = localStorage.getItem(key);
+            const existing = existingRaw ? JSON.parse(existingRaw) : [];
+            const { merged, newCount } = mergeArrayById(
+              Array.isArray(existing) ? existing : [],
+              value,
+              idField
+            );
+            localStorage.setItem(key, JSON.stringify(merged));
+            if (newCount > 0) summary.push(`${newCount} ${labels[key] || key}`);
+          } else {
+            localStorage.setItem(key, typeof value === "string" ? value : JSON.stringify(value));
+            summary.push(labels[key] || key);
+          }
+        });
+
+        setKeySet(hasApiKey());
+        setPrefs(loadPrefs());
+        const msg = summary.length > 0
+          ? `Imported ${summary.join(", ")}.`
+          : "Backup applied — no new data to merge.";
+        setImportSummary(msg);
+        toast.success(msg);
+      } catch {
+        toast.error("Invalid backup file — could not parse JSON");
+      }
+    };
+    reader.readAsText(file);
+    if (fileRef.current) fileRef.current.value = "";
+  };
+
   const clearStorage = (key: string, label: string) => {
     localStorage.removeItem(key);
     if (key === "hackmind_gemini_key") setKeySet(false);
