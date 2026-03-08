@@ -249,6 +249,11 @@ export default function History() {
                   <p className="text-sm font-mono font-semibold text-foreground truncate flex-1">
                     {record.target.length > 40 ? record.target.slice(0, 40) + "…" : record.target}
                   </p>
+                  {hasNote(extractDomain(record.target)) && (
+                    <Badge variant="outline" className="text-[10px] shrink-0 bg-primary/10 text-primary border-primary/30 flex items-center gap-0.5">
+                      <StickyNote className="h-2.5 w-2.5" /> Notes
+                    </Badge>
+                  )}
                   <Badge variant="outline" className={`text-[10px] shrink-0 ${typeInfo.className}`}>
                     {typeInfo.label}
                   </Badge>
