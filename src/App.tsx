@@ -64,6 +64,7 @@ const App = () => (
       </ApiKeyGate>
     </TooltipProvider>
     </ToastProvider>
+  </QueryClientProvider>
 );
 
 export default App;
