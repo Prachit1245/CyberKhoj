@@ -93,11 +93,7 @@ const Navbar = () => {
         <div className="container flex h-14 items-center justify-between">
           {/* Logo */}
           <NavLink to="/" className="flex items-center gap-2 group">
-            <Terminal size={20} className="text-primary" />
-            <span className="font-heading text-lg font-bold text-primary text-glow-primary">
-              HackMind
-            </span>
-            <span className="blinking-cursor text-primary text-sm">▌</span>
+            <HackMindLogo size="sm" showText={true} />
           </NavLink>
 
           {/* Desktop nav */}
