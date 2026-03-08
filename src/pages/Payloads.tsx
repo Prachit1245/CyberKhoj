@@ -37,11 +37,21 @@ function PayloadCard({ payload }: { payload: Payload }) {
         </button>
       </div>
       {/* Footer */}
-      <div className="px-3 pb-3 pt-1 flex items-start justify-between gap-2">
-        <p className="text-[11px] font-mono text-muted-foreground leading-snug">{payload.description}</p>
-        <Badge variant="outline" className={`text-[9px] shrink-0 ${SEV_STYLES[payload.severity] || ""}`}>
-          {payload.severity.toUpperCase()}
-        </Badge>
+      <div className="px-3 pb-3 pt-1 space-y-1.5">
+        <div className="flex items-start justify-between gap-2">
+          <p className="text-[11px] font-mono text-foreground/80 font-semibold leading-snug">{payload.description}</p>
+          <Badge variant="outline" className={`text-[9px] shrink-0 ${SEV_STYLES[payload.severity] || ""}`}>
+            {payload.severity.toUpperCase()}
+          </Badge>
+        </div>
+        {payload.category && (
+          <span className="inline-block text-[9px] font-mono text-muted-foreground bg-muted/30 border border-border/20 rounded px-1.5 py-0.5">
+            {payload.category}
+          </span>
+        )}
+        {payload.useCase && (
+          <p className="text-[10px] font-mono text-muted-foreground/70 leading-snug">{payload.useCase}</p>
+        )}
       </div>
     </div>
   );
