@@ -561,6 +561,12 @@ const SettingsPage = () => {
             label="Animations"
             description="Disable for better performance on low-end devices."
           />
+          <Toggle
+            enabled={prefs.typingSound}
+            onToggle={() => updatePref("typingSound", !prefs.typingSound)}
+            label="Typing Sound Effect"
+            description="Play subtle keystroke sounds during AI analysis."
+          />
         </div>
       </Section>
 
