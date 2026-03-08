@@ -1,21 +1,63 @@
+import { useNavigate } from "react-router-dom";
+import MatrixRain from "@/components/MatrixRain";
+import Typewriter from "@/components/Typewriter";
+
+const TRUST_BADGES = [
+  "100% Free Forever",
+  "No Account Needed",
+  "1000 Analyses/Day",
+  "Your Data Never Leaves Your Browser",
+];
+
 const Index = () => {
+  const navigate = useNavigate();
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
-      <div className="text-center space-y-6">
-        <h1 className="text-6xl font-extrabold tracking-tight text-glow-primary">
-          <span className="text-primary">Hack</span>
-          <span className="text-secondary">Mind</span>
-        </h1>
-        <p className="text-lg text-muted-foreground font-mono max-w-md mx-auto">
-          &gt; AI-powered toolkit for the curious mind_
+    <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background px-4">
+      <MatrixRain />
+
+      <div className="relative z-10 text-center max-w-3xl mx-auto space-y-8">
+        {/* Typewriter headline */}
+        <div className="min-h-[4rem] md:min-h-[5rem] flex items-center justify-center">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold tracking-tight leading-tight">
+            <Typewriter />
+          </h1>
+        </div>
+
+        <p className="text-muted-foreground text-base md:text-lg max-w-xl mx-auto font-mono">
+          AI-powered vulnerability analysis, attack surface mapping, and recon — all running locally in your browser.
         </p>
-        <div className="flex gap-4 justify-center pt-4">
-          <span className="inline-block h-1 w-12 rounded bg-primary animate-pulse-glow" />
-          <span className="inline-block h-1 w-8 rounded bg-secondary animate-pulse-glow" style={{ animationDelay: '0.5s' }} />
-          <span className="inline-block h-1 w-16 rounded bg-primary animate-pulse-glow" style={{ animationDelay: '1s' }} />
+
+        {/* CTA Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <button
+            onClick={() => navigate("/analyzer")}
+            className="rounded-lg bg-primary px-8 py-3.5 font-heading text-base font-bold text-primary-foreground transition-all hover:brightness-110 glow-primary"
+          >
+            Start Hacking Free
+          </button>
+          <button
+            onClick={() => navigate("/demo")}
+            className="rounded-lg border border-secondary px-8 py-3.5 font-heading text-base font-bold text-secondary transition-all hover:bg-secondary hover:text-secondary-foreground glow-secondary"
+          >
+            Watch Demo
+          </button>
+        </div>
+
+        {/* Trust badges */}
+        <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 pt-4">
+          {TRUST_BADGES.map((badge) => (
+            <span
+              key={badge}
+              className="text-xs font-mono text-muted-foreground"
+            >
+              <span className="text-primary mr-1">✓</span>
+              {badge}
+            </span>
+          ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
