@@ -60,6 +60,7 @@ const Index = () => {
       </section>
 
       <LandingDemo />
+      <SocialProof />
       <HowItWorks />
       <Features />
       <FreeBanner />
