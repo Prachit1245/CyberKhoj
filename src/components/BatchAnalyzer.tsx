@@ -127,6 +127,8 @@ const BatchAnalyzer = () => {
 
         incrementStat("totalAnalyses");
         incrementStat("attackPaths", pathCount);
+        checkAnalysisAchievements();
+        checkBatchAnalysis();
       } catch (e) {
         const entry: BatchResult = {
           url,

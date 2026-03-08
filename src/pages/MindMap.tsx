@@ -22,6 +22,7 @@ import { toast } from "@/components/Toast";
 import { useNavigate } from "react-router-dom";
 import useOnline from "@/hooks/useOnline";
 import { addToHistory } from "@/lib/store";
+import { checkMindMap } from "@/lib/achievements";
 import MindMapNodeComponent from "@/components/mindmap/MindMapNode";
 import MindMapSidePanel from "@/components/mindmap/MindMapSidePanel";
 import type { MindMapNodeData } from "@/components/mindmap/types";
