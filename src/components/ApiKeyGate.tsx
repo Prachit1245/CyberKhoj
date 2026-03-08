@@ -14,6 +14,7 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [successAnim, setSuccessAnim] = useState(false);
+  const [showDemo, setShowDemo] = useState(false);
 
   useEffect(() => {
     setUnlocked(hasApiKey());
