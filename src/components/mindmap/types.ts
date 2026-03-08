@@ -7,5 +7,6 @@ export interface MindMapNodeData {
   parentId: string | null;
   tested?: boolean;
   note?: string;
+  searchMatch?: boolean;
   [key: string]: unknown;
 }
