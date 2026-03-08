@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Trash2, ArrowRight, Loader2 } from "lucide-react";
 import { callGemini } from "@/lib/gemini";
 import { addToHistory, incrementStat } from "@/lib/store";
