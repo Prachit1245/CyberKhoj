@@ -24,6 +24,9 @@ import QuickAnalyze from "@/components/QuickAnalyze";
 import CommandPalette from "@/components/CommandPalette";
 import ShortcutsModal from "@/components/ShortcutsModal";
 
+const OFFLINE_OK = new Set(["/history", "/payloads", "/cheatsheets", "/findings"]);
+const NEEDS_AI = new Set(["/analyzer", "/attack", "/mindmap"]);
+
 const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/analyzer", label: "URL Analyzer", icon: Link2 },
