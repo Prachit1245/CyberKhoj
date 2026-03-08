@@ -316,6 +316,12 @@ body::after {
   animation: route-fade-in 0.25s ease-out both;
 }
 
+/* ── Achievement flash ── */
+@keyframes flash {
+  0% { opacity: 0.6; }
+  100% { opacity: 0; }
+}
+
 /* ── Ensure modals / dialogs have no white flash ── */
 [data-radix-portal],
 [role="dialog"],
