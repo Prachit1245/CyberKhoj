@@ -16,7 +16,7 @@ interface Props {
   onChange?: (updated: AttackPath) => void;
 }
 
-const AttackPathCard = ({ path, onChange }: Props) => {
+const AttackPathCard = memo(({ path, onChange }: Props) => {
   const [payloadOpen, setPayloadOpen] = useState(false);
   const [stepsOpen, setStepsOpen] = useState(false);
   const [notesOpen, setNotesOpen] = useState(false);
