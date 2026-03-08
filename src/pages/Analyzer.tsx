@@ -188,6 +188,8 @@ const Analyzer = () => {
         <JwtAnalyzer />
       ) : pageTab === "HTTP Request" ? (
         <HttpRequestAnalyzer />
+      ) : pageTab === "Batch" ? (
+        <BatchAnalyzer />
       ) : (
       <>
       {/* Input area */}
