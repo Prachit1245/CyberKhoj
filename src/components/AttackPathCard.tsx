@@ -111,7 +111,7 @@ const AttackPathCard = memo(({ path, onChange, beginnerMode = false }: Props) =>
     );
 
   return (
-    <div className={`rounded-xl border border-border bg-card border-l-4 ${sev.border} overflow-hidden transition-all`}>
+    <div className={`rounded-xl border border-border bg-card border-l-4 ${sev.border} ${sev.printClass} overflow-hidden transition-all print-break-inside-avoid`}>
       <div className="p-5 space-y-3">
         {/* Top row: badges */}
         <div className="flex flex-wrap items-center gap-2">
