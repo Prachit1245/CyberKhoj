@@ -14,10 +14,20 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import Dagre from "@dagrejs/dagre";
-import { ZoomIn, ZoomOut, Maximize, Download, Network, TreePine, Zap } from "lucide-react";
+import { ZoomIn, ZoomOut, Maximize, Download, Network, TreePine, Zap, StickyNote, CheckCircle, Copy, Search } from "lucide-react";
 import { callGemini } from "@/lib/gemini";
 import { buildMindMapPrompt, parseMindMapNodes, type MindMapNode } from "@/lib/prompts";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+import MindMapNodeComponent from "@/components/mindmap/MindMapNode";
+import MindMapSidePanel from "@/components/mindmap/MindMapSidePanel";
+import type { MindMapNodeData } from "@/components/mindmap/types";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 
 /* ── Severity colors ── */
 const SEV_BORDER: Record<string, string> = {
@@ -39,6 +49,8 @@ const LEGEND = [
   { label: "Medium", color: SEV_BORDER.medium },
   { label: "Low", color: SEV_BORDER.low },
 ];
+
+const nodeTypes = { mindMapNode: MindMapNodeComponent };
 
 /* ── Dagre auto-layout ── */
 function layoutWithDagre(
@@ -70,11 +82,31 @@ function layoutWithDagre(
 }
 
 /* ── Convert MindMapNode[] → ReactFlow nodes/edges ── */
-function buildFlowElements(mapNodes: MindMapNode[]): { nodes: Node[]; edges: Edge[] } {
+function buildFlowElements(
+  mapNodes: MindMapNode[],
+  collapsedIds: Set<string>,
+  nodeMetadata: Record<string, { tested?: boolean; note?: string }>
+): { nodes: Node[]; edges: Edge[] } {
   const nodes: Node[] = [];
   const edges: Edge[] = [];
 
+  // Determine which nodes are hidden due to collapsed ancestors
+  const hiddenIds = new Set<string>();
+  const markHidden = (parentId: string) => {
+    for (const mn of mapNodes) {
+      if (mn.parentId === parentId) {
+        hiddenIds.add(mn.id);
+        markHidden(mn.id);
+      }
+    }
+  };
+  for (const id of collapsedIds) {
+    markHidden(id);
+  }
+
   for (const mn of mapNodes) {
+    if (hiddenIds.has(mn.id)) continue;
+
     let style: React.CSSProperties = {};
 
     if (mn.type === "root") {
@@ -114,15 +146,26 @@ function buildFlowElements(mapNodes: MindMapNode[]): { nodes: Node[]; edges: Edg
       };
     }
 
+    const meta = nodeMetadata[mn.id] || {};
+
     nodes.push({
       id: mn.id,
-      position: { x: 0, y: 0 }, // dagre will position
-      data: { label: mn.label },
+      type: "mindMapNode",
+      position: { x: 0, y: 0 },
+      data: {
+        label: mn.label + (collapsedIds.has(mn.id) ? " ▸" : ""),
+        description: mn.description,
+        attackIdeas: mn.attackIdeas,
+        severity: mn.severity,
+        nodeType: mn.type,
+        parentId: mn.parentId,
+        tested: meta.tested,
+        note: meta.note,
+      } as MindMapNodeData,
       style,
     });
 
-    if (mn.parentId) {
-      const parentNode = mapNodes.find((n) => n.id === mn.parentId);
+    if (mn.parentId && !hiddenIds.has(mn.parentId)) {
       const edgeColor = mn.type === "category" ? GREEN : SEV_BORDER[mn.severity || "low"] || "#444";
 
       edges.push({
@@ -146,6 +189,7 @@ function buildFlowElements(mapNodes: MindMapNode[]): { nodes: Node[]; edges: Edg
 
 /* ── Canvas component ── */
 function MindMapCanvas() {
+  const navigate = useNavigate();
   const [domain, setDomain] = useState("");
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -155,17 +199,22 @@ function MindMapCanvas() {
   const rawNodesRef = useRef<MindMapNode[]>([]);
   const { fitView, zoomIn, zoomOut } = useReactFlow();
 
+  // Interaction state
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set());
+  const [checkedIdeas, setCheckedIdeas] = useState<Record<string, boolean>>({});
+  const [nodeMetadata, setNodeMetadata] = useState<Record<string, { tested?: boolean; note?: string }>>({});
+  const [contextNodeId, setContextNodeId] = useState<string | null>(null);
+
   const applyLayout = useCallback(
-    (data: MindMapNode[], dir: "LR" | "TB") => {
-      const { nodes: n, edges: e } = buildFlowElements(data);
-      // Re-layout with direction
+    (data: MindMapNode[], dir: "LR" | "TB", collapsed?: Set<string>, meta?: Record<string, { tested?: boolean; note?: string }>) => {
+      const { nodes: n, edges: e } = buildFlowElements(data, collapsed ?? collapsedIds, meta ?? nodeMetadata);
       const laid = layoutWithDagre(n, e, dir);
       setNodes(laid.nodes);
       setEdges(laid.edges);
-      // Smooth zoom-to-fit
       setTimeout(() => fitView({ padding: 0.15, duration: 800 }), 150);
     },
-    [setNodes, setEdges, fitView]
+    [setNodes, setEdges, fitView, collapsedIds, nodeMetadata]
   );
 
   const generate = async () => {
@@ -174,12 +223,16 @@ function MindMapCanvas() {
       return;
     }
     setLoading(true);
+    setSelectedNodeId(null);
+    setCollapsedIds(new Set());
+    setCheckedIdeas({});
+    setNodeMetadata({});
     try {
       const raw = await callGemini(buildMindMapPrompt(domain));
       const parsed = parseMindMapNodes(raw);
       rawNodesRef.current = parsed;
       setHasData(true);
-      applyLayout(parsed, direction);
+      applyLayout(parsed, direction, new Set(), {});
       toast.success(`Mind map generated — ${parsed.length} nodes ✓`);
     } catch (err: any) {
       toast.error(err.message || "Failed to generate mind map");
@@ -197,6 +250,71 @@ function MindMapCanvas() {
   const exportImage = () => {
     toast.info("Use your browser's screenshot tool or Ctrl+P to export");
   };
+
+  // Node click → open side panel
+  const onNodeClick = useCallback((_: any, node: Node) => {
+    setSelectedNodeId(node.id);
+  }, []);
+
+  // Double click → toggle collapse
+  const onNodeDoubleClick = useCallback((_: any, node: Node) => {
+    const d = node.data as MindMapNodeData;
+    if (d.nodeType === "attack") return; // leaves don't collapse
+
+    setCollapsedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(node.id)) next.delete(node.id);
+      else next.add(node.id);
+      // Re-layout
+      setTimeout(() => applyLayout(rawNodesRef.current, direction, next), 0);
+      return next;
+    });
+  }, [applyLayout, direction]);
+
+  // Context menu actions
+  const handleContextAction = (action: string) => {
+    if (!contextNodeId) return;
+    const mn = rawNodesRef.current.find((n) => n.id === contextNodeId);
+    if (!mn) return;
+
+    switch (action) {
+      case "note": {
+        const note = prompt("Add a note for: " + mn.label);
+        if (note !== null) {
+          setNodeMetadata((prev) => {
+            const next = { ...prev, [contextNodeId]: { ...prev[contextNodeId], note } };
+            setTimeout(() => applyLayout(rawNodesRef.current, direction, collapsedIds, next), 0);
+            return next;
+          });
+          toast.success("Note added");
+        }
+        break;
+      }
+      case "tested": {
+        setNodeMetadata((prev) => {
+          const next = { ...prev, [contextNodeId]: { ...prev[contextNodeId], tested: !prev[contextNodeId]?.tested } };
+          setTimeout(() => applyLayout(rawNodesRef.current, direction, collapsedIds, next), 0);
+          return next;
+        });
+        toast.success("Toggled tested status");
+        break;
+      }
+      case "copy": {
+        navigator.clipboard.writeText(mn.attackIdeas.join("\n"));
+        toast.success("Attack ideas copied");
+        break;
+      }
+      case "analyze": {
+        navigate(`/analyzer?target=${encodeURIComponent(mn.label)}`);
+        break;
+      }
+    }
+    setContextNodeId(null);
+  };
+
+  const selectedNode = selectedNodeId
+    ? nodes.find((n) => n.id === selectedNodeId)
+    : null;
 
   const btn =
     "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono border border-border/30 bg-card/80 text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors cursor-pointer backdrop-blur-sm";
@@ -244,45 +362,85 @@ function MindMapCanvas() {
 
       {/* Canvas */}
       <div className="flex-1 relative">
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          fitView
-          fitViewOptions={{ padding: 0.15 }}
-          proOptions={{ hideAttribution: true }}
-          style={{ background: "#0a0a0a" }}
-          minZoom={0.1}
-          maxZoom={2}
-        >
-          <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#ffffff08" />
+        <ContextMenu>
+          <ContextMenuTrigger asChild>
+            <div className="h-full w-full">
+              <ReactFlow
+                nodes={nodes}
+                edges={edges}
+                onNodesChange={onNodesChange}
+                onEdgesChange={onEdgesChange}
+                onNodeClick={onNodeClick}
+                onNodeDoubleClick={onNodeDoubleClick}
+                onNodeContextMenu={(e, node) => {
+                  e.preventDefault();
+                  setContextNodeId(node.id);
+                }}
+                nodeTypes={nodeTypes}
+                fitView
+                fitViewOptions={{ padding: 0.15 }}
+                proOptions={{ hideAttribution: true }}
+                style={{ background: "#0a0a0a" }}
+                minZoom={0.1}
+                maxZoom={2}
+              >
+                <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#ffffff08" />
 
-          {/* Legend */}
-          <Panel position="top-right">
-            <div className="rounded-lg border border-border/20 bg-black/90 backdrop-blur-sm p-3 space-y-1.5">
-              <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-2">Legend</p>
-              {LEGEND.map((l) => (
-                <div key={l.label} className="flex items-center gap-2">
-                  <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ background: l.color }} />
-                  <span className="text-[10px] font-mono text-muted-foreground">{l.label}</span>
-                </div>
-              ))}
+                {/* Legend */}
+                <Panel position="top-right">
+                  <div className="rounded-lg border border-border/20 bg-black/90 backdrop-blur-sm p-3 space-y-1.5">
+                    <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-2">Legend</p>
+                    {LEGEND.map((l) => (
+                      <div key={l.label} className="flex items-center gap-2">
+                        <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ background: l.color }} />
+                        <span className="text-[10px] font-mono text-muted-foreground">{l.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </Panel>
+
+                {/* Empty state */}
+                {!hasData && !loading && (
+                  <Panel position="top-center">
+                    <div className="mt-[30vh] text-center space-y-4">
+                      <Network className="h-16 w-16 text-muted-foreground/20 mx-auto" />
+                      <p className="text-sm font-mono text-muted-foreground/50">
+                        Enter a domain above to generate your attack surface map
+                      </p>
+                    </div>
+                  </Panel>
+                )}
+              </ReactFlow>
             </div>
-          </Panel>
+          </ContextMenuTrigger>
 
-          {/* Empty state */}
-          {!hasData && !loading && (
-            <Panel position="top-center">
-              <div className="mt-[30vh] text-center space-y-4">
-                <Network className="h-16 w-16 text-muted-foreground/20 mx-auto" />
-                <p className="text-sm font-mono text-muted-foreground/50">
-                  Enter a domain above to generate your attack surface map
-                </p>
-              </div>
-            </Panel>
-          )}
-        </ReactFlow>
+          <ContextMenuContent className="w-48 font-mono text-xs">
+            <ContextMenuItem onClick={() => handleContextAction("note")} className="cursor-pointer">
+              <StickyNote className="h-3.5 w-3.5 mr-2" /> Add Note
+            </ContextMenuItem>
+            <ContextMenuItem onClick={() => handleContextAction("tested")} className="cursor-pointer">
+              <CheckCircle className="h-3.5 w-3.5 mr-2" /> Mark Tested
+            </ContextMenuItem>
+            <ContextMenuItem onClick={() => handleContextAction("copy")} className="cursor-pointer">
+              <Copy className="h-3.5 w-3.5 mr-2" /> Copy Ideas
+            </ContextMenuItem>
+            <ContextMenuItem onClick={() => handleContextAction("analyze")} className="cursor-pointer">
+              <Search className="h-3.5 w-3.5 mr-2" /> Deep Analyze
+            </ContextMenuItem>
+          </ContextMenuContent>
+        </ContextMenu>
+
+        {/* Side Panel */}
+        {selectedNode && (
+          <MindMapSidePanel
+            nodeId={selectedNode.id}
+            data={selectedNode.data as MindMapNodeData}
+            onClose={() => setSelectedNodeId(null)}
+            onAnalyze={(label) => navigate(`/analyzer?target=${encodeURIComponent(label)}`)}
+            checkedIdeas={checkedIdeas}
+            onToggleIdea={(key) => setCheckedIdeas((prev) => ({ ...prev, [key]: !prev[key] }))}
+          />
+        )}
       </div>
     </div>
   );
