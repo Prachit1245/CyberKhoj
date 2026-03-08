@@ -162,6 +162,7 @@ const AppSidebar = () => {
 
       {/* Quick Analyze FAB + Modal */}
       <QuickAnalyze />
+      <CommandPalette />
     </div>
   );
 };
