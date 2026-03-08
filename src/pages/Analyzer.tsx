@@ -98,7 +98,7 @@ const Analyzer = () => {
   const [errorCode, setErrorCode] = useState<GeminiErrorCode | null>(null);
   const [resultTab, setResultTab] = useState<(typeof RESULT_TABS)[number]>("Attack Paths");
   const [selectedTemplate, setSelectedTemplate] = useState<TargetTemplate | null>(null);
-
+  const [beginner, setBeginner] = useState(isBeginnerMode);
   // Check for prefill from OWASP page
   useEffect(() => {
     const raw = sessionStorage.getItem("hackmind_prefill");
