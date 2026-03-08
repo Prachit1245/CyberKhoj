@@ -27,7 +27,7 @@ import QuickAnalyze from "@/components/QuickAnalyze";
 import CommandPalette from "@/components/CommandPalette";
 import ShortcutsModal from "@/components/ShortcutsModal";
 
-const OFFLINE_OK = new Set(["/history", "/payloads", "/cheatsheets", "/findings"]);
+const OFFLINE_OK = new Set(["/history", "/payloads", "/cheatsheets", "/findings", "/bookmarks"]);
 const NEEDS_AI = new Set(["/analyzer", "/attack", "/mindmap"]);
 
 const NAV_ITEMS = [
