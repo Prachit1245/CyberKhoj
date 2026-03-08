@@ -1,11 +1,8 @@
 import { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { Key, Menu, X, Github } from "lucide-react";
-import { hasApiKey, getApiKey, saveApiKey, removeApiKey } from "@/lib/gemini";
+import { hasApiKey, getApiKey, saveApiKey, removeApiKey, validateApiKey } from "@/lib/ai";
 import HackMindLogo from "@/components/HackMindLogo";
-
-const MODEL_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent";
 
 const NAV_LINKS = [
   { to: "/", label: "Home" },
@@ -45,13 +42,9 @@ const Navbar = () => {
     setValidating(true);
     setKeyError("");
     try {
-      const res = await fetch(`${MODEL_URL}?key=${trimmed}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents: [{ parts: [{ text: "Say OK" }] }] }),
-      });
-      if (!res.ok) {
-        setKeyError("Invalid key — check aistudio.google.com");
+      const result = await validateApiKey(trimmed);
+      if (!result.ok) {
+        setKeyError(result.error || "Invalid key.");
         setValidating(false);
         return;
       }
@@ -241,7 +234,7 @@ const Navbar = () => {
                     setNewKey(e.target.value);
                     setKeyError("");
                   }}
-                  placeholder="Paste your Gemini API key..."
+                  placeholder="Paste your Groq API key..."
                   className="w-full rounded-lg border border-border bg-muted/50 px-4 py-3 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 transition-colors"
                 />
                 {keyError && (

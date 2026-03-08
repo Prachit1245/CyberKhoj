@@ -1,12 +1,9 @@
 import { useState, useEffect, type ReactNode } from "react";
 import { Play, X } from "lucide-react";
-import { hasApiKey, saveApiKey } from "@/lib/gemini";
+import { hasApiKey, saveApiKey, validateApiKey } from "@/lib/ai";
 import { toast } from "@/components/Toast";
 import EthicalDisclaimer from "@/components/EthicalDisclaimer";
 import HackMindLogo from "@/components/HackMindLogo";
-
-const VALIDATE_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent";
 
 const ApiKeyGate = ({ children }: { children: ReactNode }) => {
   const [unlocked, setUnlocked] = useState(hasApiKey());
@@ -31,32 +28,10 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
     setError("");
 
     try {
-      const res = await fetch(`${VALIDATE_URL}?key=${trimmed}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents: [{ parts: [{ text: "Say OK" }] }] }),
-      });
+      const result = await validateApiKey(trimmed);
 
-      if (!res.ok) {
-        const body = await res.text();
-        console.error("API key validation failed:", res.status, body);
-
-        if (res.status === 429) {
-          // Key is valid but quota is exhausted; let user proceed so app can show quota errors contextually.
-          saveApiKey(trimmed);
-          setSuccessAnim(true);
-          toast.warning("API key saved, but your Gemini quota is currently exhausted (429).");
-          setTimeout(() => setUnlocked(true), 600);
-          return;
-        }
-
-        if (res.status === 400) {
-          setError("Request failed while validating key. Please try again.");
-        } else if (res.status === 403) {
-          setError("API key is restricted or Gemini API is not enabled for this project.");
-        } else {
-          setError(`Validation failed (${res.status}). Please verify your key and try again.`);
-        }
+      if (!result.ok) {
+        setError(result.error || "Validation failed.");
         return;
       }
 
@@ -65,13 +40,13 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
       setTimeout(() => setUnlocked(true), 600);
     } catch (err) {
       console.error("API key validation error:", err);
-      // Network errors in preview — accept key if it looks valid (starts with AIza)
-      if (trimmed.startsWith("AIza")) {
+      // Network errors — accept key if it looks plausible (gsk_ prefix for Groq)
+      if (trimmed.startsWith("gsk_")) {
         saveApiKey(trimmed);
         setSuccessAnim(true);
         setTimeout(() => setUnlocked(true), 600);
       } else {
-        setError("Could not validate key. Make sure it starts with 'AIza' and try again.");
+        setError("Could not validate key. Check your Groq API key and try again.");
       }
     } finally {
       setLoading(false);
@@ -88,7 +63,7 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
         </div>
 
         <p className="text-muted-foreground font-mono text-sm">
-          You need a free Gemini API key to use this app.
+          You need a free Groq API key to use this app.
           <br />
           It takes 30 seconds.
           <span className="blinking-cursor ml-0.5 text-primary">▌</span>
@@ -101,7 +76,7 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
               <span className="text-primary">01</span> — Get your key
             </p>
             <a
-              href="https://aistudio.google.com/apikey"
+              href="https://console.groq.com/keys"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 w-full rounded-lg bg-primary px-5 py-3 font-heading font-bold text-primary-foreground transition-all hover:brightness-110"
@@ -128,7 +103,7 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
                 setKey(e.target.value);
                 setError("");
               }}
-              placeholder="AIza..."
+              placeholder="gsk_..."
               className="w-full rounded-lg border border-border bg-muted/50 px-4 py-3 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 transition-colors"
             />
             {error && (

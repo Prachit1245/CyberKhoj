@@ -21,7 +21,7 @@ import {
   Accessibility,
 } from "lucide-react";
 import { toast } from "@/components/Toast";
-import { getApiKey, saveApiKey, removeApiKey, hasApiKey } from "@/lib/gemini";
+import { getApiKey, saveApiKey, removeApiKey, hasApiKey, validateApiKey } from "@/lib/ai";
 import { resetTour, isTourCompleted } from "@/components/OnboardingTour";
 import { usePWAInstall } from "@/hooks/usePWAInstall";
 
@@ -60,8 +60,6 @@ const loadPrefs = (): Prefs => {
 const savePrefs = (p: Prefs) => localStorage.setItem(PREFS_KEY, JSON.stringify(p));
 
 /* ─── Validate key helper ─── */
-const MODEL_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent";
 
 /* ─── Toggle Component ─── */
 const Toggle = ({
@@ -196,21 +194,17 @@ const SettingsPage = () => {
     setTesting(true);
     setTestResult(null);
     try {
-      const res = await fetch(`${MODEL_URL}?key=${k}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents: [{ parts: [{ text: "Say OK" }] }] }),
-      });
-      if (res.ok || res.status === 429) {
+      const result = await validateApiKey(k);
+      if (result.ok) {
         setTestResult("ok");
-        toast.success("API key is valid" + (res.status === 429 ? " (quota exhausted)" : ""));
+        toast.success("API key is valid");
       } else {
         setTestResult("fail");
-        toast.error("API key validation failed — check your key");
+        toast.error(result.error || "API key validation failed");
       }
     } catch {
       setTestResult("fail");
-      toast.error("Could not reach Gemini API");
+      toast.error("Could not reach Groq API");
     } finally {
       setTesting(false);
     }

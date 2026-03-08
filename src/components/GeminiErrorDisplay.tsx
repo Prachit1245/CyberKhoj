@@ -9,7 +9,7 @@ import {
   Settings,
   Terminal,
 } from "lucide-react";
-import type { GeminiErrorCode } from "@/lib/gemini";
+import type { GeminiErrorCode } from "@/lib/ai";
 
 interface GeminiErrorDisplayProps {
   code: GeminiErrorCode;

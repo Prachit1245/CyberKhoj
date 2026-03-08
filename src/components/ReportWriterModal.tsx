@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { X, Loader2, Copy, Check, FileText } from "lucide-react";
 import ReactMarkdown from "react-markdown";
-import { callGemini } from "@/lib/gemini";
+import { callGemini } from "@/lib/ai";
 import type { Finding } from "@/lib/findings";
 
 interface Props {

@@ -5,7 +5,7 @@ import { SkeletonResultCards } from "@/components/Skeletons";
 import { extractDomain } from "@/lib/targetNotes";
 import TargetNotesPanel from "@/components/TargetNotesPanel";
 import useOnline from "@/hooks/useOnline";
-import { callGemini, GeminiError, abortGeminiRequest, type GeminiErrorCode } from "@/lib/gemini";
+import { callGemini, GeminiError, abortGeminiRequest, type GeminiErrorCode } from "@/lib/ai";
 import GeminiErrorDisplay from "@/components/GeminiErrorDisplay";
 import { addToHistory, incrementStat } from "@/lib/store";
 import { checkAnalysisAchievements, checkDeepAnalysis, checkCriticalFound, checkJwtAnalysis } from "@/lib/achievements";

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { AlertTriangle, Zap, ShoppingCart, LogIn, Server, Shield, Upload, ListChecks, Download, CheckSquare, XSquare, Copy, Search, Shuffle, WifiOff, Radar } from "lucide-react";
 import EthicalDisclaimer from "@/components/EthicalDisclaimer";
 import useOnline from "@/hooks/useOnline";
-import { callGemini, GeminiError } from "@/lib/gemini";
+import { callGemini, GeminiError } from "@/lib/ai";
 import { buildAttackModePrompt, parseAttackIdeas, type AttackIdea } from "@/lib/prompts";
 import { toast } from "@/components/Toast";
 import { useDebouncedCallback } from "@/hooks/useDebounce";

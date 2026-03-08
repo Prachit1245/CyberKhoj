@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { hasApiKey } from "@/lib/gemini";
+import { hasApiKey } from "@/lib/ai";
 import { getUsageCount, DAILY_LIMIT } from "@/lib/usage";
 import { getBookmarkCount } from "@/lib/bookmarks";
 import useOnline from "@/hooks/useOnline";
