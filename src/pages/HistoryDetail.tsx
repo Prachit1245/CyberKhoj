@@ -271,6 +271,9 @@ export default function HistoryDetail() {
             </AlertDialogContent>
           </AlertDialog>
         </div>
+
+        {/* Notes Panel */}
+        <TargetNotesPanel domain={extractDomain(record.target)} />
       </div>
 
       {/* Results */}
