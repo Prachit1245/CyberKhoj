@@ -3,7 +3,7 @@ import { hasApiKey, saveApiKey } from "@/lib/gemini";
 import { toast } from "@/components/Toast";
 
 const VALIDATE_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent";
 
 const ApiKeyGate = ({ children }: { children: ReactNode }) => {
   const [unlocked, setUnlocked] = useState(hasApiKey());
