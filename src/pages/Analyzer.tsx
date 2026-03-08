@@ -3,10 +3,12 @@ import { Trash2, ArrowRight, Loader2 } from "lucide-react";
 import { callGemini } from "@/lib/gemini";
 import { addToHistory, incrementStat } from "@/lib/store";
 import { parseTarget, contextToPromptBlock } from "@/lib/parseTarget";
+import JwtAnalyzer from "@/components/JwtAnalyzer";
 
 const DEPTHS = ["Quick", "Standard", "Deep"] as const;
 const TYPES = ["URL", "HTTP Request", "JWT Token", "GraphQL"] as const;
 const RESULT_TABS = ["Attack Paths", "Explanation", "Raw JSON"] as const;
+const PAGE_TABS = ["URL Analyzer", "JWT Decoder"] as const;
 
 type Depth = (typeof DEPTHS)[number];
 type AnalysisType = (typeof TYPES)[number];
