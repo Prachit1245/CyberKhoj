@@ -22,7 +22,7 @@ import {
   ChevronsDownUp, ChevronsUpDown, List, Loader2,
 } from "lucide-react";
 import html2canvas from "html2canvas";
-import { callGemini, GeminiError } from "@/lib/gemini";
+import { callGemini, GeminiError } from "@/lib/ai";
 import { buildMindMapPrompt, parseMindMapNodes, type MindMapNode } from "@/lib/prompts";
 import { toast } from "@/components/Toast";
 import { useNavigate } from "react-router-dom";

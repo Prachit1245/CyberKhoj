@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { Loader2, CheckSquare, Square, Copy, ChevronDown, ChevronRight, Search as SearchIcon, Download, Terminal, Globe, Eye } from "lucide-react";
-import { callGemini, GeminiError } from "@/lib/gemini";
+import { callGemini, GeminiError } from "@/lib/ai";
 import { toast } from "@/components/Toast";
 
 /* ── Types ── */

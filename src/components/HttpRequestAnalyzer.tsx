@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ArrowRight, Loader2, Copy, Shield, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { callGemini } from "@/lib/gemini";
+import { callGemini } from "@/lib/ai";
 import { addToHistory, incrementStat } from "@/lib/store";
 
 interface ParsedHeader {
