@@ -150,6 +150,8 @@ const Navbar = () => {
           {/* Mobile hamburger */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={mobileOpen}
             className="md:hidden text-muted-foreground hover:text-foreground transition-colors"
           >
             {mobileOpen ? <X size={22} /> : <Menu size={22} />}
