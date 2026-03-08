@@ -340,6 +340,25 @@ const Analyzer = () => {
           </div>
         </div>
 
+        {/* Beginner Mode toggle */}
+        <div className="space-y-1.5">
+          <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Mode</p>
+          <button
+            onClick={() => {
+              const next = !beginner;
+              setBeginner(next);
+              setBeginnerMode(next);
+            }}
+            className={`flex items-center gap-2 px-4 py-2 text-xs font-mono rounded-lg border transition-all ${
+              beginner
+                ? "border-primary bg-primary/10 text-primary"
+                : "border-border bg-card text-muted-foreground hover:text-foreground hover:border-foreground/30"
+            }`}
+          >
+            <GraduationCap size={14} />
+            Beginner
+          </button>
+        </div>
         {/* Type tabs */}
         <div className="space-y-1.5">
           <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Type</p>
