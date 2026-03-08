@@ -43,6 +43,7 @@ const NAV_ITEMS = [
   { to: "/vuln-categories", label: "Vuln Categories", icon: Layers },
   { to: "/findings", label: "Findings", icon: Bug },
   { to: "/bookmarks", label: "Bookmarks", icon: Bookmark },
+  { to: "/achievements", label: "Achievements", icon: Trophy },
   { to: "/settings", label: "Settings", icon: Settings },
 ];
 
