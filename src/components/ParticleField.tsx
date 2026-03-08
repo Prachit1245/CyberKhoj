@@ -23,6 +23,7 @@ const ParticleField = () => {
     let animId: number;
 
     const resize = () => {
+      ctx.setTransform(1, 0, 0, 1, 0, 0); // reset transform before rescaling
       canvas.width = canvas.offsetWidth * devicePixelRatio;
       canvas.height = canvas.offsetHeight * devicePixelRatio;
       ctx.scale(devicePixelRatio, devicePixelRatio);

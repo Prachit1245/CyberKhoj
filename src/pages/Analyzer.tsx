@@ -3,7 +3,7 @@ import { Trash2, ArrowRight, Loader2, WifiOff, GraduationCap } from "lucide-reac
 import { extractDomain } from "@/lib/targetNotes";
 import TargetNotesPanel from "@/components/TargetNotesPanel";
 import useOnline from "@/hooks/useOnline";
-import { callGemini, GeminiError, type GeminiErrorCode } from "@/lib/gemini";
+import { callGemini, GeminiError, abortGeminiRequest, type GeminiErrorCode } from "@/lib/gemini";
 import GeminiErrorDisplay from "@/components/GeminiErrorDisplay";
 import { addToHistory, incrementStat } from "@/lib/store";
 import { checkAnalysisAchievements, checkDeepAnalysis, checkCriticalFound, checkJwtAnalysis } from "@/lib/achievements";
@@ -159,15 +159,18 @@ const Analyzer = () => {
     const run = () => { if (!loading) handleAnalyze(); };
     document.addEventListener("hackmind:run-analysis", run);
     return () => document.removeEventListener("hackmind:run-analysis", run);
-  });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, target, depth, analysisType, selectedTemplate, beginner]);
 
   const handleAnalyze = async () => {
+    if (loading) return; // Prevent duplicate calls
     const trimmed = target.trim();
     if (!trimmed) {
       setError("Please paste a target to analyze.");
       return;
     }
 
+    abortGeminiRequest();
     setLoading(true);
     setError("");
     setErrorCode(null);
@@ -215,6 +218,7 @@ const Analyzer = () => {
       setResultTab("Attack Paths");
     } catch (e) {
       if (e instanceof GeminiError) {
+        if (e.code === "ABORTED") return; // silently ignore aborted requests
         setError(e.message);
         setErrorCode(e.code);
       } else {
