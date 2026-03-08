@@ -173,6 +173,7 @@ const AppSidebar = () => {
       {/* Quick Analyze FAB + Modal */}
       <QuickAnalyze />
       <CommandPalette />
+      <ShortcutsModal />
     </div>
   );
 };
