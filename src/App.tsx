@@ -92,6 +92,17 @@ const App = () => (
               </Suspense>
             }
           />
+          <Route
+            path="/share"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Navbar />
+                <div className="pt-14">
+                  <SharedView />
+                </div>
+              </Suspense>
+            }
+          />
 
           {/* Protected routes — API key required */}
           <Route
