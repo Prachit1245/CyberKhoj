@@ -32,6 +32,7 @@ interface Prefs {
   showUsageCounter: boolean;
   animations: boolean;
   typingSound: boolean;
+  beginnerMode: boolean;
 }
 
 const DEFAULT_PREFS: Prefs = {
@@ -40,6 +41,7 @@ const DEFAULT_PREFS: Prefs = {
   showUsageCounter: true,
   animations: true,
   typingSound: false,
+  beginnerMode: false,
 };
 
 const loadPrefs = (): Prefs => {
