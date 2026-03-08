@@ -274,7 +274,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="space-y-8 max-w-5xl">
+    <div className="space-y-8 max-w-5xl mx-auto">
       {/* Welcome */}
       <div>
         <h2 className="font-heading text-2xl md:text-3xl font-extrabold text-foreground">
