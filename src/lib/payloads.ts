@@ -334,3 +334,83 @@ export const PAYLOAD_CATEGORIES: PayloadCategory[] = [
 ];
 
 export const TOTAL_PAYLOADS = PAYLOAD_CATEGORIES.reduce((sum, cat) => sum + cat.payloads.length, 0);
+
+/* ── Custom Payloads (user-created, stored in localStorage) ── */
+const CUSTOM_KEY = "hackmind_custom_payloads";
+
+export interface CustomPayload {
+  id: string;
+  code: string;
+  description: string;
+  category: string;
+  severity: Payload["severity"];
+  useCase: string;
+  createdAt: string;
+}
+
+export function getCustomPayloads(): CustomPayload[] {
+  try {
+    return JSON.parse(localStorage.getItem(CUSTOM_KEY) || "[]");
+  } catch { return []; }
+}
+
+export function saveCustomPayloads(payloads: CustomPayload[]) {
+  localStorage.setItem(CUSTOM_KEY, JSON.stringify(payloads));
+}
+
+export function addCustomPayload(payload: Omit<CustomPayload, "id" | "createdAt">): CustomPayload {
+  const list = getCustomPayloads();
+  const newPayload: CustomPayload = {
+    ...payload,
+    id: `custom-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    createdAt: new Date().toISOString(),
+  };
+  list.unshift(newPayload);
+  saveCustomPayloads(list);
+  return newPayload;
+}
+
+export function updateCustomPayload(id: string, partial: Partial<CustomPayload>) {
+  const list = getCustomPayloads().map((p) =>
+    p.id === id ? { ...p, ...partial } : p
+  );
+  saveCustomPayloads(list);
+}
+
+export function deleteCustomPayload(id: string) {
+  saveCustomPayloads(getCustomPayloads().filter((p) => p.id !== id));
+}
+
+export function exportCustomPayloadsJson(): string {
+  return JSON.stringify(getCustomPayloads(), null, 2);
+}
+
+export function importCustomPayloads(json: string): number {
+  const imported: CustomPayload[] = JSON.parse(json);
+  if (!Array.isArray(imported)) throw new Error("Invalid format");
+  const existing = getCustomPayloads();
+  const existingIds = new Set(existing.map((p) => p.id));
+  let count = 0;
+  for (const p of imported) {
+    if (!p.code || !p.description) continue;
+    if (existingIds.has(p.id)) continue;
+    existing.push({
+      id: p.id || `import-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      code: p.code,
+      description: p.description,
+      category: p.category || "Custom",
+      severity: p.severity || "medium",
+      useCase: p.useCase || "",
+      createdAt: p.createdAt || new Date().toISOString(),
+    });
+    count++;
+  }
+  saveCustomPayloads(existing);
+  return count;
+}
+
+/** All custom payload categories for dropdown */
+export const CUSTOM_CATEGORIES = [
+  "Custom", "XSS", "SQLi", "SSRF", "IDOR", "Auth Bypass", "CSRF",
+  "LFI", "RCE", "Command Injection", "Header Injection", "Other",
+];
