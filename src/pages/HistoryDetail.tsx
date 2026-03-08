@@ -246,8 +246,11 @@ export default function HistoryDetail() {
           <Button variant="outline" size="sm" onClick={handleExportJson} className="text-xs font-mono cursor-pointer">
             <FileJson className="h-3.5 w-3.5 mr-1" /> Export JSON
           </Button>
-          <Button variant="outline" size="sm" onClick={handleShare} className="text-xs font-mono cursor-pointer">
+          <Button variant="outline" size="sm" onClick={handleShare} className="text-xs font-mono cursor-pointer no-print">
             <Share2 className="h-3.5 w-3.5 mr-1" /> Share
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => window.print()} className="text-xs font-mono cursor-pointer no-print">
+            <Printer className="h-3.5 w-3.5 mr-1" /> Print
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
