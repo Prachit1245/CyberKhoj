@@ -18,7 +18,7 @@ import Dagre from "@dagrejs/dagre";
 import {
   ZoomIn, ZoomOut, Maximize, Image, FileJson, ClipboardList, Save, Network,
   TreePine, Zap, StickyNote, CheckCircle, Copy, Search, WifiOff, Plus,
-  ChevronsDownUp, ChevronsUpDown,
+  ChevronsDownUp, ChevronsUpDown, List,
 } from "lucide-react";
 import html2canvas from "html2canvas";
 import { callGemini, GeminiError } from "@/lib/gemini";
