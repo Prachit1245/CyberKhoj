@@ -17,7 +17,7 @@ import {
   ToggleLeft,
   ToggleRight,
 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/components/Toast";
 import { getApiKey, saveApiKey, removeApiKey, hasApiKey } from "@/lib/gemini";
 
 /* ─── Preferences stored in localStorage ─── */

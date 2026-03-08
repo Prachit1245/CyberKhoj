@@ -14,7 +14,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { toast } from "sonner";
+import { toast } from "@/components/Toast";
 import { getHistoryById, deleteFromHistory, type AnalysisRecord } from "@/lib/store";
 import SeveritySummaryBar from "@/components/SeveritySummaryBar";
 import AttackPathCard from "@/components/AttackPathCard";

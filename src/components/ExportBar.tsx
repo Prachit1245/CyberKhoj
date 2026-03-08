@@ -1,6 +1,6 @@
 import type { AttackPath, AnalysisResult } from "@/types";
 import { Copy, FileJson, FileText, Printer, Download } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/components/Toast";
 
 function pathsToMarkdown(paths: AttackPath[], input?: string): string {
   const lines: string[] = [];

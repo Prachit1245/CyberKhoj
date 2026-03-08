@@ -54,12 +54,8 @@ export const callGemini = async (prompt: string): Promise<string> => {
 
   // Warn at thresholds
   if (count === 900 || count === 950 || count === 990) {
-    const { toast } = await import("@/hooks/use-toast");
-    toast({
-      title: "Usage Warning",
-      description: `You've used ${count} / ${DAILY_LIMIT} analyses today.`,
-      variant: "destructive",
-    });
+    const { toast } = await import("@/components/Toast");
+    toast.warning(`You've used ${count} / ${DAILY_LIMIT} analyses today.`);
   }
 
   const data = await response.json();

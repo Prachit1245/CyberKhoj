@@ -3,7 +3,7 @@ import { X, Copy, Zap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { toast } from "@/components/Toast";
 import type { MindMapNodeData } from "./types";
 
 const SEV_COLORS: Record<string, string> = {

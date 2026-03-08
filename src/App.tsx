@@ -1,5 +1,4 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
+import { ToastProvider } from "@/components/Toast";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -25,9 +24,8 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <ToastProvider>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
       <ApiKeyGate>
         <BrowserRouter>
           <Routes>
@@ -65,6 +63,7 @@ const App = () => (
         </BrowserRouter>
       </ApiKeyGate>
     </TooltipProvider>
+    </ToastProvider>
   </QueryClientProvider>
 );
 

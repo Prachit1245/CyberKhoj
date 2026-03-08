@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { AlertTriangle, Zap, ShoppingCart, LogIn, Server, Shield, Upload, ListChecks, Download, CheckSquare, XSquare, Copy, Search, Shuffle } from "lucide-react";
 import { callGemini } from "@/lib/gemini";
 import { buildAttackModePrompt, parseAttackIdeas, type AttackIdea } from "@/lib/prompts";
-import { toast } from "sonner";
+import { toast } from "@/components/Toast";
 
 const TEMPLATES = [
   { label: "E-commerce Site", icon: ShoppingCart, context: "e-commerce web application with cart, checkout, payments" },
@@ -74,7 +74,7 @@ const AttackMode = () => {
   useEffect(() => {
     if (checklistMode && allIdeas.length > 0 && checked.size === allIdeas.length && !celebrated) {
       setCelebrated(true);
-      toast.success("Attack surface fully tested! 🎯", { duration: 5000 });
+      toast.success("Attack surface fully tested! 🎯");
     }
   }, [checked.size, allIdeas.length, checklistMode, celebrated]);
 

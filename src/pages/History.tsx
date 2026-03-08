@@ -14,7 +14,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { toast } from "sonner";
+import { toast } from "@/components/Toast";
 import { getHistory, deleteFromHistory, clearHistory, setHistory, type AnalysisRecord } from "@/lib/store";
 
 /* ── Type mapping ── */
@@ -118,24 +118,7 @@ export default function History() {
     const timer = setTimeout(() => { undoRef.current = null; }, 5000);
     undoRef.current = { record, timer };
 
-    toast("Analysis deleted", {
-      action: {
-        label: "Undo",
-        onClick: () => {
-          if (undoRef.current) {
-            clearTimeout(undoRef.current.timer);
-            // Re-insert
-            const current = getHistory();
-            current.push(undoRef.current.record);
-            current.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-            setHistory(current);
-            refresh();
-            undoRef.current = null;
-            toast.success("Restored");
-          }
-        },
-      },
-    });
+    toast.info("Analysis deleted");
   };
 
   const handleClearAll = () => {

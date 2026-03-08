@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import type { AnalysisResult } from "@/types";
-import { toast } from "sonner";
+import { toast } from "@/components/Toast";
 import { incrementStat } from "@/lib/store";
 
 const HISTORY_KEY = "hackmind_history";
