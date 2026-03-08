@@ -241,6 +241,7 @@ const SettingsPage = () => {
     "hackmind_bookmarked_payloads",
     "hackmind_bookmarks",
     "hackmind_monthly_goal",
+    "hackmind_achievements",
   ];
 
   const ARRAY_KEYS: Record<string, string> = {
