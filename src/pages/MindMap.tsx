@@ -419,11 +419,12 @@ function MindMapCanvas() {
         />
         <button
           onClick={generate}
-          disabled={loading}
+          disabled={loading || !online}
+          title={!online ? "Requires internet for AI analysis" : undefined}
           className="h-9 px-4 rounded-lg font-mono font-bold text-xs bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
         >
-          <Zap className="h-3.5 w-3.5" />
-          {loading ? "Generating..." : "Generate Mind Map"}
+          {!online ? <WifiOff className="h-3.5 w-3.5" /> : <Zap className="h-3.5 w-3.5" />}
+          {!online ? "Offline" : loading ? "Generating..." : "Generate Mind Map"}
         </button>
 
         <div className="flex-1" />
