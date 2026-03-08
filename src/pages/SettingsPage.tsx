@@ -551,28 +551,39 @@ const SettingsPage = () => {
           </div>
 
           {/* Export / Import */}
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={exportData}
-              className="flex items-center gap-1.5 rounded-md border border-primary/40 px-3 py-2 text-xs font-mono text-primary hover:bg-primary/10 transition-all"
-            >
-              <Download size={13} />
-              Export Backup
-            </button>
-            <button
-              onClick={() => fileRef.current?.click()}
-              className="flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-xs font-mono text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all"
-            >
-              <Upload size={13} />
-              Import Backup
-            </button>
-            <input
-              ref={fileRef}
-              type="file"
-              accept=".json"
-              className="hidden"
-              onChange={importData}
-            />
+          <div className="space-y-3">
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={exportData}
+                className="flex items-center gap-1.5 rounded-md border border-primary/40 px-3 py-2 text-xs font-mono text-primary hover:bg-primary/10 transition-all"
+              >
+                <Download size={13} />
+                Export Everything
+              </button>
+              <button
+                onClick={() => fileRef.current?.click()}
+                className="flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-xs font-mono text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all"
+              >
+                <Upload size={13} />
+                Import Backup
+              </button>
+              <input
+                ref={fileRef}
+                type="file"
+                accept=".json"
+                className="hidden"
+                onChange={importData}
+              />
+            </div>
+            <p className="text-[10px] text-muted-foreground font-mono">
+              Export includes: history, findings, bookmarks, settings, OWASP checklist & stats.
+            </p>
+            {importSummary && (
+              <div className="flex items-center gap-2 text-xs font-mono px-3 py-2 rounded-md bg-primary/10 text-primary border border-primary/20">
+                <Check size={13} />
+                {importSummary}
+              </div>
+            )}
           </div>
 
           {/* Clear actions */}
