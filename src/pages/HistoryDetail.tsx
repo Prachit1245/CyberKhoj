@@ -159,7 +159,7 @@ export default function HistoryDetail() {
   const handleExportMd = () => {
     const md = exportMarkdown(record, attackPaths, true);
     const date = new Date(record.date).toISOString().slice(0, 10);
-    downloadFile(md, `hackmind-${record.target.replace(/[^a-z0-9]/gi, "-")}-${date}.md`, "text/markdown");
+    downloadFile(md, `cyberkhoj-${record.target.replace(/[^a-z0-9]/gi, "-")}-${date}.md`, "text/markdown");
     toast.success("Markdown exported");
   };
 
