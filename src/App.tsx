@@ -105,6 +105,17 @@ const App = () => (
               </Suspense>
             }
           />
+          <Route
+            path="/changelog"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Navbar />
+                <div className="pt-14 px-4 py-10 max-w-5xl mx-auto">
+                  <Changelog />
+                </div>
+              </Suspense>
+            }
+          />
 
           {/* Protected routes — API key required */}
           <Route
