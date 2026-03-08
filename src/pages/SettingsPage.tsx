@@ -237,74 +237,17 @@ const SettingsPage = () => {
     "hackmind_owasp_coverage",
     "hackmind_usage",
     "hackmind_prefs",
+    "hackmind_stats",
+    "hackmind_bookmarked_payloads",
   ];
 
-  const storageSize = useMemo(() => {
-    let total = 0;
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key) {
-        total += key.length + (localStorage.getItem(key)?.length || 0);
-      }
-    }
-    return total;
-  }, []);
-
-  const formatBytes = (chars: number) => {
-    const bytes = chars * 2; // UTF-16
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+  const ARRAY_KEYS: Record<string, string> = {
+    hackmind_history: "id",
+    hackmind_findings: "id",
+    hackmind_bookmarked_payloads: "id",
   };
 
-  const exportData = () => {
-    const data: Record<string, unknown> = {};
-    storageKeys.forEach((key) => {
-      const val = localStorage.getItem(key);
-      if (val) {
-        try {
-          data[key] = JSON.parse(val);
-        } catch {
-          data[key] = val;
-        }
-      }
-    });
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `hackmind-backup-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success("Backup exported successfully");
-  };
-
-  const importData = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      try {
-        const data = JSON.parse(ev.target?.result as string);
-        if (typeof data !== "object" || !data) throw new Error("Invalid format");
-        let imported = 0;
-        Object.entries(data).forEach(([key, value]) => {
-          if (storageKeys.includes(key)) {
-            localStorage.setItem(key, typeof value === "string" ? value : JSON.stringify(value));
-            imported++;
-          }
-        });
-        setKeySet(hasApiKey());
-        setPrefs(loadPrefs());
-        toast.success(`Imported ${imported} data entries`);
-      } catch {
-        toast.error("Invalid backup file");
-      }
-    };
-    reader.readAsText(file);
-    // Reset input
-    if (fileRef.current) fileRef.current.value = "";
-  };
+  const [importSummary, setImportSummary] = useState<string | null>(null);
 
   const clearStorage = (key: string, label: string) => {
     localStorage.removeItem(key);
