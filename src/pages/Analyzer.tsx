@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Trash2, ArrowRight, Loader2 } from "lucide-react";
 import { callGemini } from "@/lib/gemini";
 import { addToHistory, incrementStat } from "@/lib/store";
+import { parseTarget, contextToPromptBlock } from "@/lib/parseTarget";
 
 const DEPTHS = ["Quick", "Standard", "Deep"] as const;
 const TYPES = ["URL", "HTTP Request", "JWT Token", "GraphQL"] as const;
