@@ -1,17 +1,7 @@
 import { type TargetContext, contextToPromptBlock } from "./parseTarget";
+import type { AttackPath, AnalysisDepth } from "@/types";
 
-export type AnalysisDepth = "quick" | "standard" | "deep";
-
-export interface AttackPath {
-  id: number;
-  title: string;
-  category: string;
-  severity: "Critical" | "High" | "Medium" | "Low" | "Info";
-  description: string;
-  payloadExample: string;
-  steps: string[];
-  references: string[];
-}
+export type { AttackPath, AnalysisDepth };
 
 const DEPTH_CONFIG: Record<AnalysisDepth, { count: number; instruction: string }> = {
   quick: {
