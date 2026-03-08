@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Bookmark, BookmarkCheck, CheckSquare, Square, StickyNote, Copy, Check, ChevronDown, ChevronRight, ExternalLink } from "lucide-react";
+import { toggleBookmark, isBookmarked } from "@/lib/bookmarks";
+import { toast } from "@/components/Toast";
 import type { AttackPath, Severity } from "@/types";
 
 const SEVERITY_STYLES: Record<Severity, { border: string; badge: string; label: string }> = {
