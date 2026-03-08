@@ -33,16 +33,26 @@ const DEPTH_CONFIG: Record<AnalysisDepth, { count: number; instruction: string }
 export const buildAnalysisPrompt = (
   target: string,
   context: TargetContext,
-  depth: AnalysisDepth
+  depth: AnalysisDepth,
+  beginnerMode = false
 ): { system: string; user: string } => {
   const cfg = DEPTH_CONFIG[depth];
   const contextBlock = contextToPromptBlock(context);
 
+  const beginnerSystemNote = beginnerMode
+    ? `\nBEGINNER MODE is enabled. Explain each attack path in simple language that a beginner can understand. Include a "beginnerExplanation" field in each object.`
+    : "";
+
   const system = `You are an elite bug bounty hunter and penetration tester with deep expertise in web application security. Analyze the given target and generate specific, actionable attack paths.
+${beginnerSystemNote}
 
 ${JSON_INSTRUCTION}
 
 ${NEGATIVE_CONSTRAINTS}`;
+
+  const beginnerField = beginnerMode
+    ? `\n    "beginnerExplanation": "In simple terms: this means an attacker could see other people's private information just by changing a number in the web address. Imagine if changing your apartment number on a mail label let you read someone else's mail."`
+    : "";
 
   const user = `Analyze this target for security vulnerabilities and generate ${cfg.count} attack paths.
 
@@ -73,7 +83,7 @@ ${cfg.instruction}
     ],
     "references": [
       "https://owasp.org/www-project-web-security-testing-guide/"
-    ]
+    ]${beginnerField}
   }
 ]
 
