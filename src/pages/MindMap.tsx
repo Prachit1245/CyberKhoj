@@ -18,7 +18,7 @@ import { ZoomIn, ZoomOut, Maximize, Image, FileJson, ClipboardList, Save, Networ
 import html2canvas from "html2canvas";
 import { callGemini } from "@/lib/gemini";
 import { buildMindMapPrompt, parseMindMapNodes, type MindMapNode } from "@/lib/prompts";
-import { toast } from "sonner";
+import { toast } from "@/components/Toast";
 import { useNavigate } from "react-router-dom";
 import { addToHistory } from "@/lib/store";
 import MindMapNodeComponent from "@/components/mindmap/MindMapNode";

@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useCallback } from "react";
 import { Search, Copy, Check, ChevronRight, Heart, X, ArrowUpDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
+import { toast } from "@/components/Toast";
 import { PAYLOAD_CATEGORIES, TOTAL_PAYLOADS, type Payload } from "@/lib/payloads";
 import { incrementStat } from "@/lib/store";
 

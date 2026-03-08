@@ -14,7 +14,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { toast } from "sonner";
+import { toast } from "@/components/Toast";
 import { getHistory, deleteFromHistory, clearHistory, setHistory, type AnalysisRecord } from "@/lib/store";
 
 /* ── Type mapping ── */
