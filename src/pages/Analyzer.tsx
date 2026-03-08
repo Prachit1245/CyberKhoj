@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Trash2, ArrowRight, Loader2, WifiOff, GraduationCap } from "lucide-react";
+import AnalysisLoader from "@/components/AnalysisLoader";
+import { SkeletonResultCards } from "@/components/Skeletons";
 import { extractDomain } from "@/lib/targetNotes";
 import TargetNotesPanel from "@/components/TargetNotesPanel";
 import useOnline from "@/hooks/useOnline";
