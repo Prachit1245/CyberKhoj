@@ -246,6 +246,7 @@ const SettingsPage = () => {
     hackmind_history: "id",
     hackmind_findings: "id",
     hackmind_bookmarked_payloads: "id",
+    hackmind_bookmarks: "id",
   };
 
   const [importSummary, setImportSummary] = useState<string | null>(null);
