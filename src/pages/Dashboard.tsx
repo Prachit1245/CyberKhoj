@@ -620,10 +620,20 @@ const Dashboard = () => {
       <div className="space-y-3">
         <h3 className="font-heading text-lg font-bold text-foreground">Recent Analyses</h3>
         {recent.length === 0 ? (
-          <div className="rounded-xl border border-border bg-card p-8 text-center">
-            <p className="text-sm font-mono text-muted-foreground">
-              No analyses yet. Start by analyzing a URL or domain.
-            </p>
+          <div className="rounded-xl border border-border bg-card p-8 text-center space-y-4">
+            <Activity size={32} className="mx-auto text-muted-foreground/30" />
+            <div className="space-y-1">
+              <p className="text-sm font-mono text-muted-foreground">No analyses yet</p>
+              <p className="text-xs font-mono text-muted-foreground/60">
+                Run your first URL analysis to start building your attack history
+              </p>
+            </div>
+            <button
+              onClick={() => navigate("/analyzer")}
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 font-heading text-sm font-bold text-primary-foreground hover:brightness-110 transition-all"
+            >
+              <Target size={16} /> Start First Analysis
+            </button>
           </div>
         ) : (
           <div className="rounded-xl border border-border bg-card overflow-hidden">
