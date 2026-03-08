@@ -4,7 +4,7 @@ import { toast } from "@/components/Toast";
 
 function pathsToMarkdown(paths: AttackPath[], input?: string): string {
   const lines: string[] = [];
-  lines.push(`# HackMind Analysis Report`);
+  lines.push(`# CyberKhoj Analysis Report`);
   if (input) lines.push(`\n**Target:** \`${input}\`\n`);
   lines.push(`**Date:** ${new Date().toISOString().slice(0, 10)}`);
   lines.push(`**Total Paths:** ${paths.length}\n`);
