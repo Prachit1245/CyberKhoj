@@ -14,10 +14,12 @@ import {
   Bug,
   ShieldAlert,
   Layers,
+  WifiOff,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { hasApiKey } from "@/lib/gemini";
 import { getUsageCount, DAILY_LIMIT } from "@/lib/usage";
+import useOnline from "@/hooks/useOnline";
 import QuickAnalyze from "@/components/QuickAnalyze";
 import CommandPalette from "@/components/CommandPalette";
 import ShortcutsModal from "@/components/ShortcutsModal";
