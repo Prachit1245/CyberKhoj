@@ -439,8 +439,14 @@ const Analyzer = () => {
         <TargetIntelligenceCard intel={targetIntel} />
       )}
 
-      {/* Results */}
+      {/* Notes Panel + Results */}
       <div className="space-y-3">
+        {/* Notes toggle (appears when target exists) */}
+        {target.trim() && (
+          <div className="flex justify-end">
+            <TargetNotesPanel domain={extractDomain(target)} />
+          </div>
+        )}
         {/* Result tabs */}
         <div className="flex border-b border-border/50">
           {RESULT_TABS.map((tab) => (
