@@ -541,7 +541,7 @@ const SettingsPage = () => {
               <button
                 onClick={async () => {
                   const ok = await install();
-                  if (ok) toast.success("HackMind installed!");
+                  if (ok) toast.success("CyberKhoj installed!");
                 }}
                 className="flex items-center gap-2 rounded-md bg-primary px-4 py-2.5 text-xs font-heading font-bold text-primary-foreground hover:brightness-110 transition-all glow-primary"
               >
