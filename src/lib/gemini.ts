@@ -3,6 +3,9 @@ const MODEL_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent";
 
 const IS_DEV = import.meta.env.DEV;
+const MIN_REQUEST_INTERVAL_MS = 1200;
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const saveApiKey = (key: string): void => {
   localStorage.setItem(STORAGE_KEY, key);
