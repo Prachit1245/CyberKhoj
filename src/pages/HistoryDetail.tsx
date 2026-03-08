@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { isBeginnerMode } from "@/lib/beginnerMode";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, RefreshCw, FileJson, FileText, Trash2, ChevronRight, Calendar, Target, Layers, Clock, Hash } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -247,7 +248,7 @@ export default function HistoryDetail() {
           <ResultsFilterBar paths={attackPaths}>
             {(filtered) =>
               filtered.map((path) => (
-                <AttackPathCard key={path.id} path={path} onChange={updatePath} />
+                <AttackPathCard key={path.id} path={path} onChange={updatePath} beginnerMode={isBeginnerMode()} />
               ))
             }
           </ResultsFilterBar>

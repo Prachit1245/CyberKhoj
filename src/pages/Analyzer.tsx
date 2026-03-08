@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Trash2, ArrowRight, Loader2, WifiOff } from "lucide-react";
+import { Trash2, ArrowRight, Loader2, WifiOff, GraduationCap } from "lucide-react";
 import useOnline from "@/hooks/useOnline";
 import { callGemini, GeminiError, type GeminiErrorCode } from "@/lib/gemini";
 import GeminiErrorDisplay from "@/components/GeminiErrorDisplay";
@@ -7,6 +7,7 @@ import { addToHistory, incrementStat } from "@/lib/store";
 import { checkAnalysisAchievements, checkDeepAnalysis, checkCriticalFound, checkJwtAnalysis } from "@/lib/achievements";
 import { parseTarget, contextToPromptBlock } from "@/lib/parseTarget";
 import { startTypingSound, stopTypingSound } from "@/lib/sounds";
+import { isBeginnerMode, setBeginnerMode } from "@/lib/beginnerMode";
 import JwtAnalyzer from "@/components/JwtAnalyzer";
 import HttpRequestAnalyzer from "@/components/HttpRequestAnalyzer";
 import BatchAnalyzer from "@/components/BatchAnalyzer";
@@ -38,7 +39,7 @@ const TARGET_TEMPLATES: TargetTemplate[] = [
   { label: "WebSocket", example: "wss://example.com/ws/chat?token=eyJhbG...", context: "This is a WebSocket endpoint. Focus especially on missing origin validation, authentication bypass after initial handshake, cross-site WebSocket hijacking (CSWSH), injection via WebSocket messages, lack of rate limiting, and insecure token transmission in connection URL." },
 ];
 
-const buildPrompt = (target: string, depth: Depth, type: AnalysisType, templateContext?: string): string => {
+const buildPrompt = (target: string, depth: Depth, type: AnalysisType, templateContext?: string, beginner?: boolean): string => {
   const depthInstruction =
     depth === "Quick"
       ? "Return exactly 5 attack paths focusing on the most critical vulnerabilities."
@@ -48,6 +49,10 @@ const buildPrompt = (target: string, depth: Depth, type: AnalysisType, templateC
 
   const ctx = parseTarget(target);
   const contextBlock = contextToPromptBlock(ctx);
+
+  const beginnerInstruction = beginner
+    ? `\n\nBEGINNER MODE: Explain each attack path in simple language that a beginner can understand. For each attack path, add a "beginnerExplanation" field that explains what this vulnerability means in plain English, why it matters, and what could go wrong — as if explaining to someone who has never done security testing before.`
+    : "";
 
   return `You are an elite bug bounty hunter and penetration tester. Analyze the following ${type} target for security vulnerabilities.
 
@@ -63,6 +68,7 @@ STRICT RULES:
 - Do NOT repeat attack paths. Every path must be unique.
 - Do NOT give generic security advice. Every path must be specific to THIS target's URL, parameters, and technology.
 - Every payload must be tailored to the actual target URL and parameters shown above.
+${beginnerInstruction}
 
 For each attack path, provide:
 1. **Attack Vector Name** (e.g., "IDOR via user ID parameter")
@@ -92,7 +98,7 @@ const Analyzer = () => {
   const [errorCode, setErrorCode] = useState<GeminiErrorCode | null>(null);
   const [resultTab, setResultTab] = useState<(typeof RESULT_TABS)[number]>("Attack Paths");
   const [selectedTemplate, setSelectedTemplate] = useState<TargetTemplate | null>(null);
-
+  const [beginner, setBeginner] = useState(isBeginnerMode);
   // Check for prefill from OWASP page
   useEffect(() => {
     const raw = sessionStorage.getItem("hackmind_prefill");
@@ -152,7 +158,7 @@ const Analyzer = () => {
     startTypingSound();
 
     try {
-      const prompt = buildPrompt(trimmed, depth, analysisType, selectedTemplate?.context);
+      const prompt = buildPrompt(trimmed, depth, analysisType, selectedTemplate?.context, beginner);
       const response = await callGemini(prompt);
       setResult(response);
 
@@ -334,6 +340,25 @@ const Analyzer = () => {
           </div>
         </div>
 
+        {/* Beginner Mode toggle */}
+        <div className="space-y-1.5">
+          <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Mode</p>
+          <button
+            onClick={() => {
+              const next = !beginner;
+              setBeginner(next);
+              setBeginnerMode(next);
+            }}
+            className={`flex items-center gap-2 px-4 py-2 text-xs font-mono rounded-lg border transition-all ${
+              beginner
+                ? "border-primary bg-primary/10 text-primary"
+                : "border-border bg-card text-muted-foreground hover:text-foreground hover:border-foreground/30"
+            }`}
+          >
+            <GraduationCap size={14} />
+            Beginner
+          </button>
+        </div>
         {/* Type tabs */}
         <div className="space-y-1.5">
           <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Type</p>

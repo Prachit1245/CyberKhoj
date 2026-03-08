@@ -32,6 +32,7 @@ interface Prefs {
   showUsageCounter: boolean;
   animations: boolean;
   typingSound: boolean;
+  beginnerMode: boolean;
 }
 
 const DEFAULT_PREFS: Prefs = {
@@ -40,6 +41,7 @@ const DEFAULT_PREFS: Prefs = {
   showUsageCounter: true,
   animations: true,
   typingSound: false,
+  beginnerMode: false,
 };
 
 const loadPrefs = (): Prefs => {
@@ -600,6 +602,12 @@ const SettingsPage = () => {
             onToggle={() => updatePref("typingSound", !prefs.typingSound)}
             label="Typing Sound Effect"
             description="Play subtle keystroke sounds during AI analysis."
+          />
+          <Toggle
+            enabled={prefs.beginnerMode}
+            onToggle={() => updatePref("beginnerMode", !prefs.beginnerMode)}
+            label="Beginner Mode"
+            description="Show simplified explanations and glossary tooltips for technical terms."
           />
         </div>
       </Section>
