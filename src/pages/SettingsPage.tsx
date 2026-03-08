@@ -486,6 +486,27 @@ const SettingsPage = () => {
         )}
       </Section>
 
+      {/* ─── Tour Section ─── */}
+      <Section icon={<Settings2 size={16} />} title="Onboarding Tour">
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground font-mono">
+            {isTourCompleted() 
+              ? "You've completed the onboarding tour." 
+              : "You haven't completed the onboarding tour yet."}
+          </p>
+          <button
+            onClick={() => {
+              resetTour();
+              toast.success("Tour restarted! Navigate to the Analyzer page.");
+            }}
+            className="flex items-center gap-2 rounded-md border border-primary/40 px-4 py-2 text-xs font-mono text-primary hover:bg-primary/10 transition-all"
+          >
+            <RefreshCw size={13} />
+            Restart Onboarding Tour
+          </button>
+        </div>
+      </Section>
+
       {/* ─── Preferences Section ─── */}
       <Section icon={<Settings2 size={16} />} title="Preferences">
         <div className="divide-y divide-border/30">
