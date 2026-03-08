@@ -650,6 +650,11 @@ const SettingsPage = () => {
         </div>
       </Section>
 
+      {/* ─── Ethical Use Section ─── */}
+      <Section icon={<Shield size={16} />} title="Ethical Use Policy">
+        <EthicalDisclaimer />
+      </Section>
+
       {/* ─── Data Management Section ─── */}
       <Section icon={<Database size={16} />} title="Data Management">
         <div className="space-y-4">
