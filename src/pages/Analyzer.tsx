@@ -216,6 +216,7 @@ const Analyzer = () => {
       setResultTab("Attack Paths");
     } catch (e) {
       if (e instanceof GeminiError) {
+        if (e.code === "ABORTED") return; // silently ignore aborted requests
         setError(e.message);
         setErrorCode(e.code);
       } else {

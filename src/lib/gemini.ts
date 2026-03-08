@@ -29,6 +29,7 @@ export type GeminiErrorCode =
   | "DAILY_LIMIT"
   | "FORBIDDEN"
   | "PARSE_ERROR"
+  | "ABORTED"
   | "API_ERROR";
 
 export class GeminiError extends Error {
@@ -43,13 +44,25 @@ export class GeminiError extends Error {
   }
 }
 
+/* ─── Active request tracking for deduplication ─── */
+let activeController: AbortController | null = null;
+
+/** Abort any in-flight Gemini request */
+export const abortGeminiRequest = (): void => {
+  if (activeController) {
+    activeController.abort();
+    activeController = null;
+  }
+};
+
 /* ─── Core fetch helper (single attempt) ─── */
-const fetchGemini = async (prompt: string, key: string): Promise<string> => {
+const fetchGemini = async (prompt: string, key: string, signal?: AbortSignal): Promise<string> => {
   let response: Response;
   try {
     response = await fetch(`${MODEL_URL}?key=${key}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      signal,
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
@@ -59,6 +72,9 @@ const fetchGemini = async (prompt: string, key: string): Promise<string> => {
       }),
     });
   } catch (err) {
+    if (err instanceof DOMException && err.name === "AbortError") {
+      throw new GeminiError("ABORTED", "Request was cancelled.");
+    }
     throw new GeminiError(
       "NETWORK_ERROR",
       "No internet connection. Check your connection and try again."
@@ -126,6 +142,11 @@ export const callGemini = async (prompt: string, expectJson = false): Promise<st
     );
   }
 
+  // Abort any previous in-flight request (deduplication)
+  abortGeminiRequest();
+  const controller = new AbortController();
+  activeController = controller;
+
   if (IS_DEV) {
     console.group("[HackMind] Gemini Request");
     console.log("Prompt length:", prompt.length);
@@ -134,27 +155,35 @@ export const callGemini = async (prompt: string, expectJson = false): Promise<st
     console.groupEnd();
   }
 
-  let text = await fetchGemini(prompt, key);
-
-  if (IS_DEV) {
-    console.group("[HackMind] Gemini Response");
-    console.log("Response length:", text.length);
-    console.log("Response (first 500 chars):", text.slice(0, 500));
-    console.groupEnd();
-  }
-
-  // Retry once if we expected JSON but got something else
-  if (expectJson && !looksLikeJson(text)) {
-    if (IS_DEV) {
-      console.warn("[HackMind] Response is not valid JSON, retrying once...");
-    }
-    text = await fetchGemini(prompt, key);
+  let text: string;
+  try {
+    text = await fetchGemini(prompt, key, controller.signal);
 
     if (IS_DEV) {
-      console.group("[HackMind] Gemini Retry Response");
+      console.group("[HackMind] Gemini Response");
       console.log("Response length:", text.length);
       console.log("Response (first 500 chars):", text.slice(0, 500));
       console.groupEnd();
+    }
+
+    // Retry once if we expected JSON but got something else
+    if (expectJson && !looksLikeJson(text)) {
+      if (IS_DEV) {
+        console.warn("[HackMind] Response is not valid JSON, retrying once...");
+      }
+      text = await fetchGemini(prompt, key, controller.signal);
+
+      if (IS_DEV) {
+        console.group("[HackMind] Gemini Retry Response");
+        console.log("Response length:", text.length);
+        console.log("Response (first 500 chars):", text.slice(0, 500));
+        console.groupEnd();
+      }
+    }
+  } finally {
+    // Clear the active controller if it's still ours
+    if (activeController === controller) {
+      activeController = null;
     }
   }
 

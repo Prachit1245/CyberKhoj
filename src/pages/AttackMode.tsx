@@ -169,11 +169,12 @@ const AttackMode = () => {
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const run = () => { if (!loading) generate(); };
     document.addEventListener("hackmind:run-attack", run);
     return () => document.removeEventListener("hackmind:run-attack", run);
-  });
+  }, [loading, domain, templateContext]);
 
   // Load saved checklist when domain changes and ideas exist
   useEffect(() => {
