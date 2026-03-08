@@ -84,14 +84,17 @@ function SheetContent({ sheet }: { sheet: CheatSheet }) {
       {/* Sections */}
       {sheet.sections.map((section, si) => (
         <div key={si} className="space-y-3">
-          <div>
-            <h3 className="text-sm font-mono font-bold text-foreground flex items-center gap-1.5">
-              <ChevronRight className="h-3.5 w-3.5 text-primary" />
-              {section.heading}
-            </h3>
-            {section.description && (
-              <p className="text-[11px] font-mono text-muted-foreground mt-0.5 ml-5">{section.description}</p>
-            )}
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <h3 className="text-sm font-mono font-bold text-foreground flex items-center gap-1.5">
+                <ChevronRight className="h-3.5 w-3.5 text-primary" />
+                {section.heading}
+              </h3>
+              {section.description && (
+                <p className="text-[11px] font-mono text-muted-foreground mt-0.5 ml-5">{section.description}</p>
+              )}
+            </div>
+            <CheatSheetBookmarkBtn sheetName={sheet.name} sectionHeading={section.heading} sectionDescription={section.description} />
           </div>
 
           {section.blocks.map((block, bi) => (
