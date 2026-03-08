@@ -176,8 +176,13 @@ const AppSidebar = () => {
       {/* Main content */}
       <div className="flex-1 flex flex-col min-h-screen overflow-hidden" style={{ background: "#0f0f0f" }}>
         {/* Top bar */}
-        <header className="h-14 flex items-center px-6 border-b border-border/50 shrink-0">
+        <header className="h-14 flex items-center px-6 border-b border-border/50 shrink-0 gap-3">
           <h1 className="font-heading text-lg font-bold text-foreground">{pageTitle}</h1>
+          {!online && (
+            <span className="flex items-center gap-1.5 rounded-full border border-destructive/40 bg-destructive/10 px-2.5 py-1 text-[10px] font-mono text-destructive animate-fade-in">
+              <WifiOff size={12} /> Offline
+            </span>
+          )}
         </header>
 
         {/* Content */}
