@@ -337,6 +337,7 @@ const Analyzer = () => {
         <button
           onClick={handleAnalyze}
           disabled={loading}
+          title="Ctrl+Enter"
           className="flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-heading text-sm font-bold text-primary-foreground hover:brightness-110 transition-all disabled:opacity-60 disabled:cursor-not-allowed glow-primary"
         >
           {loading ? (
@@ -346,6 +347,7 @@ const Analyzer = () => {
           ) : (
             <>
               Analyze <ArrowRight size={16} />
+              <kbd className="hidden sm:inline-flex ml-1 px-1.5 py-0.5 rounded border border-primary-foreground/30 text-[10px] font-mono opacity-70">⌘↵</kbd>
             </>
           )}
         </button>
