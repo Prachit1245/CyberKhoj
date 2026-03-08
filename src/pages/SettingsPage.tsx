@@ -415,7 +415,9 @@ const SettingsPage = () => {
             {/* Replace key form */}
             {replacing && (
               <div className="space-y-2 p-3 rounded-lg border border-border/50 bg-muted/20">
+                <label htmlFor="replace-key-input" className="sr-only">New API Key</label>
                 <input
+                  id="replace-key-input"
                   type="password"
                   value={newKey}
                   onChange={(e) => setNewKey(e.target.value)}
