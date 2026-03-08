@@ -59,6 +59,7 @@ const App = () => (
               <Route path="/findings" element={<Findings />} />
               <Route path="/owasp" element={<OwaspPage />} />
               <Route path="/vuln-categories" element={<VulnCategories />} />
+              <Route path="/bookmarks" element={<Bookmarks />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
