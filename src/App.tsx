@@ -55,6 +55,7 @@ const App = () => (
               <Route path="/cheatsheets" element={<CheatSheets />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/findings" element={<Findings />} />
+              <Route path="/owasp" element={<OwaspPage />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
