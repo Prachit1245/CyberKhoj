@@ -81,12 +81,11 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
   return (
     <div className={`fixed inset-0 flex items-center justify-center bg-background px-4 transition-opacity duration-500 ${successAnim ? "opacity-0 scale-105" : "opacity-100"}`}>
       <div className="gate-card w-full max-w-lg rounded-xl border border-primary/30 bg-card p-8 md:p-10">
-        <h1 className="font-heading text-3xl font-extrabold tracking-tight md:text-4xl">
-          <span className="text-primary text-glow-primary">Welcome to </span>
-          <span className="text-secondary text-glow-secondary">HackMind</span>
-        </h1>
+        <div className="mb-6">
+          <HackMindLogo size="lg" showText={true} showTagline={true} />
+        </div>
 
-        <p className="mt-3 text-muted-foreground font-mono text-sm">
+        <p className="text-muted-foreground font-mono text-sm">
           You need a free Gemini API key to use this app.
           <br />
           It takes 30 seconds.
