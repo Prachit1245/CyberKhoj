@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Trash2, ArrowRight, Loader2, WifiOff, GraduationCap } from "lucide-react";
 import useOnline from "@/hooks/useOnline";
 import { callGemini, GeminiError, type GeminiErrorCode } from "@/lib/gemini";
@@ -8,6 +8,8 @@ import { checkAnalysisAchievements, checkDeepAnalysis, checkCriticalFound, check
 import { parseTarget, contextToPromptBlock } from "@/lib/parseTarget";
 import { startTypingSound, stopTypingSound } from "@/lib/sounds";
 import { isBeginnerMode, setBeginnerMode } from "@/lib/beginnerMode";
+import { analyzeTarget } from "@/lib/targetIntelligence";
+import TargetIntelligenceCard from "@/components/TargetIntelligenceCard";
 import JwtAnalyzer from "@/components/JwtAnalyzer";
 import HttpRequestAnalyzer from "@/components/HttpRequestAnalyzer";
 import BatchAnalyzer from "@/components/BatchAnalyzer";
@@ -99,6 +101,19 @@ const Analyzer = () => {
   const [resultTab, setResultTab] = useState<(typeof RESULT_TABS)[number]>("Attack Paths");
   const [selectedTemplate, setSelectedTemplate] = useState<TargetTemplate | null>(null);
   const [beginner, setBeginner] = useState(isBeginnerMode);
+
+  // Instant client-side target intelligence
+  const targetIntel = useMemo(() => {
+    const trimmed = target.trim();
+    if (!trimmed || trimmed.length < 5) return null;
+    try {
+      const ctx = parseTarget(trimmed);
+      return analyzeTarget(ctx);
+    } catch {
+      return null;
+    }
+  }, [target]);
+
   // Check for prefill from OWASP page
   useEffect(() => {
     const raw = sessionStorage.getItem("hackmind_prefill");
@@ -416,6 +431,11 @@ const Analyzer = () => {
           <kbd className="hidden sm:inline-flex ml-1 px-1.5 py-0.5 rounded border border-border text-[10px] font-mono opacity-50">⌘L</kbd>
         </button>
       </div>
+
+      {/* Target Intelligence — instant, no API */}
+      {targetIntel && (
+        <TargetIntelligenceCard intel={targetIntel} />
+      )}
 
       {/* Results */}
       <div className="space-y-3">
