@@ -13,6 +13,7 @@ import {
   ChevronRight,
   Bug,
   ShieldAlert,
+  Layers,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { hasApiKey } from "@/lib/gemini";
