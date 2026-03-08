@@ -157,7 +157,7 @@ const extractLikelyJson = (text: string): string | null => {
   return null;
 };
 
-/* ─── Main API call with retry for invalid JSON ─── */
+/* ─── Main API call (with pacing + single request) ─── */
 export const callGemini = async (prompt: string, expectJson = false): Promise<string> => {
   const key = getApiKey();
   if (!key) {
@@ -188,6 +188,12 @@ export const callGemini = async (prompt: string, expectJson = false): Promise<st
 
   let text: string;
   try {
+    // Pace calls to reduce 429 bursts, especially in fast repeated actions.
+    const elapsed = Date.now() - lastRequestAt;
+    const waitMs = Math.max(0, MIN_REQUEST_INTERVAL_MS - elapsed);
+    if (waitMs > 0) await sleep(waitMs);
+    lastRequestAt = Date.now();
+
     text = await fetchGemini(prompt, key, controller.signal);
 
     if (IS_DEV) {
@@ -197,18 +203,11 @@ export const callGemini = async (prompt: string, expectJson = false): Promise<st
       console.groupEnd();
     }
 
-    // Retry once if we expected JSON but got something else
+    // Avoid a second API call; extract JSON locally when model wraps output in prose/fences.
     if (expectJson && !looksLikeJson(text)) {
-      if (IS_DEV) {
-        console.warn("[HackMind] Response is not valid JSON, retrying once...");
-      }
-      text = await fetchGemini(prompt, key, controller.signal);
-
-      if (IS_DEV) {
-        console.group("[HackMind] Gemini Retry Response");
-        console.log("Response length:", text.length);
-        console.log("Response (first 500 chars):", text.slice(0, 500));
-        console.groupEnd();
+      const extracted = extractLikelyJson(text);
+      if (extracted) {
+        text = extracted;
       }
     }
   } finally {
