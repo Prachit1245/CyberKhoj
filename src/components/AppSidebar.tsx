@@ -304,7 +304,7 @@ const AppSidebar = () => {
 
         {/* Content — extra bottom padding on mobile for tab bar */}
         <main className="flex-1 overflow-y-auto">
-          <div className="p-4 md:p-6 pb-24 md:pb-6">
+          <div className="p-4 md:p-6 pb-24 md:pb-6 route-animate" key={location.pathname}>
             <Outlet />
           </div>
         </main>
