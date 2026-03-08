@@ -39,7 +39,7 @@ const TARGET_TEMPLATES: TargetTemplate[] = [
   { label: "WebSocket", example: "wss://example.com/ws/chat?token=eyJhbG...", context: "This is a WebSocket endpoint. Focus especially on missing origin validation, authentication bypass after initial handshake, cross-site WebSocket hijacking (CSWSH), injection via WebSocket messages, lack of rate limiting, and insecure token transmission in connection URL." },
 ];
 
-const buildPrompt = (target: string, depth: Depth, type: AnalysisType, templateContext?: string): string => {
+const buildPrompt = (target: string, depth: Depth, type: AnalysisType, templateContext?: string, beginner?: boolean): string => {
   const depthInstruction =
     depth === "Quick"
       ? "Return exactly 5 attack paths focusing on the most critical vulnerabilities."
@@ -49,6 +49,10 @@ const buildPrompt = (target: string, depth: Depth, type: AnalysisType, templateC
 
   const ctx = parseTarget(target);
   const contextBlock = contextToPromptBlock(ctx);
+
+  const beginnerInstruction = beginner
+    ? `\n\nBEGINNER MODE: Explain each attack path in simple language that a beginner can understand. For each attack path, add a "beginnerExplanation" field that explains what this vulnerability means in plain English, why it matters, and what could go wrong — as if explaining to someone who has never done security testing before.`
+    : "";
 
   return `You are an elite bug bounty hunter and penetration tester. Analyze the following ${type} target for security vulnerabilities.
 
@@ -64,6 +68,7 @@ STRICT RULES:
 - Do NOT repeat attack paths. Every path must be unique.
 - Do NOT give generic security advice. Every path must be specific to THIS target's URL, parameters, and technology.
 - Every payload must be tailored to the actual target URL and parameters shown above.
+${beginnerInstruction}
 
 For each attack path, provide:
 1. **Attack Vector Name** (e.g., "IDOR via user ID parameter")
