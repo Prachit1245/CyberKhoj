@@ -16,6 +16,7 @@ import HistoryDetail from "./pages/HistoryDetail";
 import Payloads from "./pages/Payloads";
 import CheatSheets from "./pages/CheatSheets";
 import SettingsPage from "./pages/SettingsPage";
+import Findings from "./pages/Findings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -52,6 +53,7 @@ const App = () => (
               <Route path="/payloads" element={<Payloads />} />
               <Route path="/cheatsheets" element={<CheatSheets />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/findings" element={<Findings />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
