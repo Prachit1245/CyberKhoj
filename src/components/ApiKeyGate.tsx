@@ -26,14 +26,22 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
     setError("");
 
     try {
-      const res = await fetch(`${MODEL_URL}?key=${trimmed}`, {
+      const res = await fetch(`${VALIDATE_URL}?key=${trimmed}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ contents: [{ parts: [{ text: "Say OK" }] }] }),
       });
 
       if (!res.ok) {
-        setError("Invalid key — make sure you copied it correctly from aistudio.google.com");
+        const body = await res.text();
+        console.error("API key validation failed:", res.status, body);
+        if (res.status === 400) {
+          setError("API key works but request failed. Try again.");
+        } else if (res.status === 403) {
+          setError("API key is restricted or the Gemini API is not enabled for your project. Visit aistudio.google.com/apikey to check.");
+        } else {
+          setError(`Validation failed (${res.status}). Make sure you copied the key correctly.`);
+        }
         setLoading(false);
         return;
       }
