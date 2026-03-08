@@ -35,6 +35,9 @@ export function useHistory() {
     setHistory(updated);
     incrementStat("totalAnalyses");
     incrementStat("attackPaths", result.paths.length);
+    // Award XP based on depth
+    const xpAmount = result.depth === "deep" ? XP_REWARDS.deepAnalysis : XP_REWARDS.analysis;
+    awardXp(xpAmount);
     toast.success("Analysis saved locally ✓");
   }, []);
 
