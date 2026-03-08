@@ -220,25 +220,45 @@ const Analyzer = () => {
 
       setResultTab("Attack Paths");
     } catch (e) {
-      if (e instanceof GeminiError) {
-        if (e.code === "ABORTED") return;
-        // ── Fallback: run rule-based offline analysis ──
-        const ctx = parseTarget(trimmed);
-        const fallbackResult = fallbackAnalyze(ctx);
-        setResult(fallbackResult);
-        setIsFallback(true);
-        setError("");
-        setErrorCode(null);
-        setResultTab("Attack Paths");
-      } else {
-        // Also fallback for non-Gemini errors
-        const ctx = parseTarget(trimmed);
-        const fallbackResult = fallbackAnalyze(ctx);
-        setResult(fallbackResult);
-        setIsFallback(true);
-        setError("");
-        setErrorCode(null);
-        setResultTab("Attack Paths");
+      if (e instanceof GeminiError && e.code === "ABORTED") return;
+
+      // ── Fallback: run rule-based offline analysis ──
+      const ctx = parseTarget(trimmed);
+      const fallbackResult = fallbackAnalyze(ctx);
+      setResult(fallbackResult);
+      setIsFallback(true);
+      setError("");
+      setErrorCode(null);
+      setResultTab("Attack Paths");
+
+      // Save fallback to history & award XP
+      const pathCount = (fallbackResult.match(/^###\s/gm) || []).length;
+      incrementStat("totalAnalyses");
+      incrementStat("attackPaths", pathCount);
+      checkAnalysisAchievements();
+      try {
+        import("@/lib/xp").then(m => m.awardXp(m.XP_REWARDS.analysis));
+      } catch { /* ignore */ }
+      try {
+        const url = new URL(trimmed.startsWith("http") ? trimmed : `https://${trimmed}`);
+        incrementStat("domainsTested");
+        addToHistory({
+          id: crypto.randomUUID(),
+          target: url.hostname + url.pathname,
+          type: "url",
+          pathsFound: pathCount,
+          date: new Date().toLocaleDateString(),
+          result: fallbackResult,
+        });
+      } catch {
+        addToHistory({
+          id: crypto.randomUUID(),
+          target: trimmed.slice(0, 60),
+          type: "domain",
+          pathsFound: pathCount,
+          date: new Date().toLocaleDateString(),
+          result: fallbackResult,
+        });
       }
     } finally {
       stopTypingSound();
