@@ -263,7 +263,7 @@ export const callGemini = async (prompt: string, expectJson = false): Promise<st
   activeController = controller;
 
   if (IS_DEV) {
-    console.group("[HackMind] Gemini Request");
+    console.group("[CyberKhoj] Gemini Request");
     console.log("Prompt length:", prompt.length);
     console.log("Expect JSON:", expectJson);
     console.log("Prompt (first 500 chars):", prompt.slice(0, 500));
