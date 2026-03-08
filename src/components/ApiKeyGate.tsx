@@ -1,4 +1,5 @@
 import { useState, useEffect, type ReactNode } from "react";
+import { Play, X } from "lucide-react";
 import { hasApiKey, saveApiKey } from "@/lib/gemini";
 import { toast } from "@/components/Toast";
 import EthicalDisclaimer from "@/components/EthicalDisclaimer";
