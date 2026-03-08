@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import { Bookmark, BookmarkCheck, CheckSquare, Square, StickyNote, Copy, Check, ChevronDown, ChevronRight, ExternalLink } from "lucide-react";
 import { toggleBookmark, isBookmarked } from "@/lib/bookmarks";
 import { toast } from "@/components/Toast";
