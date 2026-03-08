@@ -99,12 +99,20 @@ const Analyzer = () => {
     }
   }, []);
 
+  // Store handleAnalyze in ref for keyboard shortcut
+  const handleAnalyzeRef = useCallback(() => {
+    // This calls handleAnalyze below — but we define it via the effect to avoid stale closures
+    document.dispatchEvent(new CustomEvent("hackmind:run-analysis"));
+  }, []);
+
   // Keyboard shortcuts: Ctrl+Enter = run, Ctrl+L = clear
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
         e.preventDefault();
-        if (!loading && pageTab === "URL Analyzer") handleAnalyzeRef.current?.();
+        if (!loading && pageTab === "URL Analyzer") {
+          document.dispatchEvent(new CustomEvent("hackmind:run-analysis"));
+        }
       }
       if ((e.ctrlKey || e.metaKey) && e.key === "l") {
         e.preventDefault();
@@ -117,7 +125,6 @@ const Analyzer = () => {
     return () => window.removeEventListener("keydown", handler);
   }, [loading, pageTab]);
 
-  const handleAnalyzeRef = { current: null as (() => void) | null };
 
   const handleAnalyze = async () => {
     const trimmed = target.trim();
