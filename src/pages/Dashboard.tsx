@@ -541,14 +541,14 @@ const Dashboard = () => {
       {/* Quick Actions */}
       <div className="space-y-3">
         <h3 className="font-heading text-lg font-bold text-foreground">Quick Actions</h3>
-        <div className="flex flex-wrap gap-3">
-          <button onClick={() => navigate("/analyzer")} className="flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 font-heading text-sm font-bold text-primary-foreground hover:brightness-110 transition-all">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <button onClick={() => navigate("/analyzer")} className="flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 md:py-2.5 font-heading text-sm font-bold text-primary-foreground hover:brightness-110 transition-all min-h-[2.75rem]">
             <Link2 size={16} /> Analyze URL
           </button>
-          <button onClick={() => navigate("/attack")} className="flex items-center gap-2 rounded-lg border border-secondary px-5 py-2.5 font-heading text-sm font-bold text-secondary hover:bg-secondary hover:text-secondary-foreground transition-all">
+          <button onClick={() => navigate("/attack")} className="flex items-center justify-center gap-2 rounded-lg border border-secondary px-5 py-3 md:py-2.5 font-heading text-sm font-bold text-secondary hover:bg-secondary hover:text-secondary-foreground transition-all min-h-[2.75rem]">
             <Swords size={16} /> Attack Mode
           </button>
-          <button onClick={() => navigate("/mindmap")} className="flex items-center gap-2 rounded-lg border border-border px-5 py-2.5 font-heading text-sm font-bold text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all">
+          <button onClick={() => navigate("/mindmap")} className="flex items-center justify-center gap-2 rounded-lg border border-border px-5 py-3 md:py-2.5 font-heading text-sm font-bold text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all min-h-[2.75rem]">
             <Network size={16} /> Open Mind Map
           </button>
         </div>
