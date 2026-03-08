@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Trash2, ArrowRight, Loader2, WifiOff, GraduationCap } from "lucide-react";
+import { extractDomain } from "@/lib/targetNotes";
+import TargetNotesPanel from "@/components/TargetNotesPanel";
 import useOnline from "@/hooks/useOnline";
 import { callGemini, GeminiError, type GeminiErrorCode } from "@/lib/gemini";
 import GeminiErrorDisplay from "@/components/GeminiErrorDisplay";
