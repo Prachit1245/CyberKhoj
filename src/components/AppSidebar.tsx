@@ -29,6 +29,7 @@ import useOnline from "@/hooks/useOnline";
 import QuickAnalyze from "@/components/QuickAnalyze";
 import CommandPalette from "@/components/CommandPalette";
 import ShortcutsModal from "@/components/ShortcutsModal";
+import { getXp, getLevel } from "@/lib/xp";
 
 const OFFLINE_OK = new Set(["/history", "/payloads", "/cheatsheets", "/findings", "/bookmarks"]);
 const NEEDS_AI = new Set(["/analyzer", "/attack", "/mindmap"]);
