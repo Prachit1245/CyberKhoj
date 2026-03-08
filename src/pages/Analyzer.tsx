@@ -8,6 +8,7 @@ import GeminiErrorDisplay from "@/components/GeminiErrorDisplay";
 import { addToHistory, incrementStat } from "@/lib/store";
 import { checkAnalysisAchievements, checkDeepAnalysis, checkCriticalFound, checkJwtAnalysis } from "@/lib/achievements";
 import { parseTarget, contextToPromptBlock } from "@/lib/parseTarget";
+import { fallbackAnalyze } from "@/lib/fallbackAnalyze";
 import { startTypingSound, stopTypingSound } from "@/lib/sounds";
 import { isBeginnerMode, setBeginnerMode } from "@/lib/beginnerMode";
 import { analyzeTarget } from "@/lib/targetIntelligence";
@@ -103,6 +104,7 @@ const Analyzer = () => {
   const [resultTab, setResultTab] = useState<(typeof RESULT_TABS)[number]>("Attack Paths");
   const [selectedTemplate, setSelectedTemplate] = useState<TargetTemplate | null>(null);
   const [beginner, setBeginner] = useState(isBeginnerMode);
+  const [isFallback, setIsFallback] = useState(false);
 
   // Instant client-side target intelligence
   const targetIntel = useMemo(() => {
@@ -175,6 +177,7 @@ const Analyzer = () => {
     setError("");
     setErrorCode(null);
     setResult("");
+    setIsFallback(false);
     startTypingSound();
 
     try {
@@ -218,12 +221,24 @@ const Analyzer = () => {
       setResultTab("Attack Paths");
     } catch (e) {
       if (e instanceof GeminiError) {
-        if (e.code === "ABORTED") return; // silently ignore aborted requests
-        setError(e.message);
-        setErrorCode(e.code);
+        if (e.code === "ABORTED") return;
+        // ── Fallback: run rule-based offline analysis ──
+        const ctx = parseTarget(trimmed);
+        const fallbackResult = fallbackAnalyze(ctx);
+        setResult(fallbackResult);
+        setIsFallback(true);
+        setError("");
+        setErrorCode(null);
+        setResultTab("Attack Paths");
       } else {
-        setError(e instanceof Error ? e.message : "Analysis failed.");
-        setErrorCode("API_ERROR");
+        // Also fallback for non-Gemini errors
+        const ctx = parseTarget(trimmed);
+        const fallbackResult = fallbackAnalyze(ctx);
+        setResult(fallbackResult);
+        setIsFallback(true);
+        setError("");
+        setErrorCode(null);
+        setResultTab("Attack Paths");
       }
     } finally {
       stopTypingSound();
@@ -467,6 +482,16 @@ const Analyzer = () => {
             </button>
           ))}
         </div>
+
+        {/* Fallback banner */}
+        {isFallback && result && (
+          <div className="flex items-center gap-3 rounded-lg border border-secondary/30 bg-secondary/5 px-4 py-3">
+            <WifiOff size={16} className="text-secondary shrink-0" />
+            <p className="text-xs font-mono text-secondary">
+              Using offline analysis mode — AI unavailable. Results are rule-based pattern matches.
+            </p>
+          </div>
+        )}
 
         {/* Result content */}
         <div className="rounded-xl border border-border bg-card p-5 min-h-[200px]">
