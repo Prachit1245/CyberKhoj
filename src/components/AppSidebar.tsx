@@ -134,6 +134,8 @@ const AppSidebar = () => {
         <nav className="flex-1 overflow-y-auto py-3 space-y-0.5 px-2">
           {NAV_ITEMS.map((item) => {
             const isActive = location.pathname === item.to;
+            const isOfflineOk = OFFLINE_OK.has(item.to);
+            const isAiPage = NEEDS_AI.has(item.to);
             return (
               <NavLink
                 key={item.to}
@@ -149,7 +151,17 @@ const AppSidebar = () => {
                   <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-primary rounded-r" />
                 )}
                 <item.icon size={18} className={isActive ? "text-primary" : ""} />
-                {!collapsed && <span>{item.label}</span>}
+                {!collapsed && (
+                  <span className="flex-1 flex items-center justify-between">
+                    {item.label}
+                    {!online && isOfflineOk && (
+                      <span className="text-[9px] font-mono text-primary bg-primary/10 border border-primary/30 rounded px-1 py-0.5 leading-none">✓</span>
+                    )}
+                    {!online && isAiPage && (
+                      <span className="text-[9px] font-mono text-destructive bg-destructive/10 border border-destructive/30 rounded px-1 py-0.5 leading-none">AI</span>
+                    )}
+                  </span>
+                )}
               </NavLink>
             );
           })}
