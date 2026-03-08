@@ -2,6 +2,7 @@ import { useState, useEffect, type ReactNode } from "react";
 import { hasApiKey, saveApiKey } from "@/lib/gemini";
 import { toast } from "@/components/Toast";
 import EthicalDisclaimer from "@/components/EthicalDisclaimer";
+import HackMindLogo from "@/components/HackMindLogo";
 
 const VALIDATE_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent";
