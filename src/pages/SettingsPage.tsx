@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { toast } from "@/components/Toast";
 import { getApiKey, saveApiKey, removeApiKey, hasApiKey } from "@/lib/gemini";
+import { resetTour, isTourCompleted } from "@/components/OnboardingTour";
 
 /* ─── Preferences stored in localStorage ─── */
 const PREFS_KEY = "hackmind_prefs";
