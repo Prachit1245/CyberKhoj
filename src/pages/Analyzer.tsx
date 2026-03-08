@@ -144,6 +144,26 @@ const Analyzer = () => {
 
   return (
     <div className="space-y-6 max-w-4xl">
+      {/* Page-level tabs */}
+      <div className="flex border-b border-border/50 mb-2">
+        {PAGE_TABS.map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setPageTab(tab)}
+            className={`px-5 py-3 text-sm font-heading font-bold transition-all border-b-2 -mb-px ${
+              pageTab === tab
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+
+      {pageTab === "JWT Decoder" ? (
+        <JwtAnalyzer />
+      ) : (
       {/* Input area */}
       <div className="space-y-2">
         <label className="text-sm font-mono text-muted-foreground uppercase tracking-widest">
