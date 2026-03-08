@@ -37,8 +37,17 @@ export const callGemini = async (prompt: string): Promise<string> => {
   });
 
   if (!response.ok) {
-    const err = await response.text();
-    throw new Error(`Gemini API error (${response.status}): ${err}`);
+    const errText = await response.text();
+
+    if (response.status === 429) {
+      throw new Error("Gemini quota exceeded (429). Please wait for reset or upgrade quota in Google AI Studio.");
+    }
+
+    if (response.status === 403) {
+      throw new Error("Gemini API access denied (403). Check API key restrictions and API enablement.");
+    }
+
+    throw new Error(`Gemini API error (${response.status}): ${errText}`);
   }
 
   const count = incrementUsage();
