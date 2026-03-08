@@ -143,3 +143,52 @@ export const parseAnalysisResponse = (raw: string): AttackPath[] => {
 
   return results;
 };
+
+/* ── Attack Mode prompt ── */
+
+export interface AttackIdea {
+  id: number;
+  idea: string;
+  category: string;
+  difficulty: "beginner" | "intermediate" | "advanced";
+  priority: "high" | "medium" | "low";
+}
+
+export const buildAttackModePrompt = (domain: string, context?: string): string => {
+  return `You are a world-class bug bounty hunter with 10+ years of experience. Generate exactly 100 specific, unique, actionable security test ideas for the target: "${domain}"${context ? ` (context: ${context})` : ""}.
+
+Cover ALL of these categories comprehensively:
+- Authentication & session management
+- SQL injection, NoSQL injection, command injection
+- Cross-site scripting (stored, reflected, DOM)
+- Business logic flaws
+- Access control & IDOR
+- API security (REST, GraphQL)
+- Client-side attacks (CSRF, clickjacking, open redirects)
+- Infrastructure (misconfigs, exposed services, default creds)
+- File upload & path traversal
+- Server-side request forgery (SSRF)
+- Race conditions & concurrency
+- Information disclosure
+- Advanced techniques (deserialization, prototype pollution, cache poisoning, HTTP smuggling)
+
+Each idea must be specific and immediately actionable — not generic advice.
+
+Return ONLY a JSON array of exactly 100 objects with this schema:
+{ "id": number, "idea": string, "category": string, "difficulty": "beginner"|"intermediate"|"advanced", "priority": "high"|"medium"|"low" }
+
+No markdown fences, no explanation, just the raw JSON array.`;
+};
+
+export const parseAttackIdeas = (raw: string): AttackIdea[] => {
+  const match = raw.match(/\[[\s\S]*\]/);
+  if (!match) throw new Error("Could not parse attack ideas from AI response");
+  const parsed = JSON.parse(match[0]) as AttackIdea[];
+  return parsed.map((item, i) => ({
+    id: item.id ?? i + 1,
+    idea: String(item.idea || ""),
+    category: String(item.category || "Other"),
+    difficulty: (["beginner", "intermediate", "advanced"].includes(item.difficulty) ? item.difficulty : "intermediate") as AttackIdea["difficulty"],
+    priority: (["high", "medium", "low"].includes(item.priority) ? item.priority : "medium") as AttackIdea["priority"],
+  }));
+};
