@@ -296,12 +296,20 @@ const Findings = () => {
                       </div>
                     )}
 
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleDelete(f.id); }}
-                      className="flex items-center gap-1.5 text-xs font-mono text-destructive hover:text-destructive/80 transition-colors"
-                    >
-                      <Trash2 size={12} /> Delete Finding
-                    </button>
+                    <div className="flex items-center gap-4">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setReportFinding(f); }}
+                        className="flex items-center gap-1.5 text-xs font-mono text-primary hover:text-primary/80 transition-colors"
+                      >
+                        <FileText size={12} /> Write Report
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleDelete(f.id); }}
+                        className="flex items-center gap-1.5 text-xs font-mono text-destructive hover:text-destructive/80 transition-colors"
+                      >
+                        <Trash2 size={12} /> Delete Finding
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
