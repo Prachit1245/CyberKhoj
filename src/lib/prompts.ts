@@ -192,3 +192,73 @@ export const parseAttackIdeas = (raw: string): AttackIdea[] => {
     priority: (["high", "medium", "low"].includes(item.priority) ? item.priority : "medium") as AttackIdea["priority"],
   }));
 };
+
+/* ── Mind Map prompt ── */
+
+export interface MindMapNode {
+  id: string;
+  label: string;
+  type: "root" | "category" | "attack";
+  parentId: string | null;
+  severity: "critical" | "high" | "medium" | "low" | null;
+  description: string;
+  attackIdeas: string[];
+}
+
+export const buildMindMapPrompt = (domain: string): string => {
+  return `You are a senior penetration tester. Generate a security attack surface mind map for "${domain}".
+
+Return ONLY a JSON object with this exact schema:
+{
+  "nodes": [
+    {
+      "id": "root",
+      "label": "${domain}",
+      "type": "root",
+      "parentId": null,
+      "severity": null,
+      "description": "Target domain",
+      "attackIdeas": []
+    },
+    {
+      "id": "cat-auth",
+      "label": "Authentication",
+      "type": "category",
+      "parentId": "root",
+      "severity": null,
+      "description": "Authentication & session management attack surface",
+      "attackIdeas": []
+    },
+    {
+      "id": "attack-auth-1",
+      "label": "Brute Force Login",
+      "type": "attack",
+      "parentId": "cat-auth",
+      "severity": "high",
+      "description": "Test for rate limiting on login endpoint",
+      "attackIdeas": ["Try credential stuffing", "Test lockout policy"]
+    }
+  ]
+}
+
+Categories MUST include: Authentication, API, Admin, FileUpload, UserProfile, Search, Payment, Integrations.
+Each category must have 4-6 specific attack child nodes with severity ratings and 2-3 attackIdeas each.
+
+No markdown fences, no explanation, just the raw JSON object.`;
+};
+
+export const parseMindMapNodes = (raw: string): MindMapNode[] => {
+  const match = raw.match(/\{[\s\S]*\}/);
+  if (!match) throw new Error("Could not parse mind map from AI response");
+  const parsed = JSON.parse(match[0]);
+  const nodes: MindMapNode[] = parsed.nodes || [];
+  return nodes.map((n) => ({
+    id: String(n.id || ""),
+    label: String(n.label || ""),
+    type: (["root", "category", "attack"].includes(n.type) ? n.type : "attack") as MindMapNode["type"],
+    parentId: n.parentId ?? null,
+    severity: n.severity ?? null,
+    description: String(n.description || ""),
+    attackIdeas: Array.isArray(n.attackIdeas) ? n.attackIdeas.map(String) : [],
+  }));
+};
