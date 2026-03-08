@@ -381,6 +381,7 @@ const Dashboard = () => {
   const perDay = useMemo(() => analysesPerDay(history), [history]);
   const domains = useMemo(() => topDomains(history), [history]);
   const vulnFreq = useMemo(() => vulnCategoryFreq(history), [history]);
+  const sevData = useMemo(() => severityFromHistory(history), [history]);
 
   const goalProgress = useMemo(() => {
     if (!goal) return 0;
