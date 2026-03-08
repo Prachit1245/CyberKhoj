@@ -11,7 +11,7 @@ const TESTIMONIALS = [
     name: "Marcus Chen",
     handle: "@h4x0r_supreme",
     avatar: "https://source.boringavatars.com/beam/40/marcus_chen?colors=39ff14,0af0ff,0a0a0a,1a1a1a,2a2a2a",
-    quote: "HackMind found an IDOR chain on a target I'd been staring at for weeks. Cashed a $3,200 bounty the same day.",
+    quote: "CyberKhoj found an IDOR chain on a target I'd been staring at for weeks. Cashed a $3,200 bounty the same day.",
   },
   {
     name: "Priya Sharma",

@@ -23,7 +23,7 @@ const Footer = () => (
         {/* Brand */}
         <div className="space-y-3">
           <span className="font-heading text-lg font-extrabold text-primary text-glow-primary logo-cursor">
-            HackMind
+            CyberKhoj
           </span>
           <p className="text-sm font-heading font-bold text-foreground">Think Like A Hacker</p>
           <p className="text-xs font-mono text-muted-foreground leading-relaxed">
@@ -84,10 +84,10 @@ const Footer = () => (
           <Link to="/ethics" className="text-muted-foreground hover:text-primary transition-colors">Ethics</Link>
         </div>
         <p className="text-xs font-mono text-muted-foreground">
-          HackMind is free forever. No tracking. No ads. No BS.
+          CyberKhoj is free forever. No tracking. No ads. No BS.
         </p>
         <p className="text-[10px] font-mono text-muted-foreground/60">
-          © {new Date().getFullYear()} HackMind. For authorized security testing only.
+          © {new Date().getFullYear()} CyberKhoj. For authorized security testing only.
         </p>
       </div>
     </div>

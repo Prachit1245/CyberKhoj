@@ -1,14 +1,14 @@
 /**
- * HackMind brand logo component.
+ * CyberKhoj brand logo component.
  * Renders the terminal cursor icon with optional text.
  * 
  * Brand guidelines:
- * - Always "HackMind" (one word, capital H and M)
+ * - Always "CyberKhoj" (one word, capital C and K)
  * - Tagline: "Think Like A Hacker"
  * - Primary color: hsl(110 100% 55%) / #22c55e
  */
 
-interface HackMindLogoProps {
+interface CyberKhojLogoProps {
   size?: "sm" | "md" | "lg" | "xl";
   showText?: boolean;
   showTagline?: boolean;
@@ -27,10 +27,9 @@ export default function HackMindLogo({
   showText = true, 
   showTagline = false,
   className = "" 
-}: HackMindLogoProps) {
+}: CyberKhojLogoProps) {
   const s = SIZES[size];
   const iconSize = s.icon;
-  const padding = Math.round(iconSize * 0.15);
   const cornerRadius = Math.round(iconSize * 0.15);
   const cursorWidth = Math.round(iconSize * 0.35);
   const cursorHeight = Math.round(iconSize * 0.5);
@@ -77,7 +76,7 @@ export default function HackMindLogo({
       {showText && (
         <div className="flex flex-col">
           <span className={`font-heading ${s.text} font-bold text-primary text-glow-primary leading-none`}>
-            HackMind
+            CyberKhoj
           </span>
           {showTagline && (
             <span className={`font-mono ${s.tagline} text-muted-foreground mt-0.5`}>
@@ -94,7 +93,7 @@ export default function HackMindLogo({
  * Static icon-only version for favicons and PWA.
  * Returns raw SVG string for embedding.
  */
-export function getHackMindIconSVG(size: number = 512): string {
+export function getCyberKhojIconSVG(size: number = 512): string {
   const cornerRadius = Math.round(size * 0.1875);
   const cursorWidth = Math.round(size * 0.375);
   const cursorHeight = Math.round(size * 0.5);
@@ -112,8 +111,8 @@ export function getHackMindIconSVG(size: number = 512): string {
 /**
  * Brand constants for consistent usage across the app.
  */
-export const HACKMIND_BRAND = {
-  name: "HackMind",
+export const CYBERKHOJ_BRAND = {
+  name: "CyberKhoj",
   tagline: "Think Like A Hacker",
   description: "AI-powered vulnerability analysis, attack surface mapping, and recon",
   colors: {
@@ -122,7 +121,7 @@ export const HACKMIND_BRAND = {
     background: "#0a0a0a",
   },
   social: {
-    github: "https://github.com/hackmind-app/hackmind",
+    github: "https://github.com/cyberkhoj-app/cyberkhoj",
     discord: "https://discord.gg/lovable-dev",
   },
 } as const;
