@@ -338,6 +338,7 @@ function MindMapCanvas() {
       result: JSON.stringify({ nodes: rawNodesRef.current }),
     });
     toast.success("Mind map saved to history");
+    checkMindMap();
   };
 
   // Node click → open side panel
