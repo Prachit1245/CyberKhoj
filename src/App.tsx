@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { ToastProvider } from "@/components/Toast";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -5,26 +6,34 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ApiKeyGate from "@/components/ApiKeyGate";
 import Navbar from "@/components/Navbar";
 import AppSidebar from "@/components/AppSidebar";
-import Index from "./pages/Index";
-import Dashboard from "./pages/Dashboard";
-import Analyzer from "./pages/Analyzer";
-import AttackMode from "./pages/AttackMode";
-import MindMap from "./pages/MindMap";
-import History from "./pages/History";
-import HistoryDetail from "./pages/HistoryDetail";
-import Payloads from "./pages/Payloads";
-import CheatSheets from "./pages/CheatSheets";
-import SettingsPage from "./pages/SettingsPage";
-import Findings from "./pages/Findings";
-import OwaspPage from "./pages/OwaspPage";
-import VulnCategories from "./pages/VulnCategories";
-import NotFound from "./pages/NotFound";
-import Bookmarks from "./pages/Bookmarks";
-import Achievements from "./pages/Achievements";
 import OnboardingTour from "./components/OnboardingTour";
 import DailyLimitOverlay from "@/components/DailyLimitOverlay";
+import { SkeletonDashboard, SkeletonAnalyzer, SkeletonPage } from "@/components/Skeletons";
+
+/* ── Lazy-loaded pages ── */
+const Index = lazy(() => import("./pages/Index"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Analyzer = lazy(() => import("./pages/Analyzer"));
+const AttackMode = lazy(() => import("./pages/AttackMode"));
+const MindMap = lazy(() => import("./pages/MindMap"));
+const History = lazy(() => import("./pages/History"));
+const HistoryDetail = lazy(() => import("./pages/HistoryDetail"));
+const Payloads = lazy(() => import("./pages/Payloads"));
+const CheatSheets = lazy(() => import("./pages/CheatSheets"));
+const SettingsPage = lazy(() => import("./pages/SettingsPage"));
+const Findings = lazy(() => import("./pages/Findings"));
+const OwaspPage = lazy(() => import("./pages/OwaspPage"));
+const VulnCategories = lazy(() => import("./pages/VulnCategories"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const Bookmarks = lazy(() => import("./pages/Bookmarks"));
+const Achievements = lazy(() => import("./pages/Achievements"));
 
 const queryClient = new QueryClient();
+
+/* Suspense fallbacks */
+const DashFallback = () => <div className="p-4 md:p-6"><SkeletonDashboard /></div>;
+const AnalyzerFallback = () => <div className="p-4 md:p-6"><SkeletonAnalyzer /></div>;
+const PageFallback = () => <div className="p-4 md:p-6"><SkeletonPage /></div>;
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -39,34 +48,34 @@ const App = () => (
             <Route
               path="/"
               element={
-                <>
+                <Suspense fallback={<PageFallback />}>
                   <Navbar />
                   <div className="pt-14">
                     <Index />
                   </div>
-                </>
+                </Suspense>
               }
             />
 
             {/* App pages with sidebar layout */}
             <Route element={<AppSidebar />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/analyzer" element={<Analyzer />} />
-              <Route path="/attack" element={<AttackMode />} />
-              <Route path="/mindmap" element={<MindMap />} />
-              <Route path="/history" element={<History />} />
-              <Route path="/history/:id" element={<HistoryDetail />} />
-              <Route path="/payloads" element={<Payloads />} />
-              <Route path="/cheatsheets" element={<CheatSheets />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/findings" element={<Findings />} />
-              <Route path="/owasp" element={<OwaspPage />} />
-              <Route path="/vuln-categories" element={<VulnCategories />} />
-              <Route path="/bookmarks" element={<Bookmarks />} />
-              <Route path="/achievements" element={<Achievements />} />
+              <Route path="/dashboard" element={<Suspense fallback={<DashFallback />}><Dashboard /></Suspense>} />
+              <Route path="/analyzer" element={<Suspense fallback={<AnalyzerFallback />}><Analyzer /></Suspense>} />
+              <Route path="/attack" element={<Suspense fallback={<PageFallback />}><AttackMode /></Suspense>} />
+              <Route path="/mindmap" element={<Suspense fallback={<PageFallback />}><MindMap /></Suspense>} />
+              <Route path="/history" element={<Suspense fallback={<PageFallback />}><History /></Suspense>} />
+              <Route path="/history/:id" element={<Suspense fallback={<PageFallback />}><HistoryDetail /></Suspense>} />
+              <Route path="/payloads" element={<Suspense fallback={<PageFallback />}><Payloads /></Suspense>} />
+              <Route path="/cheatsheets" element={<Suspense fallback={<PageFallback />}><CheatSheets /></Suspense>} />
+              <Route path="/settings" element={<Suspense fallback={<PageFallback />}><SettingsPage /></Suspense>} />
+              <Route path="/findings" element={<Suspense fallback={<PageFallback />}><Findings /></Suspense>} />
+              <Route path="/owasp" element={<Suspense fallback={<PageFallback />}><OwaspPage /></Suspense>} />
+              <Route path="/vuln-categories" element={<Suspense fallback={<PageFallback />}><VulnCategories /></Suspense>} />
+              <Route path="/bookmarks" element={<Suspense fallback={<PageFallback />}><Bookmarks /></Suspense>} />
+              <Route path="/achievements" element={<Suspense fallback={<PageFallback />}><Achievements /></Suspense>} />
             </Route>
 
-            <Route path="*" element={<NotFound />} />
+            <Route path="*" element={<Suspense fallback={<PageFallback />}><NotFound /></Suspense>} />
           </Routes>
         </BrowserRouter>
       </ApiKeyGate>
