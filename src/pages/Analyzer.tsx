@@ -93,7 +93,7 @@ const Analyzer = () => {
     setResult("");
 
     try {
-      const prompt = buildPrompt(trimmed, depth, analysisType);
+      const prompt = buildPrompt(trimmed, depth, analysisType, selectedTemplate?.context);
       const response = await callGemini(prompt);
       setResult(response);
 
