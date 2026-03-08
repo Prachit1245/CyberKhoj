@@ -101,7 +101,21 @@ const fetchGemini = async (prompt: string, key: string, signal?: AbortSignal): P
       throw new GeminiError("FORBIDDEN", "API key is restricted or Gemini API is not enabled for this project.", 403);
     }
     if (response.status === 429) {
-      throw new GeminiError("RATE_LIMIT", "Rate limit hit. Wait a moment and try again.", 429);
+      const details = errText.toLowerCase();
+      const quotaLike =
+        details.includes("quota") ||
+        details.includes("resource_exhausted") ||
+        details.includes("exceeded") ||
+        details.includes("per minute") ||
+        details.includes("per day");
+
+      throw new GeminiError(
+        "RATE_LIMIT",
+        quotaLike
+          ? "Gemini quota/rate limit reached for this key. Wait 30–60s and try again. If it keeps failing, check quota/billing in Google AI Studio."
+          : "Too many requests in a short time. Wait a few seconds and try again.",
+        429
+      );
     }
     throw new GeminiError("API_ERROR", `Gemini API error (${response.status}): ${errText.slice(0, 200)}`, response.status);
   }
