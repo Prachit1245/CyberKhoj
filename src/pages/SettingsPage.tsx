@@ -473,13 +473,13 @@ const SettingsPage = () => {
             </div>
 
             <a
-              href="https://aistudio.google.com/apikey"
+              href="https://console.groq.com"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 text-xs font-mono text-primary hover:underline"
             >
               <ExternalLink size={11} />
-              Get a new API key from Google AI Studio
+              Get a new API key from console.groq.com
             </a>
           </div>
         ) : (
