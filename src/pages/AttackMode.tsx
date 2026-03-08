@@ -180,15 +180,15 @@ const AttackMode = () => {
   // Collect unique categories
   const categories = [...new Set(revealed.map(i => i.category))].sort();
 
-  // Filter + sort
-  const filtered = (() => {
+  // Filter + sort (memoized)
+  const filtered = useMemo(() => {
     let result = [...revealed];
     if (catFilter) result = result.filter(i => i.category === catFilter);
     if (diffFilter !== "all") result = result.filter(i => i.difficulty === diffFilter);
     if (prioFilter !== "all") result = result.filter(i => i.priority === prioFilter);
     if (untestedOnly) result = result.filter(i => !checked.has(i.id));
-    if (searchQ.trim()) {
-      const q = searchQ.toLowerCase();
+    if (debouncedSearchQ.trim()) {
+      const q = debouncedSearchQ.toLowerCase();
       result = result.filter(i => i.idea.toLowerCase().includes(q) || i.category.toLowerCase().includes(q));
     }
     // Sort
@@ -205,7 +205,7 @@ const AttackMode = () => {
       }
     }
     return result;
-  })();
+  }, [revealed, catFilter, diffFilter, prioFilter, untestedOnly, debouncedSearchQ, sortMode, shuffleSeed, checked]);
 
   const btn = "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono border border-border/30 bg-card/50 text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors cursor-pointer";
   const pillClass = (active: boolean) =>
