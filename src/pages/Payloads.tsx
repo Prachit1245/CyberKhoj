@@ -1,9 +1,10 @@
 import { useState, useMemo, useRef, useCallback } from "react";
-import { Search, Copy, Check, ChevronRight, Heart, X, ArrowUpDown } from "lucide-react";
+import { Search, Copy, Check, ChevronRight, Heart, X, ArrowUpDown, Bookmark, BookmarkCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/components/Toast";
 import { PAYLOAD_CATEGORIES, TOTAL_PAYLOADS, type Payload } from "@/lib/payloads";
 import { incrementStat } from "@/lib/store";
+import { toggleBookmark, isBookmarked as isBm } from "@/lib/bookmarks";
 
 const SEV_STYLES: Record<string, string> = {
   critical: "bg-destructive/15 text-destructive border-destructive/30",
@@ -30,6 +31,7 @@ const SEV_RANK: Record<string, number> = { critical: 0, high: 1, medium: 2, low:
 
 function PayloadCard({ payload, isFav, onToggleFav }: { payload: Payload; isFav: boolean; onToggleFav: () => void }) {
   const [copied, setCopied] = useState(false);
+  const [bookmarked, setBookmarked] = useState(() => isBm("payload", payload.description));
 
   const copy = async () => {
     await navigator.clipboard.writeText(payload.code);
@@ -45,6 +47,27 @@ function PayloadCard({ payload, isFav, onToggleFav }: { payload: Payload; isFav:
           {payload.code}
         </pre>
         <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button
+            onClick={() => {
+              const { added } = toggleBookmark({
+                type: "payload",
+                title: payload.description,
+                description: payload.code.slice(0, 100),
+                sourceContext: payload.category || "Payload Library",
+                severity: payload.severity,
+                code: payload.code,
+              });
+              setBookmarked(added);
+              toast[added ? "success" : "info"](added ? "Payload bookmarked ✓" : "Bookmark removed");
+            }}
+            className={`p-1.5 rounded-md border transition-colors cursor-pointer ${
+              bookmarked
+                ? "bg-primary/15 border-primary/30 text-primary"
+                : "bg-muted/60 border-border/30 text-muted-foreground hover:text-primary"
+            }`}
+          >
+            {bookmarked ? <BookmarkCheck className="h-3.5 w-3.5" /> : <Bookmark className="h-3.5 w-3.5" />}
+          </button>
           <button
             onClick={onToggleFav}
             className={`p-1.5 rounded-md border transition-colors cursor-pointer ${

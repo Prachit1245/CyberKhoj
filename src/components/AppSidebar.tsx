@@ -15,16 +15,19 @@ import {
   ShieldAlert,
   Layers,
   WifiOff,
+  Bookmark,
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { hasApiKey } from "@/lib/gemini";
 import { getUsageCount, DAILY_LIMIT } from "@/lib/usage";
+import { getBookmarkCount } from "@/lib/bookmarks";
 import useOnline from "@/hooks/useOnline";
 import QuickAnalyze from "@/components/QuickAnalyze";
 import CommandPalette from "@/components/CommandPalette";
 import ShortcutsModal from "@/components/ShortcutsModal";
 
-const OFFLINE_OK = new Set(["/history", "/payloads", "/cheatsheets", "/findings"]);
+const OFFLINE_OK = new Set(["/history", "/payloads", "/cheatsheets", "/findings", "/bookmarks"]);
 const NEEDS_AI = new Set(["/analyzer", "/attack", "/mindmap"]);
 
 const NAV_ITEMS = [
@@ -38,6 +41,7 @@ const NAV_ITEMS = [
   { to: "/owasp", label: "OWASP Top 10", icon: ShieldAlert },
   { to: "/vuln-categories", label: "Vuln Categories", icon: Layers },
   { to: "/findings", label: "Findings", icon: Bug },
+  { to: "/bookmarks", label: "Bookmarks", icon: Bookmark },
   { to: "/settings", label: "Settings", icon: Settings },
 ];
 
@@ -52,6 +56,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/owasp": "OWASP Top 10",
   "/vuln-categories": "Vuln Categories",
   "/findings": "Findings",
+  "/bookmarks": "Bookmarks",
   "/settings": "Settings",
 };
 
@@ -100,9 +105,30 @@ const SidebarUsage = ({ collapsed, keySet }: { collapsed: boolean; keySet: boole
 
 const AppSidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const [bmCount, setBmCount] = useState(getBookmarkCount());
   const location = useLocation();
+  const navigate = useNavigate();
   const keySet = hasApiKey();
   const online = useOnline();
+
+  // Listen for bookmark changes
+  useEffect(() => {
+    const refresh = () => setBmCount(getBookmarkCount());
+    window.addEventListener("hackmind:bookmarks-changed", refresh);
+    return () => window.removeEventListener("hackmind:bookmarks-changed", refresh);
+  }, []);
+
+  // Ctrl+B shortcut
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "b") {
+        e.preventDefault();
+        navigate("/bookmarks");
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [navigate]);
 
   const pageTitle = PAGE_TITLES[location.pathname] || "HackMind";
 
@@ -154,6 +180,11 @@ const AppSidebar = () => {
                 {!collapsed && (
                   <span className="flex-1 flex items-center justify-between">
                     {item.label}
+                    {item.to === "/bookmarks" && bmCount > 0 && (
+                      <span className="text-[9px] font-mono text-primary-foreground bg-primary rounded-full px-1.5 py-0.5 leading-none min-w-[1.25rem] text-center">
+                        {bmCount > 99 ? "99+" : bmCount}
+                      </span>
+                    )}
                     {!online && isOfflineOk && (
                       <span className="text-[9px] font-mono text-primary bg-primary/10 border border-primary/30 rounded px-1 py-0.5 leading-none">✓</span>
                     )}

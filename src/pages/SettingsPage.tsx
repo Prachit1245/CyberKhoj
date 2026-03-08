@@ -239,12 +239,14 @@ const SettingsPage = () => {
     "hackmind_prefs",
     "hackmind_stats",
     "hackmind_bookmarked_payloads",
+    "hackmind_bookmarks",
   ];
 
   const ARRAY_KEYS: Record<string, string> = {
     hackmind_history: "id",
     hackmind_findings: "id",
     hackmind_bookmarked_payloads: "id",
+    hackmind_bookmarks: "id",
   };
 
   const [importSummary, setImportSummary] = useState<string | null>(null);

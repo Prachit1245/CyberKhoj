@@ -1,8 +1,10 @@
 import { useState, useRef, useCallback } from "react";
-import { Copy, Check, Printer, ChevronRight } from "lucide-react";
+import { Copy, Check, Printer, ChevronRight, Bookmark, BookmarkCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CHEAT_SHEETS, type CheatSheet, type Difficulty } from "@/lib/cheatsheets";
+import { toggleBookmark, isBookmarked as isBm } from "@/lib/bookmarks";
+import { toast } from "@/components/Toast";
 
 const DIFF_STYLES: Record<Difficulty, string> = {
   Beginner: "bg-primary/15 text-primary border-primary/30",
@@ -20,6 +22,33 @@ function CopyButton({ text }: { text: string }) {
   return (
     <button onClick={copy} className="absolute top-2 right-2 p-1.5 rounded-md bg-muted/60 border border-border/30 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors opacity-0 group-hover:opacity-100 cursor-pointer">
       {copied ? <Check className="h-3.5 w-3.5 text-primary" /> : <Copy className="h-3.5 w-3.5" />}
+    </button>
+  );
+}
+
+function CheatSheetBookmarkBtn({ sheetName, sectionHeading, sectionDescription }: { sheetName: string; sectionHeading: string; sectionDescription?: string }) {
+  const key = `${sheetName} — ${sectionHeading}`;
+  const [bookmarked, setBookmarked] = useState(() => isBm("cheatsheet", key));
+  return (
+    <button
+      onClick={() => {
+        const { added } = toggleBookmark({
+          type: "cheatsheet",
+          title: key,
+          description: sectionDescription || sectionHeading,
+          sourceContext: sheetName,
+        });
+        setBookmarked(added);
+        toast[added ? "success" : "info"](added ? "Section bookmarked ✓" : "Bookmark removed");
+      }}
+      className={`shrink-0 p-1.5 rounded-md border transition-colors cursor-pointer ${
+        bookmarked
+          ? "bg-primary/15 border-primary/30 text-primary"
+          : "bg-muted/60 border-border/30 text-muted-foreground hover:text-primary"
+      }`}
+      title={bookmarked ? "Remove bookmark" : "Bookmark section"}
+    >
+      {bookmarked ? <BookmarkCheck className="h-3.5 w-3.5" /> : <Bookmark className="h-3.5 w-3.5" />}
     </button>
   );
 }
@@ -82,14 +111,17 @@ function SheetContent({ sheet }: { sheet: CheatSheet }) {
       {/* Sections */}
       {sheet.sections.map((section, si) => (
         <div key={si} className="space-y-3">
-          <div>
-            <h3 className="text-sm font-mono font-bold text-foreground flex items-center gap-1.5">
-              <ChevronRight className="h-3.5 w-3.5 text-primary" />
-              {section.heading}
-            </h3>
-            {section.description && (
-              <p className="text-[11px] font-mono text-muted-foreground mt-0.5 ml-5">{section.description}</p>
-            )}
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <h3 className="text-sm font-mono font-bold text-foreground flex items-center gap-1.5">
+                <ChevronRight className="h-3.5 w-3.5 text-primary" />
+                {section.heading}
+              </h3>
+              {section.description && (
+                <p className="text-[11px] font-mono text-muted-foreground mt-0.5 ml-5">{section.description}</p>
+              )}
+            </div>
+            <CheatSheetBookmarkBtn sheetName={sheet.name} sectionHeading={section.heading} sectionDescription={section.description} />
           </div>
 
           {section.blocks.map((block, bi) => (

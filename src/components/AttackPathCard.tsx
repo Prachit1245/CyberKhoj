@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Bookmark, BookmarkCheck, CheckSquare, Square, StickyNote, Copy, Check, ChevronDown, ChevronRight, ExternalLink } from "lucide-react";
+import { toggleBookmark, isBookmarked } from "@/lib/bookmarks";
+import { toast } from "@/components/Toast";
 import type { AttackPath, Severity } from "@/types";
 
 const SEVERITY_STYLES: Record<Severity, { border: string; badge: string; label: string }> = {
@@ -133,13 +135,23 @@ const AttackPathCard = ({ path, onChange }: Props) => {
       {/* Bottom actions */}
       <div className="border-t border-border/50 px-5 py-2.5 flex items-center gap-4">
         <button
-          onClick={() => update({ isBookmarked: !path.isBookmarked })}
+          onClick={() => {
+            const { added } = toggleBookmark({
+              type: "attack_path",
+              title: path.title,
+              description: path.description,
+              sourceContext: `Attack Path — ${path.category}`,
+              severity: path.severity,
+            });
+            update({ isBookmarked: added });
+            toast[added ? "success" : "info"](added ? "Bookmarked ✓" : "Bookmark removed");
+          }}
           className={`flex items-center gap-1 text-xs font-mono transition-colors ${
-            path.isBookmarked ? "text-primary" : "text-muted-foreground hover:text-foreground"
+            path.isBookmarked || isBookmarked("attack_path", path.title) ? "text-primary" : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          {path.isBookmarked ? <BookmarkCheck size={14} /> : <Bookmark size={14} />}
-          {path.isBookmarked ? "Saved" : "Save"}
+          {path.isBookmarked || isBookmarked("attack_path", path.title) ? <BookmarkCheck size={14} /> : <Bookmark size={14} />}
+          {path.isBookmarked || isBookmarked("attack_path", path.title) ? "Saved" : "Save"}
         </button>
 
         <button
