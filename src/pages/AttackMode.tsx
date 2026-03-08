@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { AlertTriangle, Zap, ShoppingCart, LogIn, Server, Shield, Upload, ListChecks, Download, CheckSquare, XSquare, Copy } from "lucide-react";
+import { AlertTriangle, Zap, ShoppingCart, LogIn, Server, Shield, Upload, ListChecks, Download, CheckSquare, XSquare, Copy, Search, Shuffle } from "lucide-react";
 import { callGemini } from "@/lib/gemini";
 import { buildAttackModePrompt, parseAttackIdeas, type AttackIdea } from "@/lib/prompts";
 import { toast } from "sonner";
@@ -34,6 +34,13 @@ const AttackMode = () => {
   const [checklistMode, setChecklistMode] = useState(false);
   const [checked, setChecked] = useState<Set<number>>(new Set());
   const [celebrated, setCelebrated] = useState(false);
+  const [searchQ, setSearchQ] = useState("");
+  const [catFilter, setCatFilter] = useState<string | null>(null);
+  const [diffFilter, setDiffFilter] = useState<string>("all");
+  const [prioFilter, setPrioFilter] = useState<string>("all");
+  const [sortMode, setSortMode] = useState<"priority" | "difficulty" | "category">("priority");
+  const [untestedOnly, setUntestedOnly] = useState(false);
+  const [shuffleSeed, setShuffleSeed] = useState(0);
   const streamRef = useRef<ReturnType<typeof setInterval>>();
 
   useEffect(() => () => { if (streamRef.current) clearInterval(streamRef.current); }, []);
@@ -136,13 +143,49 @@ const AttackMode = () => {
     d === "advanced" ? "bg-red-500" : d === "intermediate" ? "bg-yellow-500" : "bg-emerald-500";
 
   const total = allIdeas.length;
-  const visible = allIdeas.slice(0, visibleCount);
+  const revealed = allIdeas.slice(0, visibleCount);
   const progress = total > 0 ? (visibleCount / total) * 100 : 0;
   const streaming = visibleCount > 0 && visibleCount < total;
   const testedCount = checked.size;
   const testProgress = total > 0 ? (testedCount / total) * 100 : 0;
 
+  // Collect unique categories
+  const categories = [...new Set(revealed.map(i => i.category))].sort();
+
+  // Filter + sort
+  const filtered = (() => {
+    let result = [...revealed];
+    if (catFilter) result = result.filter(i => i.category === catFilter);
+    if (diffFilter !== "all") result = result.filter(i => i.difficulty === diffFilter);
+    if (prioFilter !== "all") result = result.filter(i => i.priority === prioFilter);
+    if (untestedOnly) result = result.filter(i => !checked.has(i.id));
+    if (searchQ.trim()) {
+      const q = searchQ.toLowerCase();
+      result = result.filter(i => i.idea.toLowerCase().includes(q) || i.category.toLowerCase().includes(q));
+    }
+    // Sort
+    const prioRank: Record<string, number> = { high: 0, medium: 1, low: 2 };
+    const diffRank: Record<string, number> = { beginner: 0, intermediate: 1, advanced: 2 };
+    if (sortMode === "priority") result.sort((a, b) => (prioRank[a.priority] ?? 1) - (prioRank[b.priority] ?? 1));
+    else if (sortMode === "difficulty") result.sort((a, b) => (diffRank[a.difficulty] ?? 1) - (diffRank[b.difficulty] ?? 1));
+    else result.sort((a, b) => a.category.localeCompare(b.category));
+    // Shuffle
+    if (shuffleSeed > 0) {
+      for (let i = result.length - 1; i > 0; i--) {
+        const j = (shuffleSeed * (i + 1) * 9301 + 49297) % result.length;
+        [result[i], result[j]] = [result[j], result[i]];
+      }
+    }
+    return result;
+  })();
+
   const btn = "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono border border-border/30 bg-card/50 text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors cursor-pointer";
+  const pillClass = (active: boolean) =>
+    `px-3 py-1 rounded-full text-xs font-mono cursor-pointer transition-all duration-200 border ${
+      active
+        ? "bg-primary/20 border-primary text-primary"
+        : "bg-card/50 border-border/30 text-muted-foreground hover:border-primary/40"
+    }`;
 
   return (
     <div className="space-y-6 max-w-6xl">
@@ -232,7 +275,7 @@ const AttackMode = () => {
       )}
 
       {/* Checklist toolbar */}
-      {visible.length > 0 && (
+      {revealed.length > 0 && (
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => setChecklistMode(!checklistMode)}
@@ -283,10 +326,81 @@ const AttackMode = () => {
         </div>
       )}
 
+      {/* Filters */}
+      {revealed.length > 0 && !streaming && (
+        <div className="space-y-3 rounded-lg border border-border/20 bg-card/20 p-4">
+          {/* Row 1: Search + Sort + Randomize */}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative flex-1 min-w-[180px]">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <input
+                value={searchQ}
+                onChange={(e) => setSearchQ(e.target.value)}
+                placeholder="Search ideas..."
+                className="h-8 w-full rounded-lg bg-card/50 border border-border/30 pl-8 pr-3 text-xs font-mono text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50"
+              />
+            </div>
+            <select
+              value={sortMode}
+              onChange={(e) => { setSortMode(e.target.value as any); setShuffleSeed(0); }}
+              className="h-8 rounded-lg bg-card/50 border border-border/30 px-2 text-xs font-mono text-foreground focus:outline-none focus:border-primary/50"
+            >
+              <option value="priority">Sort: Priority</option>
+              <option value="difficulty">Sort: Difficulty</option>
+              <option value="category">Sort: Category</option>
+            </select>
+            <button onClick={() => setShuffleSeed(Date.now())} className={btn}><Shuffle className="h-3.5 w-3.5" />Randomize</button>
+            {checklistMode && (
+              <button
+                onClick={() => setUntestedOnly(!untestedOnly)}
+                className={pillClass(untestedOnly)}
+              >
+                Untested Only
+              </button>
+            )}
+          </div>
+
+          {/* Row 2: Category chips */}
+          <div className="flex flex-wrap gap-1.5">
+            <button onClick={() => setCatFilter(null)} className={pillClass(!catFilter)}>All</button>
+            {categories.map(cat => (
+              <button key={cat} onClick={() => setCatFilter(catFilter === cat ? null : cat)} className={pillClass(catFilter === cat)}>
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          {/* Row 3: Difficulty + Priority */}
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-mono text-muted-foreground mr-1">Difficulty:</span>
+              {["all", "beginner", "intermediate", "advanced"].map(d => (
+                <button key={d} onClick={() => setDiffFilter(d)} className={pillClass(diffFilter === d)}>
+                  {d === "all" ? "All" : d.charAt(0).toUpperCase() + d.slice(1)}
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-mono text-muted-foreground mr-1">Priority:</span>
+              {["all", "high", "medium", "low"].map(p => (
+                <button key={p} onClick={() => setPrioFilter(p)} className={pillClass(prioFilter === p)}>
+                  {p === "all" ? "All" : p.charAt(0).toUpperCase() + p.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Count */}
+          <p className="text-xs font-mono text-muted-foreground">
+            Showing <span className="text-primary font-semibold">{filtered.length}</span> / {revealed.length} ideas
+          </p>
+        </div>
+      )}
+
       {/* Ideas Grid */}
-      {visible.length > 0 && (
+      {filtered.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-          {visible.map((idea) => {
+          {filtered.map((idea) => {
             const isChecked = checked.has(idea.id);
             return (
               <div
@@ -301,7 +415,6 @@ const AttackMode = () => {
                 }`}
               >
                 <div className="flex items-start gap-2">
-                  {/* Checkbox or number badge */}
                   {checklistMode ? (
                     <span className={`shrink-0 mt-0.5 flex items-center justify-center h-5 w-5 rounded border transition-colors ${
                       isChecked ? "bg-primary border-primary text-primary-foreground" : "border-muted-foreground/30"
