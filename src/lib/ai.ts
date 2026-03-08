@@ -112,7 +112,7 @@ async function callAIRaw(prompt: string, apiKey: string, signal?: AbortSignal): 
     }
 
     if (response.status === 401) {
-      throw new GeminiError("INVALID_KEY", "Your API key is invalid or expired. Please update it in Settings.", 401);
+      throw new GeminiError("INVALID_KEY", "Invalid Groq API key. Get a fresh one at console.groq.com", 401);
     }
     if (response.status === 403) {
       throw new GeminiError("FORBIDDEN", "API key is restricted.", 403);
