@@ -531,7 +531,7 @@ const SettingsPage = () => {
         <div className="space-y-3">
           {isInstalled ? (
             <p className="text-sm text-primary font-mono flex items-center gap-2">
-              <Check size={14} /> HackMind is installed on this device
+              <Check size={14} /> CyberKhoj is installed on this device
             </p>
           ) : canInstall ? (
             <>
