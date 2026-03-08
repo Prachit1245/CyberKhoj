@@ -159,7 +159,8 @@ const Analyzer = () => {
     const run = () => { if (!loading) handleAnalyze(); };
     document.addEventListener("hackmind:run-analysis", run);
     return () => document.removeEventListener("hackmind:run-analysis", run);
-  });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, target, depth, analysisType, selectedTemplate, beginner]);
 
   const handleAnalyze = async () => {
     const trimmed = target.trim();
