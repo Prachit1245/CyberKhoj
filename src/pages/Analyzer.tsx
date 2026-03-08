@@ -99,12 +99,7 @@ const Analyzer = () => {
     }
   }, []);
 
-  // Store handleAnalyze in ref for keyboard shortcut
-  const handleAnalyzeRef = useCallback(() => {
-    // This calls handleAnalyze below — but we define it via the effect to avoid stale closures
-    document.dispatchEvent(new CustomEvent("hackmind:run-analysis"));
-  }, []);
-
+  // Keyboard shortcuts: Ctrl+Enter = run, Ctrl+L = clear
   // Keyboard shortcuts: Ctrl+Enter = run, Ctrl+L = clear
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
