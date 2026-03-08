@@ -326,10 +326,81 @@ const AttackMode = () => {
         </div>
       )}
 
+      {/* Filters */}
+      {revealed.length > 0 && !streaming && (
+        <div className="space-y-3 rounded-lg border border-border/20 bg-card/20 p-4">
+          {/* Row 1: Search + Sort + Randomize */}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative flex-1 min-w-[180px]">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <input
+                value={searchQ}
+                onChange={(e) => setSearchQ(e.target.value)}
+                placeholder="Search ideas..."
+                className="h-8 w-full rounded-lg bg-card/50 border border-border/30 pl-8 pr-3 text-xs font-mono text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50"
+              />
+            </div>
+            <select
+              value={sortMode}
+              onChange={(e) => { setSortMode(e.target.value as any); setShuffleSeed(0); }}
+              className="h-8 rounded-lg bg-card/50 border border-border/30 px-2 text-xs font-mono text-foreground focus:outline-none focus:border-primary/50"
+            >
+              <option value="priority">Sort: Priority</option>
+              <option value="difficulty">Sort: Difficulty</option>
+              <option value="category">Sort: Category</option>
+            </select>
+            <button onClick={() => setShuffleSeed(Date.now())} className={btn}><Shuffle className="h-3.5 w-3.5" />Randomize</button>
+            {checklistMode && (
+              <button
+                onClick={() => setUntestedOnly(!untestedOnly)}
+                className={pillClass(untestedOnly)}
+              >
+                Untested Only
+              </button>
+            )}
+          </div>
+
+          {/* Row 2: Category chips */}
+          <div className="flex flex-wrap gap-1.5">
+            <button onClick={() => setCatFilter(null)} className={pillClass(!catFilter)}>All</button>
+            {categories.map(cat => (
+              <button key={cat} onClick={() => setCatFilter(catFilter === cat ? null : cat)} className={pillClass(catFilter === cat)}>
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          {/* Row 3: Difficulty + Priority */}
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-mono text-muted-foreground mr-1">Difficulty:</span>
+              {["all", "beginner", "intermediate", "advanced"].map(d => (
+                <button key={d} onClick={() => setDiffFilter(d)} className={pillClass(diffFilter === d)}>
+                  {d === "all" ? "All" : d.charAt(0).toUpperCase() + d.slice(1)}
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-mono text-muted-foreground mr-1">Priority:</span>
+              {["all", "high", "medium", "low"].map(p => (
+                <button key={p} onClick={() => setPrioFilter(p)} className={pillClass(prioFilter === p)}>
+                  {p === "all" ? "All" : p.charAt(0).toUpperCase() + p.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Count */}
+          <p className="text-xs font-mono text-muted-foreground">
+            Showing <span className="text-primary font-semibold">{filtered.length}</span> / {revealed.length} ideas
+          </p>
+        </div>
+      )}
+
       {/* Ideas Grid */}
-      {visible.length > 0 && (
+      {filtered.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-          {visible.map((idea) => {
+          {filtered.map((idea) => {
             const isChecked = checked.has(idea.id);
             return (
               <div
@@ -344,7 +415,6 @@ const AttackMode = () => {
                 }`}
               >
                 <div className="flex items-start gap-2">
-                  {/* Checkbox or number badge */}
                   {checklistMode ? (
                     <span className={`shrink-0 mt-0.5 flex items-center justify-center h-5 w-5 rounded border transition-colors ${
                       isChecked ? "bg-primary border-primary text-primary-foreground" : "border-muted-foreground/30"
