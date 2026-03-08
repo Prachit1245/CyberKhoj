@@ -79,12 +79,11 @@ function SeverityBar({ result }: { result: string }) {
 
 /* ── Main History page ── */
 export default function History() {
+  const navigate = useNavigate();
   const [records, setRecords] = useState<AnalysisRecord[]>(() => getHistory());
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [sort, setSort] = useState("newest");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const undoRef = useRef<{ record: AnalysisRecord; timer: ReturnType<typeof setTimeout> } | null>(null);
 
   const refresh = useCallback(() => setRecords(getHistory()), []);
 
