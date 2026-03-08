@@ -138,6 +138,7 @@ const Analyzer = () => {
 
     setLoading(true);
     setError("");
+    setErrorCode(null);
     setResult("");
 
     try {
