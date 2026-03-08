@@ -207,6 +207,35 @@ const Analyzer = () => {
         {error && <p className="text-xs text-destructive font-mono">{error}</p>}
       </div>
 
+      {/* Target Templates */}
+      <div className="space-y-1.5">
+        <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Target Templates</p>
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
+          {TARGET_TEMPLATES.map((tmpl) => (
+            <button
+              key={tmpl.label}
+              onClick={() => {
+                setTarget(tmpl.example);
+                setSelectedTemplate(selectedTemplate?.label === tmpl.label ? null : tmpl);
+                setError("");
+              }}
+              className={`shrink-0 px-3 py-1.5 text-xs font-mono rounded-full border transition-all whitespace-nowrap ${
+                selectedTemplate?.label === tmpl.label
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "border-border bg-card text-muted-foreground hover:text-foreground hover:border-foreground/30"
+              }`}
+            >
+              {tmpl.label}
+            </button>
+          ))}
+        </div>
+        {selectedTemplate && (
+          <p className="text-[10px] font-mono text-primary/70 leading-relaxed">
+            ✦ AI will focus on: {selectedTemplate.context.split("Focus especially on ")[1]?.slice(0, 120)}…
+          </p>
+        )}
+      </div>
+
       {/* Options row */}
       <div className="flex flex-col sm:flex-row gap-4">
         {/* Depth toggle */}
