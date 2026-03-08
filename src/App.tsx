@@ -17,6 +17,7 @@ import Payloads from "./pages/Payloads";
 import CheatSheets from "./pages/CheatSheets";
 import SettingsPage from "./pages/SettingsPage";
 import Findings from "./pages/Findings";
+import OwaspPage from "./pages/OwaspPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -54,6 +55,7 @@ const App = () => (
               <Route path="/cheatsheets" element={<CheatSheets />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/findings" element={<Findings />} />
+              <Route path="/owasp" element={<OwaspPage />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
