@@ -2,8 +2,6 @@ import { useState, useCallback, useRef } from "react";
 import {
   ReactFlow,
   Background,
-  Controls,
-  MiniMap,
   useNodesState,
   useEdgesState,
   type Node,
@@ -12,244 +10,160 @@ import {
   Panel,
   ReactFlowProvider,
   useReactFlow,
+  MarkerType,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import Dagre from "@dagrejs/dagre";
 import { ZoomIn, ZoomOut, Maximize, Download, Network, TreePine, Zap } from "lucide-react";
 import { callGemini } from "@/lib/gemini";
+import { buildMindMapPrompt, parseMindMapNodes, type MindMapNode } from "@/lib/prompts";
 import { toast } from "sonner";
 
-const CATEGORY_COLORS: Record<string, string> = {
-  target: "#00ff88",
-  auth: "#f97316",
-  injection: "#ef4444",
-  xss: "#eab308",
-  api: "#06b6d4",
-  infra: "#8b5cf6",
-  logic: "#ec4899",
-  access: "#f59e0b",
-  client: "#14b8a6",
-  other: "#6b7280",
+/* ── Severity colors ── */
+const SEV_BORDER: Record<string, string> = {
+  critical: "#ef4444",
+  high: "#f97316",
+  medium: "#eab308",
+  low: "#3b82f6",
 };
 
+const CYAN = "#00f5ff";
+const GREEN = "#00ff88";
+
+/* ── Legend ── */
 const LEGEND = [
-  { label: "Target", color: CATEGORY_COLORS.target },
-  { label: "Auth", color: CATEGORY_COLORS.auth },
-  { label: "Injection", color: CATEGORY_COLORS.injection },
-  { label: "XSS", color: CATEGORY_COLORS.xss },
-  { label: "API", color: CATEGORY_COLORS.api },
-  { label: "Infrastructure", color: CATEGORY_COLORS.infra },
-  { label: "Business Logic", color: CATEGORY_COLORS.logic },
-  { label: "Access Control", color: CATEGORY_COLORS.access },
-  { label: "Client-side", color: CATEGORY_COLORS.client },
+  { label: "Root (Target)", color: CYAN },
+  { label: "Category", color: GREEN },
+  { label: "Critical", color: SEV_BORDER.critical },
+  { label: "High", color: SEV_BORDER.high },
+  { label: "Medium", color: SEV_BORDER.medium },
+  { label: "Low", color: SEV_BORDER.low },
 ];
 
-const PROMPT = (domain: string) => `You are a security expert. Generate an attack surface mind map for "${domain}".
-
-Return ONLY a JSON object with:
-{
-  "nodes": [
-    { "id": "root", "label": "${domain}", "category": "target", "children": ["cat1","cat2",...] },
-    { "id": "cat1", "label": "Category Name", "category": "auth|injection|xss|api|infra|logic|access|client|other", "children": ["leaf1","leaf2",...] },
-    { "id": "leaf1", "label": "Specific attack vector", "category": "...", "children": [] }
-  ]
-}
-
-Generate 8-12 category nodes and 3-5 leaf nodes per category. No markdown, just JSON.`;
-
-interface MapNode {
-  id: string;
-  label: string;
-  category: string;
-  children: string[];
-}
-
-function buildFlowData(
-  mapNodes: MapNode[],
-  layout: "tree" | "radial"
+/* ── Dagre auto-layout ── */
+function layoutWithDagre(
+  nodes: Node[],
+  edges: Edge[],
+  direction: "LR" | "TB" = "LR"
 ): { nodes: Node[]; edges: Edge[] } {
-  const nodeMap = new Map(mapNodes.map((n) => [n.id, n]));
-  const root = mapNodes.find((n) => n.category === "target") || mapNodes[0];
+  const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
+  g.setGraph({ rankdir: direction, nodesep: 60, ranksep: 180, edgesep: 30 });
+
+  nodes.forEach((n) => {
+    g.setNode(n.id, { width: n.measured?.width ?? 180, height: n.measured?.height ?? 50 });
+  });
+  edges.forEach((e) => {
+    g.setEdge(e.source, e.target);
+  });
+
+  Dagre.layout(g);
+
+  const laid = nodes.map((n) => {
+    const pos = g.node(n.id);
+    return {
+      ...n,
+      position: { x: pos.x - (n.measured?.width ?? 180) / 2, y: pos.y - (n.measured?.height ?? 50) / 2 },
+    };
+  });
+
+  return { nodes: laid, edges };
+}
+
+/* ── Convert MindMapNode[] → ReactFlow nodes/edges ── */
+function buildFlowElements(mapNodes: MindMapNode[]): { nodes: Node[]; edges: Edge[] } {
   const nodes: Node[] = [];
   const edges: Edge[] = [];
 
-  if (!root) return { nodes, edges };
+  for (const mn of mapNodes) {
+    let style: React.CSSProperties = {};
 
-  if (layout === "tree") {
-    // Layered tree
-    const categories = root.children.map((id) => nodeMap.get(id)).filter(Boolean) as MapNode[];
-    const catSpacing = 220;
-    const startY = -(categories.length * catSpacing) / 2;
-
-    nodes.push({
-      id: root.id,
-      position: { x: 0, y: 0 },
-      data: { label: root.label },
-      style: {
-        background: CATEGORY_COLORS.target,
-        color: "#000",
-        border: "none",
-        borderRadius: "12px",
-        fontWeight: 700,
-        fontFamily: "monospace",
-        fontSize: "14px",
-        padding: "12px 20px",
-      },
-    });
-
-    categories.forEach((cat, ci) => {
-      const color = CATEGORY_COLORS[cat.category] || CATEGORY_COLORS.other;
-      const y = startY + ci * catSpacing;
-      nodes.push({
-        id: cat.id,
-        position: { x: 400, y },
-        data: { label: cat.label },
-        style: {
-          background: color + "20",
-          color,
-          border: `1px solid ${color}60`,
-          borderRadius: "8px",
-          fontFamily: "monospace",
-          fontSize: "12px",
-          padding: "8px 14px",
-        },
-      });
-      edges.push({
-        id: `e-${root.id}-${cat.id}`,
-        source: root.id,
-        target: cat.id,
-        style: { stroke: color + "40" },
-        animated: true,
-      });
-
-      const leaves = cat.children.map((id) => nodeMap.get(id)).filter(Boolean) as MapNode[];
-      const leafSpacing = 50;
-      const leafStartY = y - ((leaves.length - 1) * leafSpacing) / 2;
-
-      leaves.forEach((leaf, li) => {
-        const lColor = CATEGORY_COLORS[leaf.category] || color;
-        nodes.push({
-          id: leaf.id,
-          position: { x: 800, y: leafStartY + li * leafSpacing },
-          data: { label: leaf.label },
-          style: {
-            background: lColor + "10",
-            color: lColor,
-            border: `1px solid ${lColor}30`,
-            borderRadius: "6px",
-            fontFamily: "monospace",
-            fontSize: "10px",
-            padding: "6px 10px",
-          },
-        });
-        edges.push({
-          id: `e-${cat.id}-${leaf.id}`,
-          source: cat.id,
-          target: leaf.id,
-          style: { stroke: lColor + "30" },
-        });
-      });
-    });
-  } else {
-    // Radial
-    const categories = root.children.map((id) => nodeMap.get(id)).filter(Boolean) as MapNode[];
-    const radius1 = 350;
-    const radius2 = 650;
-
-    nodes.push({
-      id: root.id,
-      position: { x: 0, y: 0 },
-      data: { label: root.label },
-      style: {
-        background: CATEGORY_COLORS.target,
+    if (mn.type === "root") {
+      style = {
+        background: CYAN,
         color: "#000",
         border: "none",
         borderRadius: "50%",
-        fontWeight: 700,
-        fontFamily: "monospace",
-        fontSize: "13px",
-        padding: "16px",
-        width: "auto",
-      },
+        fontWeight: 800,
+        fontFamily: "'Share Tech Mono', monospace",
+        fontSize: "14px",
+        padding: "20px 24px",
+        boxShadow: `0 0 30px ${CYAN}60, 0 0 60px ${CYAN}30`,
+      };
+    } else if (mn.type === "category") {
+      style = {
+        background: "#0d0d0d",
+        color: "#fff",
+        border: `2px solid ${GREEN}`,
+        borderRadius: "10px",
+        fontFamily: "'Share Tech Mono', monospace",
+        fontSize: "12px",
+        fontWeight: 600,
+        padding: "10px 16px",
+      };
+    } else {
+      const borderColor = SEV_BORDER[mn.severity || "low"] || SEV_BORDER.low;
+      style = {
+        background: "#0a0a0a",
+        color: borderColor,
+        border: `1.5px solid ${borderColor}`,
+        borderRadius: "6px",
+        fontFamily: "'Share Tech Mono', monospace",
+        fontSize: "10px",
+        padding: "6px 10px",
+        maxWidth: "200px",
+      };
+    }
+
+    nodes.push({
+      id: mn.id,
+      position: { x: 0, y: 0 }, // dagre will position
+      data: { label: mn.label },
+      style,
     });
 
-    categories.forEach((cat, ci) => {
-      const angle = (2 * Math.PI * ci) / categories.length - Math.PI / 2;
-      const color = CATEGORY_COLORS[cat.category] || CATEGORY_COLORS.other;
-      const x = Math.cos(angle) * radius1;
-      const y = Math.sin(angle) * radius1;
+    if (mn.parentId) {
+      const parentNode = mapNodes.find((n) => n.id === mn.parentId);
+      const edgeColor = mn.type === "category" ? GREEN : SEV_BORDER[mn.severity || "low"] || "#444";
 
-      nodes.push({
-        id: cat.id,
-        position: { x, y },
-        data: { label: cat.label },
-        style: {
-          background: color + "20",
-          color,
-          border: `1px solid ${color}60`,
-          borderRadius: "8px",
-          fontFamily: "monospace",
-          fontSize: "11px",
-          padding: "8px 12px",
+      edges.push({
+        id: `e-${mn.parentId}-${mn.id}`,
+        source: mn.parentId,
+        target: mn.id,
+        style: { stroke: edgeColor + "80", strokeDasharray: "6 3" },
+        animated: true,
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          color: edgeColor + "80",
+          width: 16,
+          height: 12,
         },
       });
-      edges.push({
-        id: `e-${root.id}-${cat.id}`,
-        source: root.id,
-        target: cat.id,
-        style: { stroke: color + "40" },
-        animated: true,
-      });
-
-      const leaves = cat.children.map((id) => nodeMap.get(id)).filter(Boolean) as MapNode[];
-      leaves.forEach((leaf, li) => {
-        const leafAngle = angle + ((li - (leaves.length - 1) / 2) * 0.15);
-        const lx = Math.cos(leafAngle) * radius2;
-        const ly = Math.sin(leafAngle) * radius2;
-        const lColor = CATEGORY_COLORS[leaf.category] || color;
-
-        nodes.push({
-          id: leaf.id,
-          position: { x: lx, y: ly },
-          data: { label: leaf.label },
-          style: {
-            background: lColor + "10",
-            color: lColor,
-            border: `1px solid ${lColor}30`,
-            borderRadius: "6px",
-            fontFamily: "monospace",
-            fontSize: "10px",
-            padding: "5px 8px",
-          },
-        });
-        edges.push({
-          id: `e-${cat.id}-${leaf.id}`,
-          source: cat.id,
-          target: leaf.id,
-          style: { stroke: lColor + "30" },
-        });
-      });
-    });
+    }
   }
 
-  return { nodes, edges };
+  return layoutWithDagre(nodes, edges, "LR");
 }
 
+/* ── Canvas component ── */
 function MindMapCanvas() {
   const [domain, setDomain] = useState("");
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [loading, setLoading] = useState(false);
-  const [layout, setLayout] = useState<"tree" | "radial">("tree");
+  const [direction, setDirection] = useState<"LR" | "TB">("LR");
   const [hasData, setHasData] = useState(false);
-  const mapNodesRef = useRef<MapNode[]>([]);
+  const rawNodesRef = useRef<MindMapNode[]>([]);
   const { fitView, zoomIn, zoomOut } = useReactFlow();
 
   const applyLayout = useCallback(
-    (data: MapNode[], l: "tree" | "radial") => {
-      const { nodes: n, edges: e } = buildFlowData(data, l);
-      setNodes(n);
-      setEdges(e);
-      setTimeout(() => fitView({ padding: 0.2 }), 100);
+    (data: MindMapNode[], dir: "LR" | "TB") => {
+      const { nodes: n, edges: e } = buildFlowElements(data);
+      // Re-layout with direction
+      const laid = layoutWithDagre(n, e, dir);
+      setNodes(laid.nodes);
+      setEdges(laid.edges);
+      // Smooth zoom-to-fit
+      setTimeout(() => fitView({ padding: 0.15, duration: 800 }), 150);
     },
     [setNodes, setEdges, fitView]
   );
@@ -261,15 +175,12 @@ function MindMapCanvas() {
     }
     setLoading(true);
     try {
-      const raw = await callGemini(PROMPT(domain));
-      const match = raw.match(/\{[\s\S]*\}/);
-      if (!match) throw new Error("Invalid response");
-      const parsed = JSON.parse(match[0]);
-      const mapNodes: MapNode[] = parsed.nodes || [];
-      mapNodesRef.current = mapNodes;
+      const raw = await callGemini(buildMindMapPrompt(domain));
+      const parsed = parseMindMapNodes(raw);
+      rawNodesRef.current = parsed;
       setHasData(true);
-      applyLayout(mapNodes, layout);
-      toast.success("Mind map generated ✓");
+      applyLayout(parsed, direction);
+      toast.success(`Mind map generated — ${parsed.length} nodes ✓`);
     } catch (err: any) {
       toast.error(err.message || "Failed to generate mind map");
     } finally {
@@ -277,14 +188,14 @@ function MindMapCanvas() {
     }
   };
 
-  const toggleLayout = () => {
-    const next = layout === "tree" ? "radial" : "tree";
-    setLayout(next);
-    if (mapNodesRef.current.length) applyLayout(mapNodesRef.current, next);
+  const toggleDirection = () => {
+    const next = direction === "LR" ? "TB" : "LR";
+    setDirection(next);
+    if (rawNodesRef.current.length) applyLayout(rawNodesRef.current, next);
   };
 
   const exportImage = () => {
-    toast.info("Use your browser's screenshot tool or print to export the map");
+    toast.info("Use your browser's screenshot tool or Ctrl+P to export");
   };
 
   const btn =
@@ -318,12 +229,12 @@ function MindMapCanvas() {
         <button onClick={() => zoomOut()} className={btn}>
           <ZoomOut className="h-3.5 w-3.5" />
         </button>
-        <button onClick={() => fitView({ padding: 0.2 })} className={btn}>
+        <button onClick={() => fitView({ padding: 0.15, duration: 600 })} className={btn}>
           <Maximize className="h-3.5 w-3.5" />
         </button>
-        <button onClick={toggleLayout} className={btn}>
-          {layout === "tree" ? <Network className="h-3.5 w-3.5" /> : <TreePine className="h-3.5 w-3.5" />}
-          {layout === "tree" ? "Radial" : "Tree"}
+        <button onClick={toggleDirection} className={btn}>
+          {direction === "LR" ? <TreePine className="h-3.5 w-3.5" /> : <Network className="h-3.5 w-3.5" />}
+          {direction === "LR" ? "Vertical" : "Horizontal"}
         </button>
         <button onClick={exportImage} className={btn}>
           <Download className="h-3.5 w-3.5" />
@@ -339,14 +250,17 @@ function MindMapCanvas() {
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           fitView
+          fitViewOptions={{ padding: 0.15 }}
           proOptions={{ hideAttribution: true }}
           style={{ background: "#0a0a0a" }}
+          minZoom={0.1}
+          maxZoom={2}
         >
-          <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#ffffff10" />
+          <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#ffffff08" />
 
           {/* Legend */}
           <Panel position="top-right">
-            <div className="rounded-lg border border-border/20 bg-black/80 backdrop-blur-sm p-3 space-y-1.5">
+            <div className="rounded-lg border border-border/20 bg-black/90 backdrop-blur-sm p-3 space-y-1.5">
               <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-2">Legend</p>
               {LEGEND.map((l) => (
                 <div key={l.label} className="flex items-center gap-2">
