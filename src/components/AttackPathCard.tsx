@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import { Bookmark, BookmarkCheck, CheckSquare, Square, StickyNote, Copy, Check, ChevronDown, ChevronRight, ExternalLink } from "lucide-react";
 import { toggleBookmark, isBookmarked } from "@/lib/bookmarks";
 import { toast } from "@/components/Toast";
@@ -16,7 +16,7 @@ interface Props {
   onChange?: (updated: AttackPath) => void;
 }
 
-const AttackPathCard = ({ path, onChange }: Props) => {
+const AttackPathCard = memo(({ path, onChange }: Props) => {
   const [payloadOpen, setPayloadOpen] = useState(false);
   const [stepsOpen, setStepsOpen] = useState(false);
   const [notesOpen, setNotesOpen] = useState(false);
@@ -193,6 +193,8 @@ const AttackPathCard = ({ path, onChange }: Props) => {
       </div>
     </div>
   );
-};
+});
+
+AttackPathCard.displayName = "AttackPathCard";
 
 export default AttackPathCard;

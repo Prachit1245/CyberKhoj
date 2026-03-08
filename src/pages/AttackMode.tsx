@@ -1,9 +1,114 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { AlertTriangle, Zap, ShoppingCart, LogIn, Server, Shield, Upload, ListChecks, Download, CheckSquare, XSquare, Copy, Search, Shuffle, WifiOff } from "lucide-react";
 import useOnline from "@/hooks/useOnline";
 import { callGemini, GeminiError } from "@/lib/gemini";
 import { buildAttackModePrompt, parseAttackIdeas, type AttackIdea } from "@/lib/prompts";
 import { toast } from "@/components/Toast";
+import { useDebouncedCallback } from "@/hooks/useDebounce";
+
+/* ── Virtualized ideas grid: renders only visible rows ── */
+const VISIBLE_BATCH = 30; // show 30 at a time, load more on scroll
+
+function VirtualizedIdeasGrid({
+  ideas,
+  checklistMode,
+  checked,
+  toggleCheck,
+  catColor,
+  diffDot,
+}: {
+  ideas: AttackIdea[];
+  checklistMode: boolean;
+  checked: Set<number>;
+  toggleCheck: (id: number) => void;
+  catColor: (cat: string) => string;
+  diffDot: (d: string) => string;
+}) {
+  const [visibleLimit, setVisibleLimit] = useState(VISIBLE_BATCH);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  // Reset visible limit when ideas change
+  useEffect(() => { setVisibleLimit(VISIBLE_BATCH); }, [ideas.length]);
+
+  // Intersection observer for infinite scroll
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVisibleLimit((prev) => Math.min(prev + VISIBLE_BATCH, ideas.length));
+        }
+      },
+      { rootMargin: "200px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [ideas.length]);
+
+  const visible = ideas.slice(0, visibleLimit);
+
+  return (
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+        {visible.map((idea) => {
+          const isChecked = checked.has(idea.id);
+          return (
+            <div
+              key={idea.id}
+              onClick={checklistMode ? () => toggleCheck(idea.id) : undefined}
+              className={`p-3 rounded-lg border transition-colors ${
+                checklistMode ? "cursor-pointer" : ""
+              } ${
+                isChecked && checklistMode
+                  ? "border-primary/30 bg-primary/5 opacity-60"
+                  : "border-border/20 bg-card/30 hover:border-primary/20"
+              }`}
+            >
+              <div className="flex items-start gap-2">
+                {checklistMode ? (
+                  <span className={`shrink-0 mt-0.5 flex items-center justify-center h-5 w-5 rounded border transition-colors ${
+                    isChecked ? "bg-primary border-primary text-primary-foreground" : "border-muted-foreground/30"
+                  }`}>
+                    {isChecked && <span className="text-[10px]">✓</span>}
+                  </span>
+                ) : (
+                  <span className="shrink-0 flex items-center justify-center h-6 w-9 rounded bg-muted/30 text-[10px] font-mono text-muted-foreground font-bold">
+                    #{String(idea.id).padStart(3, "0")}
+                  </span>
+                )}
+                <span className={`shrink-0 mt-2 h-2 w-2 rounded-full ${diffDot(idea.difficulty)}`} title={idea.difficulty} />
+                <div className="min-w-0 flex-1 space-y-1.5">
+                  <p className={`font-mono text-xs leading-relaxed ${isChecked && checklistMode ? "line-through text-muted-foreground" : "text-foreground"}`}>
+                    {idea.idea}
+                  </p>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${catColor(idea.category)}`}>
+                      {idea.category}
+                    </span>
+                    <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${
+                      idea.priority === "high" ? "text-red-400 border-red-400/30" :
+                      idea.priority === "medium" ? "text-orange-400 border-orange-400/30" :
+                      "text-muted-foreground border-border/30"
+                    }`}>{idea.priority}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      {/* Sentinel for infinite scroll */}
+      {visibleLimit < ideas.length && (
+        <div ref={sentinelRef} className="flex items-center justify-center py-4">
+          <span className="text-xs font-mono text-muted-foreground animate-pulse">
+            Loading more… ({visibleLimit}/{ideas.length})
+          </span>
+        </div>
+      )}
+    </>
+  );
+}
 
 const TEMPLATES = [
   { label: "E-commerce Site", icon: ShoppingCart, context: "e-commerce web application with cart, checkout, payments" },
@@ -37,6 +142,9 @@ const AttackMode = () => {
   const [checked, setChecked] = useState<Set<number>>(new Set());
   const [celebrated, setCelebrated] = useState(false);
   const [searchQ, setSearchQ] = useState("");
+  const [debouncedSearchQ, setDebouncedSearchQ] = useState("");
+  const applySearchQ = useDebouncedCallback((val: string) => setDebouncedSearchQ(val), 200);
+  const handleSearchQ = (val: string) => { setSearchQ(val); applySearchQ(val); };
   const [catFilter, setCatFilter] = useState<string | null>(null);
   const [diffFilter, setDiffFilter] = useState<string>("all");
   const [prioFilter, setPrioFilter] = useState<string>("all");
@@ -176,15 +284,15 @@ const AttackMode = () => {
   // Collect unique categories
   const categories = [...new Set(revealed.map(i => i.category))].sort();
 
-  // Filter + sort
-  const filtered = (() => {
+  // Filter + sort (memoized)
+  const filtered = useMemo(() => {
     let result = [...revealed];
     if (catFilter) result = result.filter(i => i.category === catFilter);
     if (diffFilter !== "all") result = result.filter(i => i.difficulty === diffFilter);
     if (prioFilter !== "all") result = result.filter(i => i.priority === prioFilter);
     if (untestedOnly) result = result.filter(i => !checked.has(i.id));
-    if (searchQ.trim()) {
-      const q = searchQ.toLowerCase();
+    if (debouncedSearchQ.trim()) {
+      const q = debouncedSearchQ.toLowerCase();
       result = result.filter(i => i.idea.toLowerCase().includes(q) || i.category.toLowerCase().includes(q));
     }
     // Sort
@@ -201,7 +309,7 @@ const AttackMode = () => {
       }
     }
     return result;
-  })();
+  }, [revealed, catFilter, diffFilter, prioFilter, untestedOnly, debouncedSearchQ, sortMode, shuffleSeed, checked]);
 
   const btn = "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono border border-border/30 bg-card/50 text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors cursor-pointer";
   const pillClass = (active: boolean) =>
@@ -361,7 +469,7 @@ const AttackMode = () => {
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
               <input
                 value={searchQ}
-                onChange={(e) => setSearchQ(e.target.value)}
+                onChange={(e) => handleSearchQ(e.target.value)}
                 placeholder="Search ideas..."
                 className="h-8 w-full rounded-lg bg-card/50 border border-border/30 pl-8 pr-3 text-xs font-mono text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50"
               />
@@ -423,56 +531,16 @@ const AttackMode = () => {
         </div>
       )}
 
-      {/* Ideas Grid */}
+      {/* Ideas Grid — virtualized for large lists */}
       {filtered.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-          {filtered.map((idea) => {
-            const isChecked = checked.has(idea.id);
-            return (
-              <div
-                key={idea.id}
-                onClick={checklistMode ? () => toggleCheck(idea.id) : undefined}
-                className={`p-3 rounded-lg border transition-colors animate-fade-in ${
-                  checklistMode ? "cursor-pointer" : ""
-                } ${
-                  isChecked && checklistMode
-                    ? "border-primary/30 bg-primary/5 opacity-60"
-                    : "border-border/20 bg-card/30 hover:border-primary/20"
-                }`}
-              >
-                <div className="flex items-start gap-2">
-                  {checklistMode ? (
-                    <span className={`shrink-0 mt-0.5 flex items-center justify-center h-5 w-5 rounded border transition-colors ${
-                      isChecked ? "bg-primary border-primary text-primary-foreground" : "border-muted-foreground/30"
-                    }`}>
-                      {isChecked && <span className="text-[10px]">✓</span>}
-                    </span>
-                  ) : (
-                    <span className="shrink-0 flex items-center justify-center h-6 w-9 rounded bg-muted/30 text-[10px] font-mono text-muted-foreground font-bold">
-                      #{String(idea.id).padStart(3, "0")}
-                    </span>
-                  )}
-                  <span className={`shrink-0 mt-2 h-2 w-2 rounded-full ${diffDot(idea.difficulty)}`} title={idea.difficulty} />
-                  <div className="min-w-0 flex-1 space-y-1.5">
-                    <p className={`font-mono text-xs leading-relaxed ${isChecked && checklistMode ? "line-through text-muted-foreground" : "text-foreground"}`}>
-                      {idea.idea}
-                    </p>
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${catColor(idea.category)}`}>
-                        {idea.category}
-                      </span>
-                      <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${
-                        idea.priority === "high" ? "text-red-400 border-red-400/30" :
-                        idea.priority === "medium" ? "text-orange-400 border-orange-400/30" :
-                        "text-muted-foreground border-border/30"
-                      }`}>{idea.priority}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <VirtualizedIdeasGrid
+          ideas={filtered}
+          checklistMode={checklistMode}
+          checked={checked}
+          toggleCheck={toggleCheck}
+          catColor={catColor}
+          diffDot={diffDot}
+        />
       )}
     </div>
   );

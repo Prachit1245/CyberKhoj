@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useRef } from "react";
+import { useDebouncedCallback } from "@/hooks/useDebounce";
 import { useNavigate } from "react-router-dom";
 import { Search, Trash2, Clock, ArrowUpDown, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -82,6 +83,9 @@ export default function History() {
   const navigate = useNavigate();
   const [records, setRecords] = useState<AnalysisRecord[]>(() => getHistory());
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const applySearch = useDebouncedCallback((val: string) => setDebouncedSearch(val), 200);
+  const handleSearch = (val: string) => { setSearch(val); applySearch(val); };
   const [filter, setFilter] = useState("all");
   const [sort, setSort] = useState("newest");
   const undoRef = useRef<{ record: AnalysisRecord; timer: ReturnType<typeof setTimeout> } | null>(null);
@@ -94,9 +98,9 @@ export default function History() {
     // Filter by type
     if (filter !== "all") list = list.filter((r) => r.type === filter);
 
-    // Search
-    if (search.trim()) {
-      const q = search.toLowerCase();
+    // Search (uses debounced value)
+    if (debouncedSearch.trim()) {
+      const q = debouncedSearch.toLowerCase();
       list = list.filter((r) => r.target.toLowerCase().includes(q));
     }
 
@@ -106,7 +110,7 @@ export default function History() {
     else if (sort === "most") list.sort((a, b) => b.pathsFound - a.pathsFound);
 
     return list;
-  }, [records, search, filter, sort]);
+  }, [records, debouncedSearch, filter, sort]);
 
   const handleDelete = (record: AnalysisRecord) => {
     deleteFromHistory(record.id);
@@ -172,12 +176,12 @@ export default function History() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
           <input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
             placeholder="Search by target..."
             className="w-full h-9 pl-9 pr-8 rounded-lg bg-card/50 border border-border/30 text-sm font-mono text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50"
           />
           {search && (
-            <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer">
+            <button onClick={() => handleSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer">
               <X className="h-3.5 w-3.5" />
             </button>
           )}
