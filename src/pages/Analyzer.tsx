@@ -177,7 +177,13 @@ const Analyzer = () => {
 
       setResultTab("Attack Paths");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Analysis failed.");
+      if (e instanceof GeminiError) {
+        setError(e.message);
+        setErrorCode(e.code);
+      } else {
+        setError(e instanceof Error ? e.message : "Analysis failed.");
+        setErrorCode("API_ERROR");
+      }
     } finally {
       setLoading(false);
     }
