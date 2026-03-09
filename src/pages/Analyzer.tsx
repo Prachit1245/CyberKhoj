@@ -20,6 +20,7 @@ import TargetIntelligenceCard from "@/components/TargetIntelligenceCard";
 import JwtAnalyzer from "@/components/JwtAnalyzer";
 import HttpRequestAnalyzer from "@/components/HttpRequestAnalyzer";
 import BatchAnalyzer from "@/components/BatchAnalyzer";
+import TechStackDetector from "@/components/TechStackDetector";
 
 const DEPTHS = ["Quick", "Standard", "Deep"] as const;
 const TYPES = ["URL", "HTTP Request", "JWT Token", "GraphQL"] as const;
