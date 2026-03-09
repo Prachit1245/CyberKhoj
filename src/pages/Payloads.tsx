@@ -251,7 +251,8 @@ function PayloadFormModal({
             <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Payload Code *</label>
             <textarea
               value={code}
-              onChange={(e) => setCode(e.target.value)}
+              onChange={(e) => setCode(enforceLimit(e.target.value, INPUT_LIMITS.PAYLOAD))}
+              maxLength={INPUT_LIMITS.PAYLOAD}
               rows={3}
               placeholder="<script>alert(1)</script>"
               className={`${inputCls} resize-none`}
