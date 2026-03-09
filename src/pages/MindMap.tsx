@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { SkeletonMindMap } from "@/components/Skeletons";
 import {
   ReactFlow,
@@ -235,6 +236,7 @@ function buildFlowElements(
 function MindMapCanvas() {
   const navigate = useNavigate();
   const online = useOnline();
+  const isMobile = useIsMobile();
   const [domain, setDomain] = useState("");
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -527,6 +529,11 @@ function MindMapCanvas() {
 
   const [showTextView, setShowTextView] = useState(false);
 
+  // Auto-switch to text view on mobile
+  useEffect(() => {
+    if (isMobile) setShowTextView(true);
+  }, [isMobile]);
+
   // Build text list for screen reader alternative
   const textListContent = useMemo(() => {
     if (!rawNodesRef.current.length) return [];
@@ -563,7 +570,7 @@ function MindMapCanvas() {
           onChange={(e) => setDomain(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && !loading && generate()}
           placeholder="example.com"
-          className="h-9 w-56 rounded-lg bg-card/50 border border-border/30 px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50"
+          className="h-9 w-full md:w-56 rounded-lg bg-card/50 border border-border/30 px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50"
         />
         <button
           onClick={generate}
@@ -604,34 +611,39 @@ function MindMapCanvas() {
 
         <div className="flex-1" />
 
-        {/* Collapse/Expand */}
-        {hasData && (
+        {/* Desktop-only graph controls */}
+        {!isMobile && (
           <>
-            <button onClick={collapseAll} className={btn} title="Collapse All">
-              <ChevronsDownUp className="h-3.5 w-3.5" />
+            {/* Collapse/Expand */}
+            {hasData && (
+              <>
+                <button onClick={collapseAll} className={btn} title="Collapse All">
+                  <ChevronsDownUp className="h-3.5 w-3.5" />
+                </button>
+                <button onClick={expandAll} className={btn} title="Expand All">
+                  <ChevronsUpDown className="h-3.5 w-3.5" />
+                </button>
+              </>
+            )}
+
+            <button onClick={() => zoomIn()} className={btn}>
+              <ZoomIn className="h-3.5 w-3.5" />
             </button>
-            <button onClick={expandAll} className={btn} title="Expand All">
-              <ChevronsUpDown className="h-3.5 w-3.5" />
+            <button onClick={() => zoomOut()} className={btn}>
+              <ZoomOut className="h-3.5 w-3.5" />
+            </button>
+            <button onClick={() => fitView({ padding: 0.15, duration: 600 })} className={btn}>
+              <Maximize className="h-3.5 w-3.5" />
+            </button>
+            <button onClick={toggleDirection} className={btn}>
+              {direction === "LR" ? <TreePine className="h-3.5 w-3.5" /> : <Network className="h-3.5 w-3.5" />}
+              {direction === "LR" ? "Vertical" : "Horizontal"}
+            </button>
+            <button onClick={exportPng} className={btn} disabled={!hasData}>
+              <Image className="h-3.5 w-3.5" /> PNG
             </button>
           </>
         )}
-
-        <button onClick={() => zoomIn()} className={btn}>
-          <ZoomIn className="h-3.5 w-3.5" />
-        </button>
-        <button onClick={() => zoomOut()} className={btn}>
-          <ZoomOut className="h-3.5 w-3.5" />
-        </button>
-        <button onClick={() => fitView({ padding: 0.15, duration: 600 })} className={btn}>
-          <Maximize className="h-3.5 w-3.5" />
-        </button>
-        <button onClick={toggleDirection} className={btn}>
-          {direction === "LR" ? <TreePine className="h-3.5 w-3.5" /> : <Network className="h-3.5 w-3.5" />}
-          {direction === "LR" ? "Vertical" : "Horizontal"}
-        </button>
-        <button onClick={exportPng} className={btn} disabled={!hasData}>
-          <Image className="h-3.5 w-3.5" /> PNG
-        </button>
         <button onClick={exportJson} className={btn} disabled={!hasData}>
           <FileJson className="h-3.5 w-3.5" /> JSON
         </button>
@@ -641,7 +653,7 @@ function MindMapCanvas() {
         <button onClick={saveToHistory} className={btn} disabled={!hasData} aria-label="Save to history">
           <Save className="h-3.5 w-3.5" /> Save
         </button>
-        {hasData && (
+        {hasData && !isMobile && (
           <button
             onClick={() => setShowTextView(!showTextView)}
             className={`${btn} ${showTextView ? "!text-primary !border-primary/40" : ""}`}

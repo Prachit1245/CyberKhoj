@@ -62,7 +62,7 @@ function CounterCard({ Icon, target, label, active, delay }: {
         <Icon size={24} className="text-primary" />
       </div>
       <div style={{
-        fontSize: "2rem",
+        fontSize: "clamp(1.25rem, 4vw, 2rem)",
         fontWeight: "bold",
         color: "hsl(var(--foreground))",
         whiteSpace: "nowrap",
@@ -100,14 +100,7 @@ const AnimatedCounter = () => {
           </p>
         </div>
 
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "24px",
-          width: "100%",
-          maxWidth: "900px",
-          margin: "0 auto",
-        }}>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 w-full max-w-[900px] mx-auto">
           {COUNTERS.map((c, i) => (
             <CounterCard key={c.label} {...c} active={visible} delay={i * 150} />
           ))}
