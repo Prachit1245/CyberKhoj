@@ -6,6 +6,8 @@ import { CHEAT_SHEETS, type CheatSheet, type Difficulty } from "@/lib/cheatsheet
 import { toggleBookmark, isBookmarked as isBm } from "@/lib/bookmarks";
 import { toast } from "@/components/Toast";
 
+const JsScanner = lazy(() => import("@/components/JsScanner"));
+
 const DIFF_STYLES: Record<Difficulty, string> = {
   Beginner: "bg-primary/15 text-primary border-primary/30",
   Intermediate: "bg-yellow-500/15 text-yellow-400 border-yellow-500/30",
