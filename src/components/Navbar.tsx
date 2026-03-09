@@ -114,7 +114,7 @@ const Navbar = () => {
             </a>
 
             <a
-              href="https://discord.gg/lovable-dev"
+              href="https://discord.gg/tQFG38qB"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Join CyberKhoj Discord community"

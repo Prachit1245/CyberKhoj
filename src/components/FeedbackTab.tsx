@@ -10,7 +10,7 @@ const TYPES: { key: FeedbackType; label: string; icon: typeof Bug }[] = [
   { key: "general", label: "General", icon: MessageCircle },
 ];
 
-const GITHUB_ISSUES_URL = "https://github.com/cyberkhoj-app/cyberkhoj/issues";
+const GITHUB_ISSUES_URL = "https://github.com/Prachit1245/CyberKhoj/issues";
 
 export default function FeedbackTab() {
   const [open, setOpen] = useState(false);

@@ -89,7 +89,7 @@ export const CYBERKHOJ_BRAND = {
     background: "#0a0a0a",
   },
   social: {
-    github: "https://github.com/Prachit1245/cyberkhoj",
-    discord: "https://discord.gg/lovable-dev",
+    github: "https://github.com/Prachit1245/CyberKhoj",
+    discord: "https://discord.gg/tQFG38qB",
   },
 } as const;
