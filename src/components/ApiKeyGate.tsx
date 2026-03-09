@@ -158,6 +158,7 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
                 type={showKey ? "text" : "password"}
                 value={key}
                 onChange={(e) => handleKeyChange(e.target.value)}
+                onContextMenu={(e) => e.preventDefault()}
                 placeholder="gsk_..."
                 className="w-full rounded-lg border border-border bg-muted/50 px-4 py-3 pr-10 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 transition-colors"
               />
