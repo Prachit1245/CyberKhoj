@@ -438,6 +438,11 @@ const AttackMode = () => {
         <SubdomainRecon domain={domain.trim()} />
       )}
 
+      {/* Historical Recon Panel */}
+      {showHistoricalRecon && domain.trim() && (
+        <HistoricalRecon domain={domain.trim()} />
+      )}
+
       {/* Progress + Counter */}
       {(loading || visibleCount > 0) && (
         <div className="space-y-2">
