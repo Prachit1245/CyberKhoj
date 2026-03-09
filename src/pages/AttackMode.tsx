@@ -396,11 +396,30 @@ const AttackMode = () => {
             Recon Checklist
           </span>
         </button>
+        <button
+          onClick={() => setShowSubdomainRecon(!showSubdomainRecon)}
+          disabled={!domain.trim()}
+          className={`h-12 px-4 rounded-lg font-heading font-bold text-sm transition-all cursor-pointer border ${
+            showSubdomainRecon
+              ? "border-primary bg-primary/10 text-primary"
+              : "border-border/30 bg-card/50 text-muted-foreground hover:text-primary hover:border-primary/40"
+          } disabled:opacity-40 disabled:cursor-not-allowed`}
+        >
+          <span className="flex items-center gap-2">
+            <Globe className="h-4 w-4" />
+            Subdomain Recon
+          </span>
+        </button>
       </div>
 
       {/* Recon Checklist Panel */}
       {showRecon && domain.trim() && (
         <ReconChecklist domain={domain.trim()} />
+      )}
+
+      {/* Subdomain Recon Panel */}
+      {showSubdomainRecon && domain.trim() && (
+        <SubdomainRecon domain={domain.trim()} />
       )}
 
       {/* Progress + Counter */}
