@@ -66,7 +66,7 @@ export default function HackMindLogo({
       {/* Text */}
       {showText && (
         <div className="flex flex-col">
-          <span className={`font-heading ${s.text} leading-none flex items-center`} style={{ color: "#39ff14" }}>
+          <span className={`font-mono ${s.text} leading-none flex items-center tracking-tight`} style={{ color: "#39ff14" }}>
             <span className="font-normal">Cyber</span>
             <span className="font-bold">Khoj</span>
             <span
