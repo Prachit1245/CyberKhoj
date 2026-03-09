@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { AlertTriangle, Zap, ShoppingCart, LogIn, Server, Shield, Upload, ListChecks, Download, CheckSquare, XSquare, Copy, Search, Shuffle, WifiOff, Radar, Globe } from "lucide-react";
+import { AlertTriangle, Zap, ShoppingCart, LogIn, Server, Shield, Upload, ListChecks, Download, CheckSquare, XSquare, Copy, Search, Shuffle, WifiOff, Radar, Globe, History as HistoryIcon } from "lucide-react";
 import EthicalDisclaimer from "@/components/EthicalDisclaimer";
 import useOnline from "@/hooks/useOnline";
 import { callGemini, GeminiError } from "@/lib/ai";
@@ -8,6 +8,7 @@ import { toast } from "@/components/Toast";
 import { useDebouncedCallback } from "@/hooks/useDebounce";
 import ReconChecklist from "@/components/ReconChecklist";
 import SubdomainRecon from "@/components/SubdomainRecon";
+import HistoricalRecon from "@/components/HistoricalRecon";
 
 /* ── Virtualized ideas grid: renders only visible rows ── */
 const VISIBLE_BATCH = 30; // show 30 at a time, load more on scroll
@@ -156,6 +157,7 @@ const AttackMode = () => {
   const [shuffleSeed, setShuffleSeed] = useState(0);
   const [showRecon, setShowRecon] = useState(false);
   const [showSubdomainRecon, setShowSubdomainRecon] = useState(false);
+  const [showHistoricalRecon, setShowHistoricalRecon] = useState(false);
   const streamRef = useRef<ReturnType<typeof setInterval>>();
 
   useEffect(() => () => { if (streamRef.current) clearInterval(streamRef.current); }, []);
@@ -410,6 +412,20 @@ const AttackMode = () => {
             Subdomain Recon
           </span>
         </button>
+        <button
+          onClick={() => setShowHistoricalRecon(!showHistoricalRecon)}
+          disabled={!domain.trim()}
+          className={`h-12 px-4 rounded-lg font-heading font-bold text-sm transition-all cursor-pointer border ${
+            showHistoricalRecon
+              ? "border-primary bg-primary/10 text-primary"
+              : "border-border/30 bg-card/50 text-muted-foreground hover:text-primary hover:border-primary/40"
+          } disabled:opacity-40 disabled:cursor-not-allowed`}
+        >
+          <span className="flex items-center gap-2">
+            <HistoryIcon className="h-4 w-4" />
+            Historical Recon
+          </span>
+        </button>
       </div>
 
       {/* Recon Checklist Panel */}
@@ -420,6 +436,11 @@ const AttackMode = () => {
       {/* Subdomain Recon Panel */}
       {showSubdomainRecon && domain.trim() && (
         <SubdomainRecon domain={domain.trim()} />
+      )}
+
+      {/* Historical Recon Panel */}
+      {showHistoricalRecon && domain.trim() && (
+        <HistoricalRecon domain={domain.trim()} />
       )}
 
       {/* Progress + Counter */}
