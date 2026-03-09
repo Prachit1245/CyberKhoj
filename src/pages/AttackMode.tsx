@@ -157,6 +157,7 @@ const AttackMode = () => {
   const [shuffleSeed, setShuffleSeed] = useState(0);
   const [showRecon, setShowRecon] = useState(false);
   const [showSubdomainRecon, setShowSubdomainRecon] = useState(false);
+  const [showHistoricalRecon, setShowHistoricalRecon] = useState(false);
   const streamRef = useRef<ReturnType<typeof setInterval>>();
 
   useEffect(() => () => { if (streamRef.current) clearInterval(streamRef.current); }, []);
