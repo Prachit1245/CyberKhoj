@@ -38,6 +38,7 @@ export const getFindings = (): Finding[] => {
 };
 
 const saveFindings = (findings: Finding[]) => {
+  if (isPrivateMode()) return;
   localStorage.setItem(FINDINGS_KEY, JSON.stringify(findings));
 };
 
