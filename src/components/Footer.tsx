@@ -97,7 +97,7 @@ const Footer = () => (
           — the AI app builder
           <span className="mx-1">|</span>
           <a
-            href="https://github.com/yourusername/cyberkhoj"
+            href="https://github.com/Prachit1245/cyberkhoj"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1 text-muted-foreground/50 hover:text-primary/70 transition-colors"

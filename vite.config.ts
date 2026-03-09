@@ -4,7 +4,6 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { VitePWA } from "vite-plugin-pwa";
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
@@ -20,9 +19,9 @@ export default defineConfig(({ mode }) => ({
       registerType: "autoUpdate",
       includeAssets: ["favicon.svg", "favicon.ico", "pwa-icon-192.png", "pwa-icon-512.png", "icon.svg"],
       manifest: {
-        name: "HackMind",
-        short_name: "HackMind",
-        description: "AI-powered vulnerability analysis and attack surface mapping",
+        name: "CyberKhoj",
+        short_name: "CyberKhoj",
+        description: "Nepal's first free AI-powered bug bounty vulnerability hunter. Generate attack paths, recon checklists and mind maps for any URL or domain.",
         theme_color: "#0a0a0a",
         background_color: "#0a0a0a",
         display: "standalone",

@@ -28,7 +28,6 @@ export default function CyberKhojLogo({
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      {/* Magnifying glass with lightning bolt */}
       <svg
         width={iconSize}
         height={iconSize}
@@ -37,33 +36,11 @@ export default function CyberKhojLogo({
         className="shrink-0"
         aria-hidden="true"
       >
-        {/* Glass circle */}
-        <circle
-          cx="13"
-          cy="13"
-          r="9"
-          stroke="#39ff14"
-          strokeWidth="2.2"
-          fill="none"
-        />
-        {/* Handle */}
-        <line
-          x1="19.8"
-          y1="19.8"
-          x2="28"
-          y2="28"
-          stroke="#39ff14"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-        />
-        {/* Lightning bolt inside glass */}
-        <path
-          d="M14.5 7L10 14.5h3.5L12 19.5 18 12h-3.5L16.5 7z"
-          fill="#39ff14"
-        />
+        <circle cx="13" cy="13" r="9" stroke="#39ff14" strokeWidth="2.2" fill="none" />
+        <line x1="19.8" y1="19.8" x2="28" y2="28" stroke="#39ff14" strokeWidth="2.5" strokeLinecap="round" />
+        <path d="M14.5 7L10 14.5h3.5L12 19.5 18 12h-3.5L16.5 7z" fill="#39ff14" />
       </svg>
 
-      {/* Text */}
       {showText && (
         <div className="flex flex-col">
           <span className={`font-mono ${s.text} leading-none flex items-center tracking-tight`} style={{ color: "#39ff14" }}>
@@ -71,10 +48,7 @@ export default function CyberKhojLogo({
             <span className="font-bold">Khoj</span>
             <span
               className="inline-block w-[2px] ml-0.5 bg-[#39ff14] rounded-sm"
-              style={{
-                height: "1em",
-                animation: "blink-cursor 1s step-end infinite",
-              }}
+              style={{ height: "1em", animation: "blink-cursor 1s step-end infinite" }}
             />
           </span>
           {showTagline && (
@@ -95,9 +69,6 @@ export default function CyberKhojLogo({
   );
 }
 
-/**
- * Static icon-only version for favicons and PWA.
- */
 export function getCyberKhojIconSVG(size: number = 512): string {
   const s = size;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${s} ${s}" fill="none">
@@ -122,10 +93,3 @@ export const CYBERKHOJ_BRAND = {
     discord: "https://discord.gg/lovable-dev",
   },
 } as const;
-
-// Backward-compatible alias
-export { CyberKhojLogo as HackMindLogo };
-function CyberKhojLogo(...args: Parameters<typeof import("./HackMindLogo").default>) {
-  // This is handled by the default export
-  return null;
-}
