@@ -71,6 +71,21 @@ const Index = () => {
             </span>
           </div>
         </div>
+
+        {/* Built with Lovable badge — bottom right of hero */}
+        <a
+          href="https://lovable.dev"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="absolute bottom-6 right-6 z-10 opacity-60 hover:opacity-100 transition-opacity"
+          title="Built with Lovable"
+        >
+          <img
+            src="https://img.shields.io/badge/Built%20with-Lovable-ff6b6b?style=flat-square&logo=heart"
+            alt="Built with Lovable"
+            className="h-5"
+          />
+        </a>
       </section>
 
       <section className="max-w-3xl mx-auto px-4 py-8">

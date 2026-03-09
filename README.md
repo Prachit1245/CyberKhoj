@@ -1,73 +1,141 @@
-# Welcome to your Lovable project
+# CyberKhoj 🔍
 
-## Project info
+### Nepal's First Free AI-Powered Bug Bounty Tool
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+> "Search. Find. Exploit Responsibly."
 
-## How can I edit this code?
+![CyberKhoj](https://img.shields.io/badge/CyberKhoj-Bug%20Bounty%20Tool-39ff14?style=for-the-badge)
+![Free](https://img.shields.io/badge/Cost-100%25%20Free-39ff14?style=for-the-badge)
+![Nepal](https://img.shields.io/badge/Made%20in-Nepal%20%F0%9F%87%B3%F0%9F%87%B5-red?style=for-the-badge)
+![Lovable](https://img.shields.io/badge/Built%20with-Lovable-ff6b6b?style=for-the-badge&logo=heart)
 
-There are several ways of editing your application.
+## What Is CyberKhoj?
 
-**Use Lovable**
+CyberKhoj is a free open source bug bounty assistant that thinks like a hacker. Paste any URL or domain and instantly get AI-powered vulnerability attack paths, recon checklists, visual mind maps, and 100 hacker test ideas — completely free forever.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+Built for the bug bounty community.  
+By a developer from Nepal 🇳🇵
 
-Changes made via Lovable will be committed automatically to this repo.
+## Features
 
-**Use your preferred IDE**
+- 🔍 **URL Analyzer** — Paste any URL, get instant attack paths
+- ⚔️ **Attack Mode** — Generate 100 hacker test ideas for any domain
+- 🧠 **Mind Map** — Visual attack surface mapper
+- 📋 **Payload Library** — 200+ ready-to-use payloads
+- 🛰️ **Recon Dashboard** — Full recon toolkit in one place
+- 🔎 **Google Dork Generator** — 30 targeted dorks per domain
+- 🕵️ **JS Recon Analyzer** — Find secrets in JavaScript files
+- 📚 **Cheat Sheets** — OWASP, SQLi, XSS, JWT and more
+- 🐛 **Findings Tracker** — Log and track your bug bounty finds
+- 🔒 **100% Private** — Your data never leaves your browser
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Live Demo
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Visit: [cyberkhoj.lovable.app](https://cyberkhoj.lovable.app)
 
-Follow these steps:
+## Cost
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+**Completely free forever.**
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+- No subscription
+- No credit card
+- No server costs
+- Uses your own free Groq API key (1,000 requests/day)
+- Get your free key at: [console.groq.com](https://console.groq.com)
 
-# Step 3: Install the necessary dependencies.
-npm i
+## Tech Stack
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+| Layer | Technology |
+|---|---|
+| Frontend | React + TypeScript + Tailwind CSS |
+| AI | Groq API (Llama 3 70B) — free tier |
+| Storage | localStorage only, no backend needed |
+| Builder | [Lovable](https://lovable.dev) |
+| Fonts | Syne + Share Tech Mono |
+
+## Getting Started
+
+### Use Online (Recommended)
+
+1. Visit [cyberkhoj.lovable.app](https://cyberkhoj.lovable.app)
+2. Get your free Groq API key at [console.groq.com](https://console.groq.com)
+3. Paste your key and start hunting bugs
+
+### Run Locally
+
+```bash
+git clone https://github.com/yourusername/cyberkhoj.git
+cd cyberkhoj
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Security & Privacy
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- ✅ API key encrypted before storing in localStorage
+- ✅ Sensitive parameters auto-redacted before sending to AI
+- ✅ No servers, no database, no tracking
+- ✅ No data collection of any kind
+- ✅ Full client-side application — everything runs in your browser
 
-**Use GitHub Codespaces**
+## ⚠️ Ethical Use Warning
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+CyberKhoj is built for **authorized security testing only**.
 
-## What technologies are used for this project?
+- Only test systems you own or have **explicit written permission** to test
+- Follow responsible disclosure guidelines
+- Use on bug bounty platforms: [HackerOne](https://hackerone.com), [Bugcrowd](https://bugcrowd.com)
+- **Never** use on systems without permission
+- The developer is not responsible for misuse
 
-This project is built with:
+## Contributing
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Contributions are welcome! This is an open source project built for the global bug bounty community.
 
-## How can I deploy this project?
+1. Fork the repo
+2. Create your feature branch
+   ```bash
+   git checkout -b feature/NewFeature
+   ```
+3. Commit your changes
+   ```bash
+   git commit -m 'Add NewFeature'
+   ```
+4. Push to the branch
+   ```bash
+   git push origin feature/NewFeature
+   ```
+5. Open a Pull Request
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+### Ways To Contribute
 
-## Can I connect a custom domain to my Lovable project?
+- 🐛 Report bugs by opening an Issue
+- 💡 Suggest new features via Issues
+- 📋 Add new payloads to the payload library
+- 📚 Add new cheat sheet content
+- 📝 Improve documentation
+- 📣 Share the tool with the bug bounty community
 
-Yes, you can!
+### Adding Payloads
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+Edit: `src/lib/payloads.ts` — follow the existing format exactly.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+### Adding Cheat Sheets
+
+Edit: `src/lib/cheatsheets.ts` — follow the existing format exactly.
+
+## License
+
+MIT License — free to use, modify, and distribute.  
+See [LICENSE](LICENSE) for full details.
+
+## Credits
+
+- Built with [Lovable](https://lovable.dev) — the AI-powered full-stack app builder
+- AI powered by [Groq](https://groq.com) — free and blazing-fast inference
+- Inspired by the global bug bounty community
+- Made with pride from Nepal 🇳🇵
+
+---
+
+⭐ **Star this repo if CyberKhoj helped you find your first bug!**
