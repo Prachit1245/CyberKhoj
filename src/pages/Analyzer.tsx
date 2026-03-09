@@ -179,7 +179,12 @@ const Analyzer = () => {
       setError("Please paste a target to analyze.");
       return;
     }
+    if (!canRequest()) {
+      setError("Slow down — max 10 analyses per minute to protect your daily quota");
+      return;
+    }
 
+    recordRequest();
     abortGeminiRequest();
     setLoading(true);
     setError("");
