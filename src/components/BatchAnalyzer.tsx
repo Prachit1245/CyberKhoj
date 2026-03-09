@@ -8,7 +8,7 @@ import { checkAnalysisAchievements, checkBatchAnalysis } from "@/lib/achievement
 import { parseTarget, contextToPromptBlock } from "@/lib/parseTarget";
 import { getUsageCount, DAILY_LIMIT } from "@/lib/usage";
 
-const MAX_URLS = 20;
+const MAX_URLS = INPUT_LIMITS.BATCH_MAX_URLS;
 
 interface BatchResult {
   url: string;
