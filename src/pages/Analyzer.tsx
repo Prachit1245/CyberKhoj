@@ -336,6 +336,8 @@ const Analyzer = () => {
         <JwtAnalyzer />
       ) : pageTab === "HTTP Request" ? (
         <HttpRequestAnalyzer />
+      ) : pageTab === "API Discovery" ? (
+        <ApiDiscovery />
       ) : pageTab === "Batch" ? (
         <BatchAnalyzer />
       ) : (
