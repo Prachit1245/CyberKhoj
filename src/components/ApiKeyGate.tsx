@@ -97,16 +97,26 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
             <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest">
               <span className="text-primary">02</span> — Paste it here
             </p>
-            <input
-              type="password"
-              value={key}
-              onChange={(e) => {
-                setKey(e.target.value);
-                setError("");
-              }}
-              placeholder="gsk_..."
-              className="w-full rounded-lg border border-border bg-muted/50 px-4 py-3 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 transition-colors"
-            />
+            <div className="relative">
+              <input
+                type={showKey ? "text" : "password"}
+                value={key}
+                onChange={(e) => {
+                  setKey(e.target.value);
+                  setError("");
+                }}
+                placeholder="gsk_..."
+                className="w-full rounded-lg border border-border bg-muted/50 px-4 py-3 pr-10 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 transition-colors"
+              />
+              <button
+                type="button"
+                onClick={() => setShowKey(!showKey)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                aria-label={showKey ? "Hide key" : "Show key"}
+              >
+                {showKey ? <EyeOff size={15} /> : <Eye size={15} />}
+              </button>
+            </div>
             {error && (
               <p className="text-xs text-destructive font-mono mt-1">{error}</p>
             )}
