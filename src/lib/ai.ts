@@ -1,4 +1,5 @@
 import CryptoJS from 'crypto-js';
+import { redactPrompt } from './redact';
 
 const GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
 const GROQ_MODELS_ENDPOINT = 'https://api.groq.com/openai/v1/models';
@@ -153,6 +154,7 @@ export function safeParseJSON(text: string) {
 
 /* ─── Core AI call via Groq ─── */
 async function callAIRaw(prompt: string, apiKey: string, signal?: AbortSignal): Promise<string> {
+  const safePrompt = redactPrompt(prompt);
   let response: Response;
   try {
     response = await fetch(GROQ_ENDPOINT, {
@@ -171,7 +173,7 @@ async function callAIRaw(prompt: string, apiKey: string, signal?: AbortSignal): 
           },
           {
             role: 'user',
-            content: prompt,
+            content: safePrompt,
           },
         ],
         temperature: 0.9,
