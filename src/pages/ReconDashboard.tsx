@@ -362,6 +362,9 @@ export default function ReconDashboard() {
             </CardContent>
           </Card>
 
+          {/* Checklist */}
+          <MasterReconChecklist domain={cleanDomain} />
+
           {/* Report */}
           <ReconReport domain={cleanDomain} techs={techs} apiPaths={apiUrls} />
 
