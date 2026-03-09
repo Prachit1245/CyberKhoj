@@ -152,7 +152,7 @@ export const parseAnalysisResponse = (raw: string): AttackPath[] => {
   const arr = extractJsonArray(raw);
 
   if (!arr || arr.length === 0) {
-    console.error("[parseAnalysisResponse] Failed to parse JSON from response:", raw.slice(0, 200));
+    if (import.meta.env.DEV) console.error("[parseAnalysisResponse] Failed to parse JSON from response");
     return [sanitizePath({
       title: "Parse Error — Raw Response Available",
       severity: "Info",
