@@ -1,14 +1,42 @@
+import CryptoJS from 'crypto-js';
+
 const GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
 const STORAGE_KEY = 'cyberkhoj_groq_key';
 
-/* ─── Key management ─── */
+/* ─── Device fingerprint for encryption ─── */
+function getDeviceFingerprint(): string {
+  const raw = [
+    navigator.userAgent,
+    screen.width,
+    screen.height,
+    navigator.language,
+  ].join('|');
+  return CryptoJS.SHA256(raw).toString();
+}
+
+/* ─── Key management (AES-encrypted) ─── */
 
 export function saveApiKey(key: string) {
-  localStorage.setItem(STORAGE_KEY, key);
+  const encrypted = CryptoJS.AES.encrypt(key, getDeviceFingerprint()).toString();
+  localStorage.setItem(STORAGE_KEY, encrypted);
 }
 
 export function getApiKey(): string | null {
-  return localStorage.getItem(STORAGE_KEY);
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (!stored) return null;
+  try {
+    const bytes = CryptoJS.AES.decrypt(stored, getDeviceFingerprint());
+    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+    if (!decrypted) {
+      // Decryption failed (different device / corrupted) — clear it
+      localStorage.removeItem(STORAGE_KEY);
+      return null;
+    }
+    return decrypted;
+  } catch {
+    localStorage.removeItem(STORAGE_KEY);
+    return null;
+  }
 }
 
 export function removeApiKey() {
@@ -16,7 +44,7 @@ export function removeApiKey() {
 }
 
 export function hasApiKey(): boolean {
-  return !!localStorage.getItem(STORAGE_KEY);
+  return !!getApiKey();
 }
 
 /* ─── Typed error codes for UI handling ─── */

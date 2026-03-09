@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArrowRight, Key } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { saveApiKey } from "@/lib/ai";
 
 const FinalCTA = () => {
   const [apiKey, setApiKey] = useState("");
@@ -8,7 +9,7 @@ const FinalCTA = () => {
 
   const handleGo = () => {
     if (apiKey.trim()) {
-      localStorage.setItem("cyberkhoj_groq_key", apiKey.trim());
+      saveApiKey(apiKey.trim());
     }
     navigate("/analyzer");
   };
