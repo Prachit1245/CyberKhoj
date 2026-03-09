@@ -35,8 +35,9 @@ const Navbar = () => {
 
   const handleSaveKey = async () => {
     const trimmed = newKey.trim();
-    if (!trimmed || trimmed.length < 10) {
-      setKeyError("Please enter a valid API key.");
+    const formatCheck = validateKeyFormat(trimmed);
+    if (!formatCheck.valid) {
+      setKeyError(formatCheck.error || "Invalid key format.");
       return;
     }
     setValidating(true);
