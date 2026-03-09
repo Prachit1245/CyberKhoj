@@ -109,7 +109,11 @@ const Analyzer = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<TargetTemplate | null>(null);
   const [beginner, setBeginner] = useState(isBeginnerMode);
   const [isFallback, setIsFallback] = useState(false);
+  const [cooldown, setCooldown] = useState(false);
+  const [rpm, setRpm] = useState(getRPM);
 
+  // Subscribe to RPM updates
+  useEffect(() => onRPMChange(() => setRpm(getRPM())), []);
   // Instant client-side target intelligence
   const targetIntel = useMemo(() => {
     const trimmed = target.trim();
