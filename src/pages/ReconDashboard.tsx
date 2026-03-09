@@ -361,6 +361,9 @@ export default function ReconDashboard() {
             </CardContent>
           </Card>
 
+          {/* Report */}
+          <ReconReport domain={cleanDomain} techs={techs} apiPaths={apiUrls} />
+
         </div>
       )}
     </div>
