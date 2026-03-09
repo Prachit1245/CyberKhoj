@@ -48,6 +48,7 @@ const NAV_ITEMS = [
   { to: "/findings", label: "Findings", icon: Bug },
   { to: "/bookmarks", label: "Bookmarks", icon: Bookmark },
   { to: "/achievements", label: "Achievements", icon: Trophy },
+  { to: "/dork-generator", label: "Dork Generator", icon: Globe },
   { to: "/settings", label: "Settings", icon: Settings },
 ];
 
