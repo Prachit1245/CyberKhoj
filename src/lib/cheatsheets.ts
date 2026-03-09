@@ -659,4 +659,207 @@ export const CHEAT_SHEETS: CheatSheet[] = [
       },
     ],
   },
+  {
+    id: "js-recon",
+    name: "JS Recon",
+    difficulty: "Intermediate",
+    description: "JavaScript file reconnaissance for bug bounty — find endpoints, secrets, and internal infrastructure hidden in JS files.",
+    sections: [
+      {
+        heading: "Finding JS Files",
+        description: "Methods to discover JavaScript files on a target.",
+        blocks: [
+          {
+            title: "Browser DevTools",
+            code: `# Chrome DevTools → Network tab → Filter by "JS"
+# 1. Open target site
+# 2. Press F12 → Network tab
+# 3. Reload page (Ctrl+R)
+# 4. Filter by "JS" in the filter bar
+# 5. Right-click → Copy → Copy all URLs`,
+          },
+          {
+            title: "View Source",
+            code: `# View page source and grep for script tags
+# In browser: view-source:https://target.com
+# Look for: <script src="...">
+# Also check: data-main, data-src attributes`,
+          },
+          {
+            title: "Wayback Machine JS Hunting",
+            code: `# Find old JS files that may contain secrets
+waybackurls target.com | grep "\\.js$" | sort -u > js_files.txt
+
+# Download all JS files
+cat js_files.txt | xargs -I{} wget {}
+
+# Check archived versions for removed secrets
+curl "https://web.archive.org/web/*/target.com/*.js"`,
+          },
+          {
+            title: "getJS Tool",
+            code: `# Install getJS
+go install github.com/003random/getJS@latest
+
+# Extract JS URLs from a page
+getJS --url https://target.com --complete
+
+# Extract from multiple URLs
+cat urls.txt | getJS --complete`,
+          },
+          {
+            title: "subjs Tool",
+            code: `# Install subjs
+go install github.com/lc/subjs@latest
+
+# Find JS files from a list of URLs
+cat urls.txt | subjs
+
+# Pipe from other tools
+echo "https://target.com" | subjs | sort -u`,
+          },
+        ],
+        tips: [
+          "JS files often change between deployments — check multiple Wayback snapshots",
+          "Don't forget .js.map (source map) files — they contain original unminified source code",
+          "Check /webpack-manifest.json or /asset-manifest.json for complete JS file listings",
+        ],
+      },
+      {
+        heading: "Regex Patterns for JS Analysis",
+        description: "Search patterns to find sensitive data in JavaScript files.",
+        blocks: [
+          {
+            title: "API Endpoints",
+            code: `# REST API paths
+/api/[a-zA-Z0-9_/]+
+
+# Full URL endpoints
+https?://[a-zA-Z0-9._-]+/[a-zA-Z0-9._/-]+
+
+# Fetch/axios calls
+fetch\\(['"\`][^'"\`]+['"\`]
+axios\\.(get|post|put|delete)\\(['"\`][^'"\`]+`,
+          },
+          {
+            title: "AWS Keys",
+            code: `# AWS Access Key ID
+AKIA[0-9A-Z]{16}
+
+# AWS Secret Key
+[0-9a-zA-Z/+]{40}
+
+# S3 Bucket URLs
+[a-zA-Z0-9._-]+\\.s3\\.amazonaws\\.com
+s3://[a-zA-Z0-9._-]+`,
+          },
+          {
+            title: "Generic Secrets",
+            code: `# Key-value secrets
+(secret|key|token|password|passwd|pwd|auth)\\s*[:=]\\s*['"][^'"]+['"]
+
+# Bearer tokens
+Bearer\\s+[a-zA-Z0-9._-]+
+
+# Base64 encoded (potential secrets)
+[A-Za-z0-9+/]{40,}={0,2}`,
+          },
+          {
+            title: "Internal Domains & Services",
+            code: `# Internal/staging domains
+https?://[a-z0-9._-]+\\.(internal|local|staging|dev|test)
+
+# Private IPs
+(10\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})
+(172\\.(1[6-9]|2[0-9]|3[0-1])\\.[0-9]{1,3}\\.[0-9]{1,3})
+(192\\.168\\.[0-9]{1,3}\\.[0-9]{1,3})`,
+          },
+          {
+            title: "Firebase & Google",
+            code: `# Firebase URLs
+[a-zA-Z0-9_-]+-default-rtdb\\.firebaseio\\.com
+[a-zA-Z0-9_-]+\\.firebaseapp\\.com
+
+# Google API Keys
+AIza[0-9A-Za-z_-]{35}
+
+# Google OAuth
+[0-9]+-[a-z0-9_]+\\.apps\\.googleusercontent\\.com`,
+          },
+          {
+            title: "Other Cloud & Service Keys",
+            code: `# Stripe keys
+(sk|pk)_(test|live)_[0-9a-zA-Z]{24,}
+
+# Slack tokens
+xox[bpors]-[0-9a-zA-Z]{10,}
+
+# GitHub tokens
+gh[pousr]_[A-Za-z0-9_]{36,}
+
+# JWT tokens
+eyJ[A-Za-z0-9_-]+\\.eyJ[A-Za-z0-9_-]+`,
+          },
+        ],
+        tips: [
+          "Use the JS Scanner below to paste code and auto-detect these patterns instantly",
+          "Minified JS can be beautified with js-beautify or browser DevTools pretty-print",
+          "Source maps (.js.map) give you the original variable names — much easier to find secrets",
+        ],
+      },
+      {
+        heading: "Recon Tools",
+        description: "Automated tools for JavaScript analysis.",
+        blocks: [
+          {
+            title: "LinkFinder — Extract endpoints",
+            code: `# Install
+git clone https://github.com/GerbenJav);stra/LinkFinder.git
+cd LinkFinder && pip3 install -r requirements.txt
+
+# Find endpoints in a JS file
+python3 linkfinder.py -i https://target.com/app.js -o cli
+
+# Scan entire domain
+python3 linkfinder.py -i https://target.com -d -o results.html`,
+          },
+          {
+            title: "SecretFinder — Find secrets",
+            code: `# Install
+git clone https://github.com/m4ll0k/SecretFinder.git
+cd SecretFinder && pip3 install -r requirements.txt
+
+# Scan a JS file for secrets
+python3 SecretFinder.py -i https://target.com/app.js -o cli
+
+# Scan with custom regex
+python3 SecretFinder.py -i https://target.com/app.js -o cli -r regex.txt`,
+          },
+          {
+            title: "JSScanner — Comprehensive scan",
+            code: `# One-liner: download all JS and grep for secrets
+waybackurls target.com | grep "\\.js$" | sort -u | \\
+  while read url; do
+    echo "=== $url ===" >> js_secrets.txt
+    curl -s "$url" | grep -oP '(api_key|apiKey|secret|token|password)\\s*[:=]\\s*["\\'\\x60][^"\\'\\x60]+' >> js_secrets.txt
+  done`,
+          },
+          {
+            title: "Nuclei JS Templates",
+            code: `# Use nuclei with JS-specific templates
+nuclei -u https://target.com -t exposures/tokens/
+nuclei -u https://target.com -t http/exposures/files/js-map.yaml
+
+# Scan multiple JS URLs
+cat js_urls.txt | nuclei -t exposures/ -o findings.txt`,
+          },
+        ],
+        tips: [
+          "Always check .js.map files first — they're the easiest win for code review",
+          "Compare JS files across deployments to find newly added or removed endpoints",
+          "Webpack chunk files (0.chunk.js, vendors.js) often contain more secrets than main bundles",
+        ],
+      },
+    ],
+  },
 ];
