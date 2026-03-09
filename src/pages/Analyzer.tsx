@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import EthicalDisclaimer from "@/components/EthicalDisclaimer";
 import { INPUT_LIMITS, enforceLimit } from "@/lib/sanitize";
 import { Trash2, ArrowRight, Loader2, WifiOff, GraduationCap } from "lucide-react";
 import { canRequest, recordRequest, getRPM, getMaxRPM, onRPMChange } from "@/lib/rateLimit";
@@ -315,6 +316,9 @@ const Analyzer = () => {
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
+      {/* Ethical disclaimer */}
+      <EthicalDisclaimer compact />
+
       {/* Page-level tabs — scrollable on mobile */}
       <div className="flex border-b border-border/50 mb-2 overflow-x-auto scrollbar-thin">
         {PAGE_TABS.map((tab) => (

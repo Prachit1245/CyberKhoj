@@ -25,7 +25,7 @@ const Footer = () => (
           <span className="font-mono text-lg font-extrabold text-primary text-glow-primary logo-cursor">
             CyberKhoj
           </span>
-          <p className="text-sm font-heading font-bold text-foreground">Think Like A Hacker</p>
+          <p className="text-sm font-heading font-bold text-foreground">Search. Find. Exploit Responsibly.</p>
           <p className="text-xs font-mono text-muted-foreground leading-relaxed">
             Made for the bug bounty community. AI-powered recon and vulnerability analysis — free, private, and local.
           </p>
@@ -97,7 +97,7 @@ const Footer = () => (
           — the AI app builder
           <span className="mx-1">|</span>
           <a
-            href="https://github.com/yourusername/cyberkhoj"
+            href="https://github.com/Prachit1245/cyberkhoj"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1 text-muted-foreground/50 hover:text-primary/70 transition-colors"
