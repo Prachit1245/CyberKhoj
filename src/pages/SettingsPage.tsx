@@ -410,6 +410,7 @@ const SettingsPage = () => {
                     type={showNewKey ? "text" : "password"}
                     value={newKey}
                     onChange={(e) => setNewKey(e.target.value)}
+                    onContextMenu={(e) => e.preventDefault()}
                     placeholder="Paste new API key..."
                     className="w-full rounded-lg border border-border bg-muted/50 px-4 py-2.5 pr-10 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 transition-colors"
                   />
