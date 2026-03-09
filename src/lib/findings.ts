@@ -1,3 +1,5 @@
+import { isPrivateMode } from "./privateMode";
+
 const FINDINGS_KEY = "hackmind_findings";
 
 export type FindingSeverity = "Critical" | "High" | "Medium" | "Low" | "Info";
