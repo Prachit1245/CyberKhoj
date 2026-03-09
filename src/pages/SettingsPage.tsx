@@ -21,7 +21,7 @@ import {
   Accessibility,
 } from "lucide-react";
 import { toast } from "@/components/Toast";
-import { getApiKey, saveApiKey, removeApiKey, hasApiKey, validateApiKey } from "@/lib/ai";
+import { getApiKey, saveApiKey, removeApiKey, hasApiKey, validateApiKey, validateKeyFormat } from "@/lib/ai";
 import { resetTour, isTourCompleted } from "@/components/OnboardingTour";
 import { usePWAInstall } from "@/hooks/usePWAInstall";
 
