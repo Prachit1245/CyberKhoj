@@ -137,10 +137,11 @@ const ReconChecklist = ({ domain }: Props) => {
       saveReconChecked(domain, new Set());
       toast.success(`Generated ${parsed.length} recon tasks ✓`);
     } catch (err: any) {
+      if (import.meta.env.DEV) console.error("[ReconChecklist]", err);
       if (err instanceof GeminiError) {
-        toast.error(`${err.code}: ${err.message}`);
+        toast.error(err.message);
       } else {
-        toast.error(err.message || "Failed to generate checklist");
+        toast.error("Failed to generate checklist. Please try again.");
       }
     } finally {
       setLoading(false);
