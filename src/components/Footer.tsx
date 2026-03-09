@@ -22,7 +22,7 @@ const Footer = () => (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8">
         {/* Brand */}
         <div className="space-y-3">
-          <span className="font-heading text-lg font-extrabold text-primary text-glow-primary logo-cursor">
+          <span className="font-mono text-lg font-extrabold text-primary text-glow-primary logo-cursor">
             CyberKhoj
           </span>
           <p className="text-sm font-heading font-bold text-foreground">Think Like A Hacker</p>
