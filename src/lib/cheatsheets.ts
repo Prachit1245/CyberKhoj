@@ -814,7 +814,7 @@ eyJ[A-Za-z0-9_-]+\\.eyJ[A-Za-z0-9_-]+`,
           {
             title: "LinkFinder — Extract endpoints",
             code: `# Install
-git clone https://github.com/GerbenJav);stra/LinkFinder.git
+git clone https://github.com/GerbenJavstra/LinkFinder.git
 cd LinkFinder && pip3 install -r requirements.txt
 
 # Find endpoints in a JS file
