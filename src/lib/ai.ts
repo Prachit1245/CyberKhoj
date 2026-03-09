@@ -1,4 +1,5 @@
 import CryptoJS from 'crypto-js';
+import { redactPrompt } from './redact';
 
 const GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
 const GROQ_MODELS_ENDPOINT = 'https://api.groq.com/openai/v1/models';
