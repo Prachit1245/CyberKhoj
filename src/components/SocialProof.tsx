@@ -6,29 +6,42 @@ const STATS = [
   { icon: Globe, value: "50+", label: "Countries" },
 ];
 
+/** Simple deterministic avatar from initials */
+const InitialAvatar = ({ name }: { name: string }) => {
+  const initials = name.split(" ").map(w => w[0]).join("").slice(0, 2);
+  // Hash name to pick a hue offset
+  const hash = name.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+  const hue = 110 + (hash % 60); // green-ish range
+  return (
+    <div
+      className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-mono font-bold shrink-0"
+      style={{ background: `hsl(${hue} 60% 25%)`, color: `hsl(${hue} 100% 60%)` }}
+      aria-hidden="true"
+    >
+      {initials}
+    </div>
+  );
+};
+
 const TESTIMONIALS = [
   {
     name: "Marcus Chen",
     handle: "@h4x0r_supreme",
-    avatar: "https://source.boringavatars.com/beam/40/marcus_chen?colors=39ff14,0af0ff,0a0a0a,1a1a1a,2a2a2a",
     quote: "CyberKhoj found an IDOR chain on a target I'd been staring at for weeks. Cashed a $3,200 bounty the same day.",
   },
   {
     name: "Priya Sharma",
     handle: "@bug_priya",
-    avatar: "https://source.boringavatars.com/beam/40/priya_sharma?colors=39ff14,0af0ff,0a0a0a,1a1a1a,2a2a2a",
     quote: "The attack path cards are insane. I use the payload examples as starting points for every recon session now.",
   },
   {
     name: "Jake Morrison",
     handle: "@jm_security",
-    avatar: "https://source.boringavatars.com/beam/40/jake_morrison?colors=39ff14,0af0ff,0a0a0a,1a1a1a,2a2a2a",
     quote: "Went from 2 valid reports a month to 8. The depth of analysis on GraphQL endpoints is unmatched.",
   },
   {
     name: "Amira Osei",
     handle: "@amira_pwns",
-    avatar: "https://source.boringavatars.com/beam/40/amira_osei?colors=39ff14,0af0ff,0a0a0a,1a1a1a,2a2a2a",
     quote: "Finally a tool that thinks like a hacker. The OWASP mapping helped me write better reports that get triaged faster.",
   },
 ];
@@ -72,13 +85,7 @@ const SocialProof = () => (
               {t.quote}
             </p>
             <div className="flex items-center gap-3 pt-1">
-              <img
-                src={t.avatar}
-                alt={t.name}
-                width={36}
-                height={36}
-                className="rounded-full bg-muted"
-              />
+              <InitialAvatar name={t.name} />
               <div>
                 <p className="text-sm font-heading font-bold text-foreground">{t.name}</p>
                 <p className="text-xs font-mono text-primary">{t.handle}</p>
