@@ -9,6 +9,7 @@ import { detectTech } from "@/lib/techDetector";
 import { callGemini, safeParseJSON, GeminiError } from "@/lib/ai";
 import { toast } from "@/components/Toast";
 import ReconReport from "@/components/ReconReport";
+import MasterReconChecklist from "@/components/MasterReconChecklist";
 
 /* ── Data ── */
 
@@ -360,6 +361,9 @@ export default function ReconDashboard() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Checklist */}
+          <MasterReconChecklist domain={cleanDomain} />
 
           {/* Report */}
           <ReconReport domain={cleanDomain} techs={techs} apiPaths={apiUrls} />
