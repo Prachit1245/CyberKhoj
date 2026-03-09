@@ -173,8 +173,8 @@ const SettingsPage = () => {
   const fileRef = useRef<HTMLInputElement>(null);
   const { canInstall, isInstalled, install } = usePWAInstall();
 
-  /* Prefs state */
   const [prefs, setPrefs] = useState<Prefs>(loadPrefs);
+  const [sessionTimeout, setSessionTimeoutState] = useState<TimeoutOption>(getSessionTimeout);
 
   /* Confirm dialog */
   const [confirm, setConfirm] = useState<{
