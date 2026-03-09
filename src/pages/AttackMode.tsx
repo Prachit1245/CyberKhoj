@@ -422,7 +422,7 @@ const AttackMode = () => {
           } disabled:opacity-40 disabled:cursor-not-allowed`}
         >
           <span className="flex items-center gap-2">
-            <History className="h-4 w-4" />
+            <HistoryIcon className="h-4 w-4" />
             Historical Recon
           </span>
         </button>
