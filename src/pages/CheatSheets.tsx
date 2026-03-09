@@ -1,10 +1,12 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, lazy, Suspense } from "react";
 import { Copy, Check, Printer, ChevronRight, Bookmark, BookmarkCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CHEAT_SHEETS, type CheatSheet, type Difficulty } from "@/lib/cheatsheets";
 import { toggleBookmark, isBookmarked as isBm } from "@/lib/bookmarks";
 import { toast } from "@/components/Toast";
+
+const JsScanner = lazy(() => import("@/components/JsScanner"));
 
 const DIFF_STYLES: Record<Difficulty, string> = {
   Beginner: "bg-primary/15 text-primary border-primary/30",
@@ -188,8 +190,13 @@ export default function CheatSheets() {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 overflow-y-auto pr-1 pb-8">
+      <div className="flex-1 overflow-y-auto pr-1 pb-8 space-y-6">
         <SheetContent sheet={activeSheet} />
+        {activeSheet.id === "js-recon" && (
+          <Suspense fallback={<div className="text-xs text-muted-foreground font-mono p-4">Loading scanner…</div>}>
+            <JsScanner />
+          </Suspense>
+        )}
       </div>
     </div>
   );
