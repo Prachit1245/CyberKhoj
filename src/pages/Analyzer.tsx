@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { INPUT_LIMITS, enforceLimit } from "@/lib/sanitize";
 import { Trash2, ArrowRight, Loader2, WifiOff, GraduationCap } from "lucide-react";
+import { canRequest, recordRequest, getRPM, getMaxRPM, onRPMChange } from "@/lib/rateLimit";
 import AnalysisLoader from "@/components/AnalysisLoader";
 import { SkeletonResultCards } from "@/components/Skeletons";
 import { extractDomain } from "@/lib/targetNotes";
