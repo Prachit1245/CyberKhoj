@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { AlertTriangle, Zap, ShoppingCart, LogIn, Server, Shield, Upload, ListChecks, Download, CheckSquare, XSquare, Copy, Search, Shuffle, WifiOff, Radar } from "lucide-react";
+import { AlertTriangle, Zap, ShoppingCart, LogIn, Server, Shield, Upload, ListChecks, Download, CheckSquare, XSquare, Copy, Search, Shuffle, WifiOff, Radar, Globe } from "lucide-react";
 import EthicalDisclaimer from "@/components/EthicalDisclaimer";
 import useOnline from "@/hooks/useOnline";
 import { callGemini, GeminiError } from "@/lib/ai";
@@ -7,6 +7,7 @@ import { buildAttackModePrompt, parseAttackIdeas, type AttackIdea } from "@/lib/
 import { toast } from "@/components/Toast";
 import { useDebouncedCallback } from "@/hooks/useDebounce";
 import ReconChecklist from "@/components/ReconChecklist";
+import SubdomainRecon from "@/components/SubdomainRecon";
 
 /* ── Virtualized ideas grid: renders only visible rows ── */
 const VISIBLE_BATCH = 30; // show 30 at a time, load more on scroll
