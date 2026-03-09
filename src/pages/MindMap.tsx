@@ -529,6 +529,11 @@ function MindMapCanvas() {
 
   const [showTextView, setShowTextView] = useState(false);
 
+  // Auto-switch to text view on mobile
+  useEffect(() => {
+    if (isMobile) setShowTextView(true);
+  }, [isMobile]);
+
   // Build text list for screen reader alternative
   const textListContent = useMemo(() => {
     if (!rawNodesRef.current.length) return [];
