@@ -38,7 +38,7 @@ export default function MindMapSidePanel({ nodeId, data, onClose, onAnalyze, che
   };
 
   return (
-    <div className="absolute top-0 right-0 h-full w-[360px] border-l border-border/20 bg-card/95 backdrop-blur-md z-50 flex flex-col font-mono overflow-hidden animate-in slide-in-from-right duration-200">
+    <div className="absolute top-0 right-0 h-full w-full md:w-[360px] border-l border-border/20 bg-card/95 backdrop-blur-md z-50 flex flex-col font-mono overflow-hidden animate-in slide-in-from-right duration-200">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border/20">
         <div className="flex items-center gap-2 min-w-0">
