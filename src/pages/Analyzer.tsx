@@ -26,7 +26,7 @@ import ApiDiscovery from "@/components/ApiDiscovery";
 const DEPTHS = ["Quick", "Standard", "Deep"] as const;
 const TYPES = ["URL", "HTTP Request", "JWT Token", "GraphQL"] as const;
 const RESULT_TABS = ["Attack Paths", "Explanation", "Raw JSON"] as const;
-const PAGE_TABS = ["URL Analyzer", "HTTP Request", "JWT Decoder", "Batch"] as const;
+const PAGE_TABS = ["URL Analyzer", "HTTP Request", "JWT Decoder", "API Discovery", "Batch"] as const;
 
 type Depth = (typeof DEPTHS)[number];
 type AnalysisType = (typeof TYPES)[number];
