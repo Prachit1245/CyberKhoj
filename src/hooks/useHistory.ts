@@ -40,8 +40,8 @@ export function useHistory() {
   const refresh = useCallback(() => setHistory(readHistory()), []);
 
   const addToHistory = useCallback((result: AnalysisResult) => {
-    // Redact sensitive params from target before persisting
-    const safeResult = { ...result, target: redactTarget(result.target) };
+    // Redact sensitive params from input before persisting
+    const safeResult = { ...result, input: redactTarget(result.input) };
     const updated = [safeResult, ...readHistory().filter((r) => r.id !== safeResult.id)].slice(0, MAX_ITEMS);
     writeHistory(updated);
     setHistory(updated);
