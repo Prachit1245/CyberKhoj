@@ -3,6 +3,7 @@ import { INPUT_LIMITS, enforceLimit } from "@/lib/sanitize";
 import { ArrowRight, Loader2, ChevronDown, ChevronRight, Download, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { callGemini } from "@/lib/ai";
+import { canRequest, recordRequest } from "@/lib/rateLimit";
 import { addToHistory, incrementStat } from "@/lib/store";
 import { checkAnalysisAchievements, checkBatchAnalysis } from "@/lib/achievements";
 import { parseTarget, contextToPromptBlock } from "@/lib/parseTarget";
