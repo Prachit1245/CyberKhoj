@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { SkeletonMindMap } from "@/components/Skeletons";
 import {
   ReactFlow,
