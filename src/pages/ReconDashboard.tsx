@@ -8,6 +8,7 @@ import { sanitizeInput } from "@/lib/sanitize";
 import { detectTech } from "@/lib/techDetector";
 import { callGemini, safeParseJSON, GeminiError } from "@/lib/ai";
 import { toast } from "@/components/Toast";
+import ReconReport from "@/components/ReconReport";
 
 /* ── Data ── */
 
@@ -359,6 +360,9 @@ export default function ReconDashboard() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Report */}
+          <ReconReport domain={cleanDomain} techs={techs} apiPaths={apiUrls} />
 
         </div>
       )}
