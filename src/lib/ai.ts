@@ -173,7 +173,7 @@ async function callAIRaw(prompt: string, apiKey: string, signal?: AbortSignal): 
           },
           {
             role: 'user',
-            content: prompt,
+            content: safePrompt,
           },
         ],
         temperature: 0.9,
