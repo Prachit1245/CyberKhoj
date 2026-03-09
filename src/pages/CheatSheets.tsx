@@ -198,7 +198,6 @@ export default function CheatSheets() {
           </Suspense>
         )}
       </div>
-      </div>
     </div>
   );
 }
