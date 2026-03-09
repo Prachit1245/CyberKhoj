@@ -12,6 +12,8 @@ import ComparisonTable from "@/components/ComparisonTable";
 import FinalCTA from "@/components/FinalCTA";
 import Footer from "@/components/Footer";
 import EthicalDisclaimer from "@/components/EthicalDisclaimer";
+import WhatIsCyberKhoj from "@/components/WhatIsCyberKhoj";
+import LandingFAQ from "@/components/LandingFAQ";
 
 const TRUST_BADGES = [
   "100% Free Forever",
@@ -32,12 +34,12 @@ const Index = () => {
         <div className="relative z-10 text-center max-w-3xl mx-auto space-y-8">
           <div className="min-h-[4rem] md:min-h-[5rem] flex items-center justify-center">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold tracking-tight leading-tight">
-              <Typewriter />
+              CyberKhoj — Free AI Bug Bounty Tool
             </h1>
           </div>
 
           <p className="text-muted-foreground text-base md:text-lg max-w-xl mx-auto font-mono">
-            AI-powered vulnerability analysis, attack surface mapping, and recon — all running locally in your browser.
+            AI-powered vulnerability analysis, attack surface mapping, and recon — all running locally in your browser. Think like a hacker. Find bugs faster.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -58,13 +60,12 @@ const Index = () => {
           <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 pt-4">
             {TRUST_BADGES.map((badge) => (
               <span key={badge} className="text-xs font-mono text-muted-foreground">
-                <span className="text-primary mr-1">✓</span>
+                <span className="text-primary mr-1" aria-hidden="true">✓</span>
                 {badge}
               </span>
             ))}
           </div>
 
-          {/* Security badge */}
           <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-5 py-2.5 backdrop-blur-sm">
             <span className="text-xs font-mono text-primary leading-relaxed text-center">
               🔒 Your API key never leaves your device. Zero servers. Zero tracking. Zero data collection. Ever.
@@ -72,7 +73,6 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Built with Lovable badge — bottom right of hero */}
         <a
           href="https://lovable.dev"
           target="_blank"
@@ -92,6 +92,7 @@ const Index = () => {
         <EthicalDisclaimer />
       </section>
 
+      <WhatIsCyberKhoj />
       <LandingDemo />
       <AnimatedCounter />
       <SocialProof />
@@ -99,6 +100,7 @@ const Index = () => {
       <Features />
       <ComparisonTable />
       <FreeBanner />
+      <LandingFAQ />
       <FinalCTA />
       <Footer />
     </div>
