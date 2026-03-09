@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { ArrowRight, Key } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { saveApiKey } from "@/lib/ai";
+import { useNavigate } from "react-router-dom";
 
 const FinalCTA = () => {
   const [apiKey, setApiKey] = useState("");
