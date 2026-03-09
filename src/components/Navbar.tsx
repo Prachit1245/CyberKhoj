@@ -104,7 +104,7 @@ const Navbar = () => {
 
             {/* Community buttons */}
             <a
-              href="https://github.com/Prachit1245/cyberkhoj"
+              href="https://github.com/Prachit1245/CyberKhoj"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Star CyberKhoj on GitHub"
@@ -114,7 +114,7 @@ const Navbar = () => {
             </a>
 
             <a
-              href="https://discord.gg/lovable-dev"
+              href="https://discord.gg/tQFG38qB"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Join CyberKhoj Discord community"

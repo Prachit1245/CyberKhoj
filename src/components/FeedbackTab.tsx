@@ -10,7 +10,7 @@ const TYPES: { key: FeedbackType; label: string; icon: typeof Bug }[] = [
   { key: "general", label: "General", icon: MessageCircle },
 ];
 
-const GITHUB_ISSUES_URL = "https://github.com/cyberkhoj-app/cyberkhoj/issues";
+const GITHUB_ISSUES_URL = "https://github.com/Prachit1245/CyberKhoj/issues";
 
 export default function FeedbackTab() {
   const [open, setOpen] = useState(false);
@@ -156,7 +156,7 @@ export default function FeedbackTab() {
               </a>
 
               <a
-                href="https://discord.gg/lovable-dev"
+                href="https://discord.gg/tQFG38qB"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 w-full rounded-lg border border-border px-3 py-2.5 text-xs font-mono text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all"
