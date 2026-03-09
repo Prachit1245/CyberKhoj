@@ -10,7 +10,7 @@ const FinalCTA = () => {
 
   const handleGo = () => {
     if (apiKey.trim()) {
-      localStorage.setItem("cyberkhoj_groq_key", apiKey.trim());
+      saveApiKey(apiKey.trim());
     }
     navigate("/analyzer");
   };
