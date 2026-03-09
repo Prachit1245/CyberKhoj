@@ -62,7 +62,7 @@ function CounterCard({ Icon, target, label, active, delay }: {
         <Icon size={24} className="text-primary" />
       </div>
       <div style={{
-        fontSize: "2rem",
+        fontSize: "clamp(1.25rem, 4vw, 2rem)",
         fontWeight: "bold",
         color: "hsl(var(--foreground))",
         whiteSpace: "nowrap",
