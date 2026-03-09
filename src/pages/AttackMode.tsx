@@ -137,6 +137,7 @@ const saveChecked = (domain: string, checked: Set<number>) => {
 };
 
 const AttackMode = () => {
+  usePageTitle("Attack Mode — CyberKhoj");
   const online = useOnline();
   const [domain, setDomain] = useState("");
   const [templateContext, setTemplateContext] = useState("");

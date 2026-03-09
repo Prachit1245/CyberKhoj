@@ -161,6 +161,7 @@ function SheetContent({ sheet }: { sheet: CheatSheet }) {
 }
 
 export default function CheatSheets() {
+  usePageTitle("Cheat Sheets — CyberKhoj");
   const [activeId, setActiveId] = useState(CHEAT_SHEETS[0].id);
   const activeSheet = CHEAT_SHEETS.find((s) => s.id === activeId) || CHEAT_SHEETS[0];
 

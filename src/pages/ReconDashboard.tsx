@@ -79,6 +79,7 @@ function CopyBtn({ text, id, copiedKey, copy }: { text: string; id: string; copi
 /* ── Main Page ── */
 
 export default function ReconDashboard() {
+  usePageTitle("Recon Dashboard — CyberKhoj");
   const [domain, setDomain] = useState("");
   const [active, setActive] = useState(false);
   const { copiedKey, copy } = useCopy();

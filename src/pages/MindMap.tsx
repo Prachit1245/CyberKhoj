@@ -235,6 +235,7 @@ function buildFlowElements(
 
 /* ── Canvas component ── */
 function MindMapCanvas() {
+  usePageTitle("Mind Map — CyberKhoj");
   const navigate = useNavigate();
   const online = useOnline();
   const isMobile = useIsMobile();

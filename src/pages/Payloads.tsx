@@ -304,6 +304,7 @@ function PayloadFormModal({
 /* ═══════════════════════ Main Page ═══════════════════════ */
 
 export default function Payloads() {
+  usePageTitle("Payload Library — CyberKhoj");
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [sevFilter, setSevFilter] = useState<SevFilter>("all");
