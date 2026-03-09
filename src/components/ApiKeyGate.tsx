@@ -1,15 +1,17 @@
 import { useState, useEffect, type ReactNode } from "react";
-import { Play, X, Eye, EyeOff } from "lucide-react";
-import { hasApiKey, saveApiKey, validateApiKey } from "@/lib/ai";
+import { Play, X, Eye, EyeOff, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { hasApiKey, saveApiKey, validateApiKey, validateKeyFormat, onKeyExpired } from "@/lib/ai";
 import { toast } from "@/components/Toast";
 import EthicalDisclaimer from "@/components/EthicalDisclaimer";
 import HackMindLogo from "@/components/HackMindLogo";
+
+type ValidationState = "idle" | "checking" | "valid" | "format_error" | "api_error";
 
 const ApiKeyGate = ({ children }: { children: ReactNode }) => {
   const [unlocked, setUnlocked] = useState(hasApiKey());
   const [key, setKey] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [validationState, setValidationState] = useState<ValidationState>("idle");
   const [successAnim, setSuccessAnim] = useState(false);
   const [showDemo, setShowDemo] = useState(false);
   const [showKey, setShowKey] = useState(false);
@@ -18,14 +20,35 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
     setUnlocked(hasApiKey());
   }, []);
 
+  // Listen for 401 key expiry from any API call
+  useEffect(() => {
+    return onKeyExpired(() => {
+      setUnlocked(false);
+      setError("Your API key has expired or been revoked. Please add a new key.");
+      setValidationState("api_error");
+      toast.error("API key expired — please enter a new key");
+    });
+  }, []);
+
+  const handleKeyChange = (value: string) => {
+    setKey(value);
+    setError("");
+    setValidationState("idle");
+  };
+
   const handleSubmit = async () => {
     const trimmed = key.trim();
-    if (!trimmed || trimmed.length < 10) {
-      setError("Please enter a valid API key.");
+
+    // Step 1: Client-side format validation
+    const formatCheck = validateKeyFormat(trimmed);
+    if (!formatCheck.valid) {
+      setError(formatCheck.error || "Invalid key format.");
+      setValidationState("format_error");
       return;
     }
 
-    setLoading(true);
+    // Step 2: Server-side validation via /models endpoint
+    setValidationState("checking");
     setError("");
 
     try {
@@ -33,28 +56,61 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
 
       if (!result.ok) {
         setError(result.error || "Validation failed.");
+        setValidationState("api_error");
         return;
       }
 
+      setValidationState("valid");
       saveApiKey(trimmed);
       setSuccessAnim(true);
       setTimeout(() => setUnlocked(true), 600);
-    } catch (err) {
-      console.error("API key validation failed");
-      // Network errors — accept key if it looks plausible (gsk_ prefix for Groq)
-      if (trimmed.startsWith("gsk_")) {
+    } catch {
+      // Network errors — accept key if format is valid
+      const formatOk = validateKeyFormat(trimmed);
+      if (formatOk.valid) {
+        setValidationState("valid");
         saveApiKey(trimmed);
         setSuccessAnim(true);
         setTimeout(() => setUnlocked(true), 600);
       } else {
         setError("Could not validate key. Check your Groq API key and try again.");
+        setValidationState("api_error");
       }
-    } finally {
-      setLoading(false);
     }
   };
 
   if (unlocked) return <>{children}</>;
+
+  const statusIndicator = () => {
+    switch (validationState) {
+      case "checking":
+        return (
+          <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground mt-1">
+            <Loader2 size={12} className="animate-spin" /> Checking…
+          </div>
+        );
+      case "valid":
+        return (
+          <div className="flex items-center gap-2 text-xs font-mono text-green-400 mt-1">
+            <CheckCircle size={12} /> Valid Groq key — ready to use
+          </div>
+        );
+      case "format_error":
+        return (
+          <div className="flex items-center gap-2 text-xs font-mono text-destructive mt-1">
+            <XCircle size={12} /> {error}
+          </div>
+        );
+      case "api_error":
+        return (
+          <div className="flex items-center gap-2 text-xs font-mono text-destructive mt-1">
+            <XCircle size={12} /> {error}
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className={`fixed inset-0 flex items-center justify-center bg-background px-4 transition-opacity duration-500 ${successAnim ? "opacity-0 scale-105" : "opacity-100"}`}>
@@ -101,10 +157,7 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
               <input
                 type={showKey ? "text" : "password"}
                 value={key}
-                onChange={(e) => {
-                  setKey(e.target.value);
-                  setError("");
-                }}
+                onChange={(e) => handleKeyChange(e.target.value)}
                 placeholder="gsk_..."
                 className="w-full rounded-lg border border-border bg-muted/50 px-4 py-3 pr-10 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 transition-colors"
               />
@@ -117,9 +170,7 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
                 {showKey ? <EyeOff size={15} /> : <Eye size={15} />}
               </button>
             </div>
-            {error && (
-              <p className="text-xs text-destructive font-mono mt-1">{error}</p>
-            )}
+            {statusIndicator()}
           </div>
 
           {/* Step 3 */}
@@ -129,15 +180,12 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
             </p>
             <button
               onClick={handleSubmit}
-              disabled={loading}
+              disabled={validationState === "checking"}
               className="w-full rounded-lg border border-primary/50 bg-primary/10 px-5 py-3 font-heading font-bold text-primary transition-all hover:bg-primary hover:text-primary-foreground disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {loading ? (
+              {validationState === "checking" ? (
                 <>
-                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
+                  <Loader2 size={16} className="animate-spin" />
                   Validating…
                 </>
               ) : (
