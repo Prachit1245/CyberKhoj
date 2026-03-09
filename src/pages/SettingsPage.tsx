@@ -163,11 +163,11 @@ const ConfirmDialog = ({
 const SettingsPage = () => {
   /* API Key state */
   const [keySet, setKeySet] = useState(hasApiKey());
-  const [showKey, setShowKey] = useState(false);
   const [newKey, setNewKey] = useState("");
   const [replacing, setReplacing] = useState(false);
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<"ok" | "fail" | null>(null);
+  const [showNewKey, setShowNewKey] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const { canInstall, isInstalled, install } = usePWAInstall();
 
@@ -184,7 +184,9 @@ const SettingsPage = () => {
   const maskedKey = () => {
     const k = getApiKey();
     if (!k) return "—";
-    return k.slice(0, 6) + "•".repeat(8) + k.slice(-4);
+    const first = k.slice(0, 4);
+    const last = k.slice(-4);
+    return `${first}****...****${last}`;
   };
 
   /* ── API Key Actions ── */
@@ -380,17 +382,17 @@ const SettingsPage = () => {
       <Section icon={<Key size={16} />} title="Groq API Key">
         {keySet ? (
           <div className="space-y-4">
-            {/* Current key display */}
+            {/* Key Health indicator */}
             <div className="flex items-center gap-3 rounded-lg bg-muted/30 border border-border/50 px-4 py-3">
-              <p className="text-sm font-mono text-foreground flex-1 break-all">
-                {showKey ? getApiKey() : maskedKey()}
-              </p>
-              <button
-                onClick={() => setShowKey(!showKey)}
-                className="text-muted-foreground hover:text-foreground transition-colors p-1"
-              >
-                {showKey ? <EyeOff size={15} /> : <Eye size={15} />}
-              </button>
+              <span className={`inline-block h-2.5 w-2.5 rounded-full shrink-0 ${
+                testResult === "fail" ? "bg-destructive" : "bg-primary"
+              }`} />
+              <span className="text-sm font-mono text-foreground">
+                {testResult === "fail" ? "Key Invalid" : "Key Active"}
+              </span>
+              <span className="text-xs font-mono text-muted-foreground ml-auto break-all">
+                {maskedKey()}
+              </span>
             </div>
 
             {/* Test result indicator */}
@@ -411,14 +413,24 @@ const SettingsPage = () => {
             {replacing && (
               <div className="space-y-2 p-3 rounded-lg border border-border/50 bg-muted/20">
                 <label htmlFor="replace-key-input" className="sr-only">New API Key</label>
-                <input
-                  id="replace-key-input"
-                  type="password"
-                  value={newKey}
-                  onChange={(e) => setNewKey(e.target.value)}
-                  placeholder="Paste new API key..."
-                  className="w-full rounded-lg border border-border bg-muted/50 px-4 py-2.5 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 transition-colors"
-                />
+                <div className="relative">
+                  <input
+                    id="replace-key-input"
+                    type={showNewKey ? "text" : "password"}
+                    value={newKey}
+                    onChange={(e) => setNewKey(e.target.value)}
+                    placeholder="Paste new API key..."
+                    className="w-full rounded-lg border border-border bg-muted/50 px-4 py-2.5 pr-10 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 transition-colors"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewKey(!showNewKey)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    aria-label={showNewKey ? "Hide key" : "Show key"}
+                  >
+                    {showNewKey ? <EyeOff size={14} /> : <Eye size={14} />}
+                  </button>
+                </div>
                 <div className="flex gap-2">
                   <button
                     onClick={handleReplaceKey}
