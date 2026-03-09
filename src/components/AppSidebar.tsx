@@ -18,6 +18,7 @@ import {
   WifiOff,
   Bookmark,
   Trophy,
+  Globe,
   MoreHorizontal,
   X,
 } from "lucide-react";
