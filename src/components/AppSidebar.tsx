@@ -19,6 +19,7 @@ import {
   Bookmark,
   Trophy,
   Globe,
+  Radar,
   MoreHorizontal,
   X,
 } from "lucide-react";
