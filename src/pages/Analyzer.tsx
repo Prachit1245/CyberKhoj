@@ -20,6 +20,7 @@ import TargetIntelligenceCard from "@/components/TargetIntelligenceCard";
 import JwtAnalyzer from "@/components/JwtAnalyzer";
 import HttpRequestAnalyzer from "@/components/HttpRequestAnalyzer";
 import BatchAnalyzer from "@/components/BatchAnalyzer";
+import TechStackDetector from "@/components/TechStackDetector";
 
 const DEPTHS = ["Quick", "Standard", "Deep"] as const;
 const TYPES = ["URL", "HTTP Request", "JWT Token", "GraphQL"] as const;
@@ -499,9 +500,10 @@ const Analyzer = () => {
       </div>
 
       {/* Target Intelligence — instant, no API */}
-      {targetIntel && (
-        <TargetIntelligenceCard intel={targetIntel} />
-      )}
+      {targetIntel && <TargetIntelligenceCard intel={targetIntel} />}
+
+      {/* Tech Stack Detector — instant, no API */}
+      {target.trim() && <TechStackDetector url={target.trim()} />}
 
       {/* Notes Panel + Results */}
       <div className="space-y-3">
