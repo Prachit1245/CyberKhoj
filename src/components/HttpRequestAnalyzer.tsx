@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { INPUT_LIMITS, enforceLimit } from "@/lib/sanitize";
 import { ArrowRight, Loader2, Copy, Shield, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { callGemini } from "@/lib/ai";
