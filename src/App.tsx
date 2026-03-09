@@ -1,4 +1,7 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
+import { useSessionLock } from "@/hooks/useSessionLock";
+import SessionLockScreen from "@/components/SessionLockScreen";
+import { removeApiKey } from "@/lib/ai";
 import { ToastProvider } from "@/components/Toast";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
