@@ -8,6 +8,7 @@ import { toast } from "@/components/Toast";
 import { useDebouncedCallback } from "@/hooks/useDebounce";
 import ReconChecklist from "@/components/ReconChecklist";
 import SubdomainRecon from "@/components/SubdomainRecon";
+import HistoricalRecon from "@/components/HistoricalRecon";
 
 /* ── Virtualized ideas grid: renders only visible rows ── */
 const VISIBLE_BATCH = 30; // show 30 at a time, load more on scroll
