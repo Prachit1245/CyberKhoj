@@ -226,7 +226,7 @@ export const parseAttackIdeas = (raw: string): AttackIdea[] => {
   try {
     parsed = JSON.parse(match[0]) as AttackIdea[];
   } catch (e) {
-    console.error("[parseAttackIdeas] JSON.parse failed:", e, "\nRaw excerpt:", match[0].slice(0, 300));
+    if (import.meta.env.DEV) console.error("[parseAttackIdeas] JSON.parse failed:", e);
     throw new Error("AI returned malformed JSON. Please try again.");
   }
   return parsed.map((item, i) => ({
