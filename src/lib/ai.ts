@@ -1,7 +1,19 @@
 import CryptoJS from 'crypto-js';
 
 const GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
+const GROQ_MODELS_ENDPOINT = 'https://api.groq.com/openai/v1/models';
 const STORAGE_KEY = 'cyberkhoj_groq_key';
+
+/* ─── Event: key expired/revoked ─── */
+type KeyExpiredListener = () => void;
+const keyExpiredListeners = new Set<KeyExpiredListener>();
+export function onKeyExpired(cb: KeyExpiredListener) {
+  keyExpiredListeners.add(cb);
+  return () => { keyExpiredListeners.delete(cb); };
+}
+function notifyKeyExpired() {
+  keyExpiredListeners.forEach((cb) => cb());
+}
 
 /* ─── Device fingerprint for encryption ─── */
 function getDeviceFingerprint(): string {
@@ -21,7 +33,22 @@ function normalizeApiKey(value: string): string {
 }
 
 function isLikelyGroqKey(value: string): boolean {
-  return /^gsk_[A-Za-z0-9_-]{20,}$/.test(value);
+  return /^gsk_[A-Za-z0-9_]{36,}$/.test(value);
+}
+
+/** Client-side format validation with specific error messages */
+export function validateKeyFormat(key: string): { valid: boolean; error?: string } {
+  const normalized = normalizeApiKey(key);
+  if (!normalized.startsWith("gsk_")) {
+    return { valid: false, error: "Key must start with \"gsk_\"" };
+  }
+  if (normalized.length < 40) {
+    return { valid: false, error: "Key is too short — must be at least 40 characters" };
+  }
+  if (!/^[A-Za-z0-9_]+$/.test(normalized)) {
+    return { valid: false, error: "Key contains invalid characters — only letters, numbers, and underscores allowed" };
+  }
+  return { valid: true };
 }
 
 /* ─── Key management (AES-encrypted) ─── */
@@ -168,7 +195,8 @@ async function callAIRaw(prompt: string, apiKey: string, signal?: AbortSignal): 
     }
 
     if (response.status === 401) {
-      throw new GeminiError("INVALID_KEY", "Invalid Groq API key. Get a fresh one at console.groq.com", 401);
+      notifyKeyExpired();
+      throw new GeminiError("INVALID_KEY", "Your API key has expired or been revoked. Please add a new key.", 401);
     }
     if (response.status === 403) {
       throw new GeminiError("FORBIDDEN", "API key is restricted.", 403);
@@ -225,25 +253,21 @@ export const callGemini = async (prompt: string, _expectJson = false): Promise<s
 /* ─── Validate a Groq API key ─── */
 export async function validateApiKey(apiKey: string): Promise<{ ok: boolean; error?: string }> {
   const normalized = normalizeApiKey(apiKey);
-  if (!isLikelyGroqKey(normalized)) {
-    return { ok: false, error: "Invalid API key format." };
+  const formatCheck = validateKeyFormat(normalized);
+  if (!formatCheck.valid) {
+    return { ok: false, error: formatCheck.error };
   }
 
   try {
-    const res = await fetch(GROQ_ENDPOINT, {
-      method: 'POST',
+    // Use /models endpoint — no chat quota consumed
+    const res = await fetch(GROQ_MODELS_ENDPOINT, {
+      method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': `Bearer ${normalized}`,
       },
-      body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        messages: [{ role: 'user', content: 'Say OK' }],
-        max_tokens: 5,
-      }),
     });
 
-    if (res.status === 401) return { ok: false, error: "Invalid API key." };
+    if (res.status === 401) return { ok: false, error: "Key rejected by Groq — check and retry." };
     if (res.status === 429) return { ok: true }; // Key is valid, just rate limited
     if (!res.ok) return { ok: false, error: `Validation failed (${res.status}).` };
     return { ok: true };

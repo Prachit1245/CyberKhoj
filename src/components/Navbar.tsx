@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { Key, Menu, X, Github } from "lucide-react";
-import { hasApiKey, getApiKey, saveApiKey, removeApiKey, validateApiKey } from "@/lib/ai";
+import { hasApiKey, getApiKey, saveApiKey, removeApiKey, validateApiKey, validateKeyFormat } from "@/lib/ai";
 import HackMindLogo from "@/components/HackMindLogo";
 
 const NAV_LINKS = [
@@ -35,8 +35,9 @@ const Navbar = () => {
 
   const handleSaveKey = async () => {
     const trimmed = newKey.trim();
-    if (!trimmed || trimmed.length < 10) {
-      setKeyError("Please enter a valid API key.");
+    const formatCheck = validateKeyFormat(trimmed);
+    if (!formatCheck.valid) {
+      setKeyError(formatCheck.error || "Invalid key format.");
       return;
     }
     setValidating(true);

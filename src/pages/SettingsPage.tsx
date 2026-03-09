@@ -21,7 +21,7 @@ import {
   Accessibility,
 } from "lucide-react";
 import { toast } from "@/components/Toast";
-import { getApiKey, saveApiKey, removeApiKey, hasApiKey, validateApiKey } from "@/lib/ai";
+import { getApiKey, saveApiKey, removeApiKey, hasApiKey, validateApiKey, validateKeyFormat } from "@/lib/ai";
 import { resetTour, isTourCompleted } from "@/components/OnboardingTour";
 import { usePWAInstall } from "@/hooks/usePWAInstall";
 
@@ -212,10 +212,16 @@ const SettingsPage = () => {
     }
   };
 
-  const handleReplaceKey = () => {
+  const handleReplaceKey = async () => {
     const trimmed = newKey.trim();
-    if (!trimmed || trimmed.length < 10) {
-      toast.error("Please enter a valid API key");
+    const formatCheck = validateKeyFormat(trimmed);
+    if (!formatCheck.valid) {
+      toast.error(formatCheck.error || "Invalid key format");
+      return;
+    }
+    const result = await validateApiKey(trimmed);
+    if (!result.ok) {
+      toast.error(result.error || "Key rejected by Groq");
       return;
     }
     saveApiKey(trimmed);
