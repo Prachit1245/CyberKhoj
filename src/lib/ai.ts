@@ -154,6 +154,7 @@ export function safeParseJSON(text: string) {
 
 /* ─── Core AI call via Groq ─── */
 async function callAIRaw(prompt: string, apiKey: string, signal?: AbortSignal): Promise<string> {
+  const safePrompt = redactPrompt(prompt);
   let response: Response;
   try {
     response = await fetch(GROQ_ENDPOINT, {
