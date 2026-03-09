@@ -40,7 +40,7 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
       setSuccessAnim(true);
       setTimeout(() => setUnlocked(true), 600);
     } catch (err) {
-      console.error("API key validation error:", err);
+      console.error("API key validation failed");
       // Network errors — accept key if it looks plausible (gsk_ prefix for Groq)
       if (trimmed.startsWith("gsk_")) {
         saveApiKey(trimmed);
