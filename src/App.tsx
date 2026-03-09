@@ -38,6 +38,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const Bookmarks = lazy(() => import("./pages/Bookmarks"));
 const Achievements = lazy(() => import("./pages/Achievements"));
 const DorkGenerator = lazy(() => import("./pages/DorkGenerator"));
+const ReconDashboard = lazy(() => import("./pages/ReconDashboard"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Ethics = lazy(() => import("./pages/Ethics"));
