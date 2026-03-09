@@ -33,7 +33,22 @@ function normalizeApiKey(value: string): string {
 }
 
 function isLikelyGroqKey(value: string): boolean {
-  return /^gsk_[A-Za-z0-9_-]{20,}$/.test(value);
+  return /^gsk_[A-Za-z0-9_]{36,}$/.test(value);
+}
+
+/** Client-side format validation with specific error messages */
+export function validateKeyFormat(key: string): { valid: boolean; error?: string } {
+  const normalized = normalizeApiKey(key);
+  if (!normalized.startsWith("gsk_")) {
+    return { valid: false, error: "Key must start with \"gsk_\"" };
+  }
+  if (normalized.length < 40) {
+    return { valid: false, error: "Key is too short — must be at least 40 characters" };
+  }
+  if (!/^[A-Za-z0-9_]+$/.test(normalized)) {
+    return { valid: false, error: "Key contains invalid characters — only letters, numbers, and underscores allowed" };
+  }
+  return { valid: true };
 }
 
 /* ─── Key management (AES-encrypted) ─── */
