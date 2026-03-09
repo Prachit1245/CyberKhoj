@@ -382,17 +382,17 @@ const SettingsPage = () => {
       <Section icon={<Key size={16} />} title="Groq API Key">
         {keySet ? (
           <div className="space-y-4">
-            {/* Current key display */}
+            {/* Key Health indicator */}
             <div className="flex items-center gap-3 rounded-lg bg-muted/30 border border-border/50 px-4 py-3">
-              <p className="text-sm font-mono text-foreground flex-1 break-all">
-                {showKey ? getApiKey() : maskedKey()}
-              </p>
-              <button
-                onClick={() => setShowKey(!showKey)}
-                className="text-muted-foreground hover:text-foreground transition-colors p-1"
-              >
-                {showKey ? <EyeOff size={15} /> : <Eye size={15} />}
-              </button>
+              <span className={`inline-block h-2.5 w-2.5 rounded-full shrink-0 ${
+                testResult === "fail" ? "bg-destructive" : "bg-primary"
+              }`} />
+              <span className="text-sm font-mono text-foreground">
+                {testResult === "fail" ? "Key Invalid" : "Key Active"}
+              </span>
+              <span className="text-xs font-mono text-muted-foreground ml-auto break-all">
+                {maskedKey()}
+              </span>
             </div>
 
             {/* Test result indicator */}
