@@ -64,7 +64,7 @@ Visit: [cyberkhoj.lovable.app](https://cyberkhoj.lovable.app)
 ### Run Locally
 
 ```bash
-git clone https://github.com/yourusername/cyberkhoj.git
+git clone https://github.com/Prachit1245/CyberKhoj.git
 cd cyberkhoj
 npm install
 npm run dev

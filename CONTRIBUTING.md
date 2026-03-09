@@ -37,7 +37,7 @@ We are proud of this and do not hide it. AI tools are a normal part of modern so
 ## Setting Up Locally
 
 ```bash
-git clone https://github.com/yourusername/cyberkhoj.git
+git clone https://github.com/Prachit1245/CyberKhoj.git
 cd cyberkhoj
 npm install
 npm run dev
