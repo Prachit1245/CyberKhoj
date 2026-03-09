@@ -3,6 +3,7 @@ import { INPUT_LIMITS, enforceLimit } from "@/lib/sanitize";
 import { ArrowRight, Loader2, ChevronDown, ChevronRight, Download, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { callGemini } from "@/lib/ai";
+import { canRequest, recordRequest } from "@/lib/rateLimit";
 import { addToHistory, incrementStat } from "@/lib/store";
 import { checkAnalysisAchievements, checkBatchAnalysis } from "@/lib/achievements";
 import { parseTarget, contextToPromptBlock } from "@/lib/parseTarget";
@@ -120,6 +121,16 @@ const BatchAnalyzer = () => {
       if (abortRef.current) break;
       setCurrentIdx(i);
       const url = urls[i];
+
+      // Rate limit check per URL
+      if (!canRequest()) {
+        setError(`Rate limited at URL ${i + 1}. Wait a moment and retry.`);
+        break;
+      }
+      recordRequest();
+
+      // 2s delay between URLs (except first)
+      if (i > 0) await new Promise((r) => setTimeout(r, 2000));
 
       try {
         const prompt = buildQuickPrompt(url);

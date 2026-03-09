@@ -3,6 +3,7 @@ import { INPUT_LIMITS, enforceLimit } from "@/lib/sanitize";
 import { Zap, X, ArrowRight, Loader2, ExternalLink, Save, WifiOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { callGemini, GeminiError, type GeminiErrorCode } from "@/lib/ai";
+import { canRequest, recordRequest } from "@/lib/rateLimit";
 import { addToHistory, incrementStat } from "@/lib/store";
 import { parseTarget, contextToPromptBlock } from "@/lib/parseTarget";
 import { Badge } from "@/components/ui/badge";
@@ -91,7 +92,9 @@ const QuickAnalyze = () => {
   const handleAnalyze = useCallback(async () => {
     const trimmed = target.trim();
     if (!trimmed) { setError("Enter a target URL or endpoint."); return; }
+    if (!canRequest()) { setError("Slow down — max 10 analyses per minute to protect your daily quota"); return; }
 
+    recordRequest();
     setLoading(true);
     setError("");
     setRawResult("");

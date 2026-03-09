@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { INPUT_LIMITS, enforceLimit } from "@/lib/sanitize";
 import { Trash2, ArrowRight, Loader2, WifiOff, GraduationCap } from "lucide-react";
+import { canRequest, recordRequest, getRPM, getMaxRPM, onRPMChange } from "@/lib/rateLimit";
 import AnalysisLoader from "@/components/AnalysisLoader";
 import { SkeletonResultCards } from "@/components/Skeletons";
 import { extractDomain } from "@/lib/targetNotes";
@@ -108,7 +109,11 @@ const Analyzer = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<TargetTemplate | null>(null);
   const [beginner, setBeginner] = useState(isBeginnerMode);
   const [isFallback, setIsFallback] = useState(false);
+  const [cooldown, setCooldown] = useState(false);
+  const [rpm, setRpm] = useState(getRPM);
 
+  // Subscribe to RPM updates
+  useEffect(() => onRPMChange(() => setRpm(getRPM())), []);
   // Instant client-side target intelligence
   const targetIntel = useMemo(() => {
     const trimmed = target.trim();
@@ -174,7 +179,12 @@ const Analyzer = () => {
       setError("Please paste a target to analyze.");
       return;
     }
+    if (!canRequest()) {
+      setError("Slow down — max 10 analyses per minute to protect your daily quota");
+      return;
+    }
 
+    recordRequest();
     abortGeminiRequest();
     setLoading(true);
     setError("");
@@ -266,6 +276,8 @@ const Analyzer = () => {
     } finally {
       stopTypingSound();
       setLoading(false);
+      setCooldown(true);
+      setTimeout(() => setCooldown(false), 3000);
     }
   };
 
@@ -444,8 +456,8 @@ const Analyzer = () => {
       <div className="flex flex-col sm:flex-row gap-3">
         <button
           onClick={handleAnalyze}
-          disabled={loading || !online}
-          title={!online ? "Requires internet for AI analysis" : "Ctrl+Enter"}
+          disabled={loading || !online || cooldown}
+          title={!online ? "Requires internet for AI analysis" : cooldown ? "Cooldown…" : "Ctrl+Enter"}
           className="flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3.5 md:py-3 font-heading text-sm font-bold text-primary-foreground hover:brightness-110 transition-all disabled:opacity-60 disabled:cursor-not-allowed glow-primary min-h-[2.75rem]"
         >
           {loading ? (
@@ -476,6 +488,10 @@ const Analyzer = () => {
           <kbd className="hidden sm:inline-flex ml-1 px-1.5 py-0.5 rounded border border-border text-[10px] font-mono opacity-50">⌘L</kbd>
         </button>
       </div>
+      {/* RPM counter */}
+      <p className="text-[10px] font-mono text-muted-foreground">
+        {rpm}/{getMaxRPM()} requests this minute
+      </p>
 
       {/* Target Intelligence — instant, no API */}
       {targetIntel && (
