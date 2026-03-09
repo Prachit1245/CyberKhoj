@@ -5,34 +5,62 @@ const STORAGE_KEY = 'cyberkhoj_groq_key';
 
 /* ─── Device fingerprint for encryption ─── */
 function getDeviceFingerprint(): string {
+  const width = Math.min(screen.width, screen.height);
+  const height = Math.max(screen.width, screen.height);
   const raw = [
     navigator.userAgent,
-    screen.width,
-    screen.height,
+    width,
+    height,
     navigator.language,
   ].join('|');
   return CryptoJS.SHA256(raw).toString();
 }
 
+function normalizeApiKey(value: string): string {
+  return value.replace(/\s+/g, "").trim();
+}
+
+function isLikelyGroqKey(value: string): boolean {
+  return /^gsk_[A-Za-z0-9_-]{20,}$/.test(value);
+}
+
 /* ─── Key management (AES-encrypted) ─── */
 
 export function saveApiKey(key: string) {
-  const encrypted = CryptoJS.AES.encrypt(key, getDeviceFingerprint()).toString();
+  const normalized = normalizeApiKey(key);
+  if (!normalized) return;
+  const payload = JSON.stringify({ v: 1, key: normalized });
+  const encrypted = CryptoJS.AES.encrypt(payload, getDeviceFingerprint()).toString();
   localStorage.setItem(STORAGE_KEY, encrypted);
 }
 
 export function getApiKey(): string | null {
   const stored = localStorage.getItem(STORAGE_KEY);
   if (!stored) return null;
+
   try {
     const bytes = CryptoJS.AES.decrypt(stored, getDeviceFingerprint());
     const decrypted = bytes.toString(CryptoJS.enc.Utf8);
     if (!decrypted) {
-      // Decryption failed (different device / corrupted) — clear it
       localStorage.removeItem(STORAGE_KEY);
       return null;
     }
-    return decrypted;
+
+    let candidate = decrypted;
+    try {
+      const parsed = JSON.parse(decrypted) as { key?: string };
+      if (typeof parsed.key === "string") candidate = parsed.key;
+    } catch {
+      // backward compatibility for old encrypted plain-string format
+    }
+
+    const normalized = normalizeApiKey(candidate);
+    if (!isLikelyGroqKey(normalized)) {
+      localStorage.removeItem(STORAGE_KEY);
+      return null;
+    }
+
+    return normalized;
   } catch {
     localStorage.removeItem(STORAGE_KEY);
     return null;
@@ -196,12 +224,17 @@ export const callGemini = async (prompt: string, _expectJson = false): Promise<s
 
 /* ─── Validate a Groq API key ─── */
 export async function validateApiKey(apiKey: string): Promise<{ ok: boolean; error?: string }> {
+  const normalized = normalizeApiKey(apiKey);
+  if (!isLikelyGroqKey(normalized)) {
+    return { ok: false, error: "Invalid API key format." };
+  }
+
   try {
     const res = await fetch(GROQ_ENDPOINT, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
+        'Authorization': `Bearer ${normalized}`,
       },
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
