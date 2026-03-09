@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from "react";
+import { INPUT_LIMITS, enforceLimit } from "@/lib/sanitize";
 import { ArrowRight, Loader2, ChevronDown, ChevronRight, Download, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { callGemini } from "@/lib/ai";
@@ -7,7 +8,7 @@ import { checkAnalysisAchievements, checkBatchAnalysis } from "@/lib/achievement
 import { parseTarget, contextToPromptBlock } from "@/lib/parseTarget";
 import { getUsageCount, DAILY_LIMIT } from "@/lib/usage";
 
-const MAX_URLS = 20;
+const MAX_URLS = INPUT_LIMITS.BATCH_MAX_URLS;
 
 interface BatchResult {
   url: string;
@@ -214,7 +215,7 @@ const BatchAnalyzer = () => {
         </div>
         <textarea
           value={input}
-          onChange={(e) => { setInput(e.target.value); setError(""); }}
+          onChange={(e) => { setInput(enforceLimit(e.target.value, INPUT_LIMITS.BATCH_URL_LENGTH * MAX_URLS)); setError(""); }}
           placeholder={`https://example.com/api/users?id=1\nhttps://example.com/admin/dashboard\nhttps://example.com/auth/login\nhttps://example.com/upload`}
           rows={6}
           className="w-full rounded-xl border border-border bg-card px-4 py-3 font-mono text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 transition-colors resize-y"
