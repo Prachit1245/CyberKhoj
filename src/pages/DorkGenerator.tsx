@@ -123,7 +123,7 @@ export default function DorkGenerator() {
         </Button>
       </div>
 
-      {error && <GeminiErrorDisplay error={error} />}
+      {error && <GeminiErrorDisplay code={error.code} message={error.message} onRetry={generate} />}
 
       {dorks.length > 0 && (
         <>
