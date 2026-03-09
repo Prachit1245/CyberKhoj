@@ -63,8 +63,14 @@ const Index = () => {
               </span>
             ))}
           </div>
+
+          {/* Security badge */}
+          <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-5 py-2.5 backdrop-blur-sm">
+            <span className="text-xs font-mono text-primary leading-relaxed text-center">
+              🔒 Your API key never leaves your device. Zero servers. Zero tracking. Zero data collection. Ever.
+            </span>
+          </div>
         </div>
-      </section>
 
       <section className="max-w-3xl mx-auto px-4 py-8">
         <EthicalDisclaimer />

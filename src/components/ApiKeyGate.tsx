@@ -196,9 +196,12 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
           </div>
         </div>
 
-        <p className="mt-6 text-center text-xs text-muted-foreground font-mono">
-          Your key is stored only in your browser. We never see it.
-        </p>
+        <div className="mt-6 rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-center">
+          <p className="text-xs text-primary font-mono leading-relaxed">
+            🔒 Your API key never leaves your device.<br />
+            Zero servers. Zero tracking. Zero data collection. Ever.
+          </p>
+        </div>
 
         <div className="mt-4">
           <EthicalDisclaimer compact />
