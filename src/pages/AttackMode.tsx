@@ -412,6 +412,20 @@ const AttackMode = () => {
             Subdomain Recon
           </span>
         </button>
+        <button
+          onClick={() => setShowHistoricalRecon(!showHistoricalRecon)}
+          disabled={!domain.trim()}
+          className={`h-12 px-4 rounded-lg font-heading font-bold text-sm transition-all cursor-pointer border ${
+            showHistoricalRecon
+              ? "border-primary bg-primary/10 text-primary"
+              : "border-border/30 bg-card/50 text-muted-foreground hover:text-primary hover:border-primary/40"
+          } disabled:opacity-40 disabled:cursor-not-allowed`}
+        >
+          <span className="flex items-center gap-2">
+            <History className="h-4 w-4" />
+            Historical Recon
+          </span>
+        </button>
       </div>
 
       {/* Recon Checklist Panel */}
