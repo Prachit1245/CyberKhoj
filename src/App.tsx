@@ -52,12 +52,18 @@ const PageFallback = () => <div className="p-4 md:p-6"><SkeletonPage /></div>;
 
 const AppInner = () => {
   const { locked, unlock } = useSessionLock();
+  const [privateModeOn, setPrivateModeOn] = useState(isPrivateMode);
+
+  useEffect(() => {
+    const handler = () => setPrivateModeOn(isPrivateMode());
+    window.addEventListener("hackmind:private-mode-changed", handler);
+    return () => window.removeEventListener("hackmind:private-mode-changed", handler);
+  }, []);
 
   // Clear in-memory key references when locked (encrypted copy stays in localStorage)
   useEffect(() => {
     if (locked) {
       // Force getApiKey to re-read from encrypted storage on next call
-      // The key is never held in a module-level variable, so locking is sufficient
     }
   }, [locked]);
 
