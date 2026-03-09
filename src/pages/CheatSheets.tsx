@@ -190,8 +190,14 @@ export default function CheatSheets() {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 overflow-y-auto pr-1 pb-8">
+      <div className="flex-1 overflow-y-auto pr-1 pb-8 space-y-6">
         <SheetContent sheet={activeSheet} />
+        {activeSheet.id === "js-recon" && (
+          <Suspense fallback={<div className="text-xs text-muted-foreground font-mono p-4">Loading scanner…</div>}>
+            <JsScanner />
+          </Suspense>
+        )}
+      </div>
       </div>
     </div>
   );
