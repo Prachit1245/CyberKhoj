@@ -163,11 +163,11 @@ const ConfirmDialog = ({
 const SettingsPage = () => {
   /* API Key state */
   const [keySet, setKeySet] = useState(hasApiKey());
-  const [showKey, setShowKey] = useState(false);
   const [newKey, setNewKey] = useState("");
   const [replacing, setReplacing] = useState(false);
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<"ok" | "fail" | null>(null);
+  const [showNewKey, setShowNewKey] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const { canInstall, isInstalled, install } = usePWAInstall();
 
@@ -184,7 +184,9 @@ const SettingsPage = () => {
   const maskedKey = () => {
     const k = getApiKey();
     if (!k) return "—";
-    return k.slice(0, 6) + "•".repeat(8) + k.slice(-4);
+    const first = k.slice(0, 4);
+    const last = k.slice(-4);
+    return `${first}****...****${last}`;
   };
 
   /* ── API Key Actions ── */
