@@ -104,7 +104,7 @@ const Navbar = () => {
 
             {/* Community buttons */}
             <a
-              href="https://github.com/Prachit1245/cyberkhoj"
+              href="https://github.com/Prachit1245/CyberKhoj"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Star CyberKhoj on GitHub"
