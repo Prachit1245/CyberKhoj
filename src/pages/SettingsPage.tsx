@@ -693,18 +693,98 @@ const SettingsPage = () => {
         <EthicalDisclaimer />
       </Section>
 
+      {/* ─── Private Mode Section ─── */}
+      <Section icon={<EyeOffIcon size={16} />} title="Private Mode">
+        <div className="space-y-3">
+          <Toggle
+            enabled={privateMode}
+            onToggle={() => {
+              const next = !privateMode;
+              setPrivateModeState(next);
+              setPrivateMode(next);
+              toast.success(next ? "Private Mode enabled — nothing will be saved" : "Private Mode disabled");
+            }}
+            label="Private Mode"
+            description="When enabled, nothing is saved to localStorage this session. Resets on browser close."
+          />
+          {privateMode && (
+            <div className="flex items-center gap-2 text-xs font-mono px-3 py-2 rounded-md bg-accent/20 text-accent-foreground border border-accent/30">
+              <Shield size={13} />
+              🔒 Private Mode ON — nothing is being saved this session
+            </div>
+          )}
+        </div>
+      </Section>
+
       {/* ─── Data Management Section ─── */}
       <Section icon={<Database size={16} />} title="Data Management">
         <div className="space-y-4">
-          {/* Storage size */}
-          <div className="flex items-center gap-3 rounded-lg bg-muted/30 border border-border/50 px-4 py-3">
-            <HardDrive size={15} className="text-primary shrink-0" />
-            <div className="flex-1">
-              <p className="text-xs font-mono text-muted-foreground">Local Storage Used</p>
-              <p className="text-sm font-mono text-foreground font-bold">
-                {formatBytes(storageSize)}
-              </p>
+          {/* Storage size monitor */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-3 rounded-lg bg-muted/30 border border-border/50 px-4 py-3">
+              <HardDrive size={15} className={`shrink-0 ${isStorageWarning ? "text-destructive" : "text-primary"}`} />
+              <div className="flex-1">
+                <p className="text-xs font-mono text-muted-foreground">Local Storage Used</p>
+                <p className={`text-sm font-mono font-bold ${isStorageWarning ? "text-destructive" : "text-foreground"}`}>
+                  {formatStorageSize(storageSizeBytes)} / ~5 MB limit
+                </p>
+              </div>
+              <button
+                onClick={refreshStorageSize}
+                className="text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Refresh storage size"
+              >
+                <RefreshCw size={13} />
+              </button>
             </div>
+            {/* Progress bar */}
+            <div className="w-full h-1.5 rounded-full bg-muted/50 overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all ${isStorageWarning ? "bg-destructive" : "bg-primary"}`}
+                style={{ width: `${storagePercent}%` }}
+              />
+            </div>
+            {isStorageWarning && (
+              <div className="flex items-center gap-2 text-xs font-mono px-3 py-2 rounded-md bg-destructive/10 text-destructive border border-destructive/20">
+                <AlertTriangle size={13} />
+                Storage is nearly full! Consider clearing old data below.
+              </div>
+            )}
+          </div>
+
+          {/* Storage Audit — expandable list of all keys */}
+          <div className="border-t border-border/30 pt-3">
+            <button
+              onClick={() => setShowStorageAudit(!showStorageAudit)}
+              className="flex items-center gap-2 text-xs font-mono text-muted-foreground hover:text-foreground transition-all w-full"
+            >
+              <Database size={12} />
+              {showStorageAudit ? "Hide" : "Show"} all stored data keys ({STORAGE_KEYS_INFO.filter(k => localStorage.getItem(k.key) !== null).length} active)
+            </button>
+            {showStorageAudit && (
+              <div className="mt-2 space-y-1 max-h-64 overflow-y-auto">
+                {STORAGE_KEYS_INFO.map((info) => {
+                  const exists = localStorage.getItem(info.key) !== null;
+                  const size = getKeySizeBytes(info.key);
+                  return (
+                    <div
+                      key={info.key}
+                      className={`flex items-center justify-between gap-2 px-3 py-1.5 rounded text-xs font-mono ${
+                        exists ? "bg-muted/20" : "opacity-40"
+                      }`}
+                    >
+                      <div className="min-w-0">
+                        <span className="text-foreground">{info.label}</span>
+                        <span className="text-muted-foreground ml-2 hidden sm:inline">{info.description}</span>
+                      </div>
+                      <span className="shrink-0 text-muted-foreground">
+                        {exists ? formatStorageSize(size) : "—"}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Export / Import */}
@@ -769,6 +849,16 @@ const SettingsPage = () => {
                 label: "Usage Counter",
                 desc: "Reset today's usage counter to zero",
               },
+              {
+                key: "hackmind_achievements",
+                label: "Achievements",
+                desc: "Reset all unlocked achievements",
+              },
+              {
+                key: "hackmind_xp",
+                label: "XP & Level",
+                desc: "Reset experience points to zero",
+              },
             ].map((item) => (
               <div
                 key={item.key}
@@ -783,7 +873,10 @@ const SettingsPage = () => {
                     setConfirm({
                       title: `Clear ${item.label}?`,
                       message: `This will permanently delete all ${item.label.toLowerCase()} data. This cannot be undone.`,
-                      action: () => clearStorage(item.key, item.label),
+                      action: () => {
+                        clearStorage(item.key, item.label);
+                        refreshStorageSize();
+                      },
                     })
                   }
                   className="shrink-0 flex items-center gap-1.5 rounded-md border border-destructive/30 px-3 py-1.5 text-xs font-mono text-destructive hover:bg-destructive/10 transition-all"
