@@ -5,13 +5,23 @@ const STORAGE_KEY = 'cyberkhoj_groq_key';
 
 /* ─── Device fingerprint for encryption ─── */
 function getDeviceFingerprint(): string {
+  const width = Math.min(screen.width, screen.height);
+  const height = Math.max(screen.width, screen.height);
   const raw = [
     navigator.userAgent,
-    screen.width,
-    screen.height,
+    width,
+    height,
     navigator.language,
   ].join('|');
   return CryptoJS.SHA256(raw).toString();
+}
+
+function normalizeApiKey(value: string): string {
+  return value.replace(/\s+/g, "").trim();
+}
+
+function isLikelyGroqKey(value: string): boolean {
+  return /^gsk_[A-Za-z0-9_-]{20,}$/.test(value);
 }
 
 /* ─── Key management (AES-encrypted) ─── */
