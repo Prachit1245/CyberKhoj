@@ -24,6 +24,8 @@ import { toast } from "@/components/Toast";
 import { getApiKey, saveApiKey, removeApiKey, hasApiKey, validateApiKey, validateKeyFormat } from "@/lib/ai";
 import { resetTour, isTourCompleted } from "@/components/OnboardingTour";
 import { usePWAInstall } from "@/hooks/usePWAInstall";
+import { triggerManualLock, getSessionTimeout, setSessionTimeout, type TimeoutOption } from "@/hooks/useSessionLock";
+import { Lock } from "lucide-react";
 
 /* ─── Preferences stored in localStorage ─── */
 const PREFS_KEY = "hackmind_prefs";
