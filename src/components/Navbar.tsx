@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { Key, Menu, X, Github } from "lucide-react";
-import { hasApiKey, getApiKey, saveApiKey, removeApiKey, validateApiKey } from "@/lib/ai";
+import { hasApiKey, getApiKey, saveApiKey, removeApiKey, validateApiKey, validateKeyFormat } from "@/lib/ai";
 import HackMindLogo from "@/components/HackMindLogo";
 
 const NAV_LINKS = [
