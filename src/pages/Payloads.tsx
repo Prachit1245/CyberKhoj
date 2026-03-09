@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef, useCallback } from "react";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { INPUT_LIMITS, enforceLimit } from "@/lib/sanitize";
 import {
   Search, Copy, Check, ChevronRight, Heart, X, ArrowUpDown,
@@ -303,6 +304,7 @@ function PayloadFormModal({
 /* ═══════════════════════ Main Page ═══════════════════════ */
 
 export default function Payloads() {
+  usePageTitle("Payload Library — CyberKhoj");
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [sevFilter, setSevFilter] = useState<SevFilter>("all");

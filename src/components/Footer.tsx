@@ -4,12 +4,16 @@ const TOOLS = [
   { label: "URL Analyzer", to: "/analyzer" },
   { label: "Attack Mode", to: "/attack" },
   { label: "Mind Map", to: "/mindmap" },
+  { label: "Recon Dashboard", to: "/recon" },
   { label: "Payload Library", to: "/payloads" },
   { label: "Cheat Sheets", to: "/cheatsheets" },
+  { label: "Dork Generator", to: "/dork-generator" },
 ];
 
 const RESOURCES = [
   { label: "OWASP Top 10", to: "/owasp" },
+  { label: "Vuln Categories", to: "/vuln-categories" },
+  { label: "Changelog", to: "/changelog" },
   { label: "HackerOne", href: "https://hackerone.com" },
   { label: "Bugcrowd", href: "https://bugcrowd.com" },
   { label: "PortSwigger Academy", href: "https://portswigger.net/web-security" },
@@ -18,7 +22,6 @@ const RESOURCES = [
 const Footer = () => (
   <footer className="border-t border-primary/20" style={{ background: "#050505" }}>
     <div className="max-w-5xl mx-auto px-4 py-14 md:py-16">
-      {/* Three columns */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8">
         {/* Brand */}
         <div className="space-y-3">
@@ -34,7 +37,7 @@ const Footer = () => (
         {/* Tools */}
         <div className="space-y-3">
           <h3 className="text-xs font-mono uppercase tracking-widest text-muted-foreground">Tools</h3>
-          <nav className="flex flex-col gap-2">
+          <nav aria-label="Tool pages" className="flex flex-col gap-2">
             {TOOLS.map((t) => (
               <Link
                 key={t.to}
@@ -50,7 +53,7 @@ const Footer = () => (
         {/* Resources */}
         <div className="space-y-3">
           <h3 className="text-xs font-mono uppercase tracking-widest text-muted-foreground">Resources</h3>
-          <nav className="flex flex-col gap-2">
+          <nav aria-label="Resources" className="flex flex-col gap-2">
             {RESOURCES.map((r) =>
               "to" in r ? (
                 <Link
@@ -87,7 +90,7 @@ const Footer = () => (
           CyberKhoj is free forever. No tracking. No ads. No BS.
         </p>
         <p className="text-[10px] font-mono text-muted-foreground/60">
-          © {new Date().getFullYear()} CyberKhoj. For authorized security testing only.
+          © {new Date().getFullYear()} CyberKhoj. For authorized security testing only. Last updated: January 2026
         </p>
         <p className="text-[10px] font-mono text-muted-foreground/50 flex items-center justify-center gap-1.5 flex-wrap">
           Built with love using{" "}

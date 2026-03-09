@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SkeletonMindMap } from "@/components/Skeletons";
 import {
@@ -234,6 +235,7 @@ function buildFlowElements(
 
 /* ── Canvas component ── */
 function MindMapCanvas() {
+  usePageTitle("Mind Map — CyberKhoj");
   const navigate = useNavigate();
   const online = useOnline();
   const isMobile = useIsMobile();

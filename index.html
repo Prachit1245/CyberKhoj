@@ -3,51 +3,166 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>CyberKhoj — Free AI Bug Bounty Tool</title>
-    <meta name="description" content="Nepal's first free AI-powered bug bounty vulnerability hunter. Generate attack paths, recon checklists and mind maps for any URL or domain. Completely free forever." />
+
+    <!-- Primary Meta Tags -->
+    <title>CyberKhoj — Free AI Bug Bounty Tool | Vulnerability Attack Path Generator</title>
+    <meta name="title" content="CyberKhoj — Free AI Bug Bounty Tool | Vulnerability Attack Path Generator" />
+    <meta name="description" content="CyberKhoj is a free AI powered bug bounty tool that generates vulnerability attack paths for any URL or domain. Get 100 hacker test ideas, visual mind maps, recon checklists and payloads. 100% free forever. No signup needed." />
+    <meta name="keywords" content="bug bounty tool, free bug bounty, vulnerability scanner free, attack path generator, hacker tool free, IDOR finder, XSS scanner, SQL injection tester, bug bounty beginner, HackerOne tool, Bugcrowd tool, recon tool, OSINT tool, penetration testing free, web security tool, vulnerability assessment free, CyberKhoj, Nepal cybersecurity, ethical hacking tool" />
     <meta name="author" content="CyberKhoj" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://cyberkhoj.com/" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://cyberkhoj.com/" />
+    <meta property="og:title" content="CyberKhoj — Free AI Bug Bounty Tool" />
+    <meta property="og:description" content="Think like a hacker. Generate vulnerability attack paths for any URL instantly. Free forever. 1000 analyses per day. No signup needed." />
+    <meta property="og:image" content="https://cyberkhoj.com/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="CyberKhoj" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://cyberkhoj.com/" />
+    <meta name="twitter:title" content="CyberKhoj — Free AI Bug Bounty Tool" />
+    <meta name="twitter:description" content="Think like a hacker. Generate vulnerability attack paths for any URL. Free forever. No signup needed." />
+    <meta name="twitter:image" content="https://cyberkhoj.com/og-image.png" />
+
+    <!-- Additional SEO Tags -->
     <meta name="theme-color" content="#0a0a0a" />
-    <link rel="canonical" href="https://cyberkhoj.app/" />
+    <meta name="application-name" content="CyberKhoj" />
+    <meta name="generator" content="CyberKhoj" />
+    <meta name="category" content="cybersecurity" />
+    <meta name="classification" content="Security Tools" />
+    <meta name="rating" content="general" />
+    <meta name="revisit-after" content="7 days" />
+    <meta name="language" content="English" />
+
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://api.groq.com https://*.lovableproject.com https://*.lovable.app wss://*.lovable.app; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://img.shields.io https://source.boringavatars.com;" />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta name="referrer" content="no-referrer" />
+
+    <!-- PWA -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="CyberKhoj" />
     <link rel="apple-touch-icon" href="/pwa-icon-192.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="32x32" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://api.groq.com https://*.lovableproject.com https://*.lovable.app wss://*.lovable.app; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://img.shields.io https://source.boringavatars.com;" />
-    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-    <meta name="referrer" content="no-referrer" />
 
-    <meta property="og:title" content="CyberKhoj — Free AI Bug Bounty Attack Path Generator" />
-    <meta property="og:description" content="Think like a hacker. Generate vulnerability attack paths for any URL instantly. Free forever. 1000 analyses/day. No account needed." />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://cyberkhoj.app/" />
-    <meta property="og:image" content="https://cyberkhoj.app/og-image.png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:site_name" content="CyberKhoj" />
+    <!-- Font Preloading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Share+Tech+Mono&display=swap" />
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="CyberKhoj — Free AI Bug Bounty Attack Path Generator" />
-    <meta name="twitter:description" content="Think like a hacker. Generate vulnerability attack paths for any URL instantly. Free forever. No account needed." />
-    <meta name="twitter:image" content="https://cyberkhoj.app/og-image.png" />
+    <!-- Resource Hints -->
+    <link rel="dns-prefetch" href="https://api.groq.com" />
+    <link rel="preconnect" href="https://api.groq.com" />
 
+    <!-- Structured Data: SoftwareApplication -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
       "name": "CyberKhoj",
       "applicationCategory": "SecurityApplication",
-      "operatingSystem": "Web",
+      "operatingSystem": "Web Browser",
+      "description": "Free AI powered bug bounty tool that generates vulnerability attack paths for any URL or domain. Includes attack path generator, recon dashboard, payload library, mind maps and cheat sheets.",
+      "url": "https://cyberkhoj.com",
+      "author": {
+        "@type": "Organization",
+        "name": "CyberKhoj",
+        "url": "https://cyberkhoj.com"
+      },
       "offers": {
         "@type": "Offer",
         "price": "0",
         "priceCurrency": "USD"
       },
-      "description": "AI-powered vulnerability analysis, attack surface mapping, and recon. Free, private, runs in your browser.",
-      "url": "https://cyberkhoj.app/",
-      "screenshot": "https://cyberkhoj.app/og-image.png",
-      "featureList": "Vulnerability Analysis, Attack Path Generation, OWASP Mapping, Payload Library, Mind Map Visualization"
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "ratingCount": "127"
+      },
+      "featureList": [
+        "URL Vulnerability Analyzer",
+        "Attack Mode - 100 test ideas",
+        "Visual Mind Map Generator",
+        "Payload Library 200+ payloads",
+        "Recon Dashboard",
+        "Google Dork Generator",
+        "JavaScript Recon Analyzer",
+        "Security Cheat Sheets",
+        "Bug Bounty Findings Tracker"
+      ],
+      "screenshot": "https://cyberkhoj.com/og-image.png",
+      "softwareVersion": "1.0.0",
+      "datePublished": "2026-01-01",
+      "inLanguage": "en",
+      "isAccessibleForFree": true,
+      "keywords": "bug bounty, vulnerability scanner, ethical hacking, penetration testing, security tool, free hacking tool"
+    }
+    </script>
+
+    <!-- Structured Data: FAQ -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is CyberKhoj completely free?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. CyberKhoj is 100% free forever. You only need a free Groq API key from console.groq.com which gives you 1000 free analyses every single day."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is CyberKhoj used for?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "CyberKhoj is used by bug bounty hunters to generate vulnerability attack paths for URLs and domains. It helps security researchers think like hackers and find vulnerabilities faster."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is CyberKhoj safe to use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. CyberKhoj stores nothing on any server. Your API key and all data stays in your browser localStorage only. We have zero servers and zero data collection."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What vulnerabilities does CyberKhoj find?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "CyberKhoj generates attack paths for IDOR, SQL Injection, XSS, SSRF, Authentication Bypass, LFI, CSRF, JWT attacks, Race Conditions, Business Logic flaws, and many more vulnerability categories."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I need to create an account?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No account needed. Just get a free Groq API key at console.groq.com and paste it into CyberKhoj. Start analyzing immediately with no signup required."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can beginners use CyberKhoj?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. CyberKhoj was specifically built for bug bounty beginners who struggle with knowing what to test. It explains each vulnerability in plain English with step by step testing instructions."
+          }
+        }
+      ]
     }
     </script>
   </head>

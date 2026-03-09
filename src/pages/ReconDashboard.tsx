@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { Radar, Copy, Check, ExternalLink, Download, Globe, Search, Terminal, Cpu, Sparkles, Loader2, History, Settings2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -78,6 +79,7 @@ function CopyBtn({ text, id, copiedKey, copy }: { text: string; id: string; copi
 /* ── Main Page ── */
 
 export default function ReconDashboard() {
+  usePageTitle("Recon Dashboard — CyberKhoj");
   const [domain, setDomain] = useState("");
   const [active, setActive] = useState(false);
   const { copiedKey, copy } = useCopy();

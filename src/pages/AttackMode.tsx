@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { AlertTriangle, Zap, ShoppingCart, LogIn, Server, Shield, Upload, ListChecks, Download, CheckSquare, XSquare, Copy, Search, Shuffle, WifiOff, Radar, Globe, History as HistoryIcon } from "lucide-react";
 import EthicalDisclaimer from "@/components/EthicalDisclaimer";
 import useOnline from "@/hooks/useOnline";
@@ -136,6 +137,7 @@ const saveChecked = (domain: string, checked: Set<number>) => {
 };
 
 const AttackMode = () => {
+  usePageTitle("Attack Mode — CyberKhoj");
   const online = useOnline();
   const [domain, setDomain] = useState("");
   const [templateContext, setTemplateContext] = useState("");

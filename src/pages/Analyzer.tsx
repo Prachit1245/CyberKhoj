@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import EthicalDisclaimer from "@/components/EthicalDisclaimer";
 import { INPUT_LIMITS, enforceLimit } from "@/lib/sanitize";
 import { Trash2, ArrowRight, Loader2, WifiOff, GraduationCap } from "lucide-react";
@@ -99,6 +100,7 @@ Format your response clearly with markdown headers and bullet points.`;
 };
 
 const Analyzer = () => {
+  usePageTitle("URL Analyzer — CyberKhoj");
   const online = useOnline();
   const [pageTab, setPageTab] = useState<(typeof PAGE_TABS)[number]>("URL Analyzer");
   const [target, setTarget] = useState("");

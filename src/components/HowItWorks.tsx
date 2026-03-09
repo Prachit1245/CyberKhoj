@@ -46,8 +46,9 @@ const HowItWorks = () => {
     <section ref={ref} className="relative py-24 px-4 bg-background">
       <div className="container max-w-5xl mx-auto">
         <h2 className="font-heading text-3xl md:text-4xl font-extrabold text-center mb-4">
-          <span className="text-primary text-glow-primary">How</span>{" "}
-          <span className="text-foreground">It Works</span>
+          <span className="text-foreground">How </span>
+          <span className="text-primary text-glow-primary">CyberKhoj</span>
+          <span className="text-foreground"> Works</span>
         </h2>
         <p className="text-center text-muted-foreground font-mono text-sm mb-16 max-w-md mx-auto">
           Three steps. Zero friction. Full power.
@@ -56,26 +57,19 @@ const HowItWorks = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-0 items-start">
           {STEPS.map((step, i) => (
             <div key={step.num} className="flex items-start">
-              {/* Card */}
               <div
                 className={`hiw-card flex-1 rounded-xl border border-border bg-card p-6 transition-all duration-700 ${
-                  visible
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-8"
+                  visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
                 }`}
                 style={{ transitionDelay: `${i * 150}ms` }}
               >
-                {/* Green top border accent */}
-                <div className="h-0.5 w-12 bg-primary rounded-full mb-5" />
-
-                <span className="font-mono text-3xl font-bold text-primary/20 select-none">
+                <div className="h-0.5 w-12 bg-primary rounded-full mb-5" aria-hidden="true" />
+                <span className="font-mono text-3xl font-bold text-primary/20 select-none" aria-hidden="true">
                   {step.num}
                 </span>
-
                 <div className="mt-3 mb-3 inline-flex items-center justify-center rounded-lg bg-primary/10 p-2.5">
-                  <step.icon size={22} className="text-primary" />
+                  <step.icon size={22} className="text-primary" aria-hidden="true" />
                 </div>
-
                 <h3 className="font-heading text-lg font-bold text-foreground mb-2">
                   {step.title}
                 </h3>
@@ -84,28 +78,16 @@ const HowItWorks = () => {
                 </p>
               </div>
 
-              {/* Arrow connector (desktop only, not after last) */}
               {i < STEPS.length - 1 && (
                 <div
                   className={`hidden md:flex items-center justify-center w-10 shrink-0 self-center transition-all duration-700 ${
                     visible ? "opacity-100" : "opacity-0"
                   }`}
                   style={{ transitionDelay: `${i * 150 + 300}ms` }}
+                  aria-hidden="true"
                 >
-                  <svg
-                    width="32"
-                    height="16"
-                    viewBox="0 0 32 16"
-                    fill="none"
-                    className="text-primary/40"
-                  >
-                    <path
-                      d="M0 8h28m0 0l-6-6m6 6l-6 6"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
+                  <svg width="32" height="16" viewBox="0 0 32 16" fill="none" className="text-primary/40">
+                    <path d="M0 8h28m0 0l-6-6m6 6l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
               )}

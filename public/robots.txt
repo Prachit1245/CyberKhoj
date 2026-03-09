@@ -1,4 +1,20 @@
 User-agent: *
 Allow: /
+Allow: /analyzer
+Allow: /attack
+Allow: /mindmap
+Allow: /recon
+Allow: /payloads
+Allow: /cheatsheets
+Allow: /owasp
+Allow: /terms
+Allow: /privacy
+Allow: /ethics
+Disallow: /dashboard
+Disallow: /history
+Disallow: /findings
+Disallow: /settings
+Disallow: /bookmarks
+Disallow: /achievements
 
-Sitemap: https://cyberkhoj.app/sitemap.xml
+Sitemap: https://cyberkhoj.com/sitemap.xml

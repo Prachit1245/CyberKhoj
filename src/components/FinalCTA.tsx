@@ -16,7 +16,6 @@ const FinalCTA = () => {
 
   return (
     <section className="relative overflow-hidden py-28 md:py-36 px-4">
-      {/* Radial glow bg */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -28,7 +27,7 @@ const FinalCTA = () => {
 
       <div className="relative z-10 max-w-2xl mx-auto text-center space-y-8">
         <h2 className="text-3xl md:text-5xl lg:text-6xl font-heading font-extrabold text-foreground leading-tight">
-          Start Finding Bugs Right Now —{" "}
+          Start Finding Vulnerabilities Today —{" "}
           <span className="text-primary text-glow-primary">Free Forever</span>
         </h2>
 
@@ -37,7 +36,6 @@ const FinalCTA = () => {
           Zero signup. Zero cost. Full power.
         </p>
 
-        {/* Inline API key input */}
         <div className="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto">
           <div className="relative flex-1">
             <Key
@@ -59,14 +57,14 @@ const FinalCTA = () => {
             onClick={handleGo}
             className="flex items-center justify-center gap-2 rounded-lg bg-primary px-8 py-3.5 font-heading text-base font-bold text-primary-foreground transition-all hover:brightness-110 glow-primary whitespace-nowrap"
           >
-            Launch Analyzer <ArrowRight size={18} />
+            Launch Analyzer <ArrowRight size={18} aria-hidden="true" />
           </button>
         </div>
 
         <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
           {["No credit card", "No account", "1000 analyses/day", "100% local"].map((t) => (
             <span key={t} className="text-xs font-mono text-muted-foreground">
-              <span className="text-primary mr-1">✓</span>{t}
+              <span className="text-primary mr-1" aria-hidden="true">✓</span>{t}
             </span>
           ))}
         </div>

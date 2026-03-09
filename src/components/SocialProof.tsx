@@ -6,12 +6,10 @@ const STATS = [
   { icon: Globe, value: "50+", label: "Countries" },
 ];
 
-/** Simple deterministic avatar from initials */
 const InitialAvatar = ({ name }: { name: string }) => {
   const initials = name.split(" ").map(w => w[0]).join("").slice(0, 2);
-  // Hash name to pick a hue offset
   const hash = name.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
-  const hue = 110 + (hash % 60); // green-ish range
+  const hue = 110 + (hash % 60);
   return (
     <div
       className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-mono font-bold shrink-0"
@@ -51,39 +49,33 @@ const PLATFORMS = ["HackerOne", "Bugcrowd", "OWASP", "Synack", "Intigriti"];
 const SocialProof = () => (
   <section className="relative py-20 md:py-28 px-4 bg-background">
     <div className="max-w-4xl mx-auto space-y-14">
-      {/* Header */}
       <div className="text-center space-y-3">
         <h2 className="text-2xl md:text-4xl font-heading font-extrabold text-foreground">
-          Built For The Bug Bounty Community
+          What Bug Bounty Hunters <span className="text-primary text-glow-primary">Say</span>
         </h2>
         <p className="text-sm md:text-base text-muted-foreground font-mono max-w-lg mx-auto">
           Trusted by hunters on every major platform
         </p>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-3 gap-4 md:gap-8">
         {STATS.map((s) => (
           <div key={s.label} className="text-center space-y-2">
-            <s.icon size={24} className="mx-auto text-primary" />
+            <s.icon size={24} className="mx-auto text-primary" aria-hidden="true" />
             <p className="text-2xl md:text-4xl font-heading font-extrabold text-foreground">{s.value}</p>
             <p className="text-xs md:text-sm font-mono text-muted-foreground">{s.label}</p>
           </div>
         ))}
       </div>
 
-      {/* Testimonials 2×2 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {TESTIMONIALS.map((t) => (
           <div
             key={t.handle}
             className="rounded-xl border border-border bg-card p-5 space-y-3 transition-shadow duration-300 hover:shadow-[0_0_20px_hsl(110_100%_55%/0.08)]"
           >
-            {/* Green quote mark */}
-            <span className="text-3xl font-heading font-extrabold text-primary leading-none select-none">"</span>
-            <p className="text-sm font-mono text-foreground leading-relaxed -mt-1">
-              {t.quote}
-            </p>
+            <span className="text-3xl font-heading font-extrabold text-primary leading-none select-none" aria-hidden="true">"</span>
+            <p className="text-sm font-mono text-foreground leading-relaxed -mt-1">{t.quote}</p>
             <div className="flex items-center gap-3 pt-1">
               <InitialAvatar name={t.name} />
               <div>
@@ -95,13 +87,9 @@ const SocialProof = () => (
         ))}
       </div>
 
-      {/* Platform badges */}
       <div className="flex flex-wrap justify-center gap-3">
         {PLATFORMS.map((p) => (
-          <span
-            key={p}
-            className="rounded-full border border-border bg-muted/30 px-4 py-1.5 text-xs font-mono text-muted-foreground"
-          >
+          <span key={p} className="rounded-full border border-border bg-muted/30 px-4 py-1.5 text-xs font-mono text-muted-foreground">
             {p}
           </span>
         ))}

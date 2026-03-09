@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, lazy, Suspense } from "react";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { Copy, Check, Printer, ChevronRight, Bookmark, BookmarkCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -160,6 +161,7 @@ function SheetContent({ sheet }: { sheet: CheatSheet }) {
 }
 
 export default function CheatSheets() {
+  usePageTitle("Cheat Sheets — CyberKhoj");
   const [activeId, setActiveId] = useState(CHEAT_SHEETS[0].id);
   const activeSheet = CHEAT_SHEETS.find((s) => s.id === activeId) || CHEAT_SHEETS[0];
 
