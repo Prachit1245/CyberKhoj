@@ -158,6 +158,7 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
                 type={showKey ? "text" : "password"}
                 value={key}
                 onChange={(e) => handleKeyChange(e.target.value)}
+                onContextMenu={(e) => e.preventDefault()}
                 placeholder="gsk_..."
                 className="w-full rounded-lg border border-border bg-muted/50 px-4 py-3 pr-10 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 transition-colors"
               />
@@ -195,9 +196,12 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
           </div>
         </div>
 
-        <p className="mt-6 text-center text-xs text-muted-foreground font-mono">
-          Your key is stored only in your browser. We never see it.
-        </p>
+        <div className="mt-6 rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-center">
+          <p className="text-xs text-primary font-mono leading-relaxed">
+            🔒 Your API key never leaves your device.<br />
+            Zero servers. Zero tracking. Zero data collection. Ever.
+          </p>
+        </div>
 
         <div className="mt-4">
           <EthicalDisclaimer compact />
