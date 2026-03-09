@@ -24,6 +24,8 @@ import { toast } from "@/components/Toast";
 import { getApiKey, saveApiKey, removeApiKey, hasApiKey, validateApiKey, validateKeyFormat } from "@/lib/ai";
 import { resetTour, isTourCompleted } from "@/components/OnboardingTour";
 import { usePWAInstall } from "@/hooks/usePWAInstall";
+import { triggerManualLock, getSessionTimeout, setSessionTimeout, type TimeoutOption } from "@/hooks/useSessionLock";
+import { Lock } from "lucide-react";
 
 /* ─── Preferences stored in localStorage ─── */
 const PREFS_KEY = "hackmind_prefs";
@@ -171,8 +173,8 @@ const SettingsPage = () => {
   const fileRef = useRef<HTMLInputElement>(null);
   const { canInstall, isInstalled, install } = usePWAInstall();
 
-  /* Prefs state */
   const [prefs, setPrefs] = useState<Prefs>(loadPrefs);
+  const [sessionTimeout, setSessionTimeoutState] = useState<TimeoutOption>(getSessionTimeout);
 
   /* Confirm dialog */
   const [confirm, setConfirm] = useState<{
@@ -517,7 +519,48 @@ const SettingsPage = () => {
         )}
       </Section>
 
-      {/* ─── Tour Section ─── */}
+      {/* ─── Session Security ─── */}
+      <Section icon={<Shield size={16} />} title="Session Security">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-mono text-foreground">Auto-lock Timeout</p>
+              <p className="text-xs text-muted-foreground">Lock session after inactivity period.</p>
+            </div>
+            <div className="flex rounded-md border border-border overflow-hidden shrink-0">
+              {([15, 30, 60, 0] as TimeoutOption[]).map((m) => (
+                <button
+                  key={m}
+                  onClick={() => {
+                    setSessionTimeoutState(m);
+                    setSessionTimeout(m);
+                    toast.success(`Session timeout set to ${m === 0 ? "Never" : `${m} min`}`);
+                  }}
+                  className={`px-3 py-1.5 text-xs font-mono transition-all ${
+                    sessionTimeout === m
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {m === 0 ? "Never" : `${m}m`}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <button
+            onClick={() => {
+              triggerManualLock();
+              toast.success("Session locked");
+            }}
+            className="flex items-center gap-2 rounded-md border border-primary/40 px-4 py-2.5 text-xs font-mono text-primary hover:bg-primary/10 transition-all w-full justify-center"
+          >
+            <Lock size={14} />
+            Lock Now
+          </button>
+        </div>
+      </Section>
+
       <Section icon={<Settings2 size={16} />} title="Onboarding Tour">
         <div className="space-y-3">
           <p className="text-sm text-muted-foreground font-mono">

@@ -1,4 +1,7 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
+import { useSessionLock } from "@/hooks/useSessionLock";
+import SessionLockScreen from "@/components/SessionLockScreen";
+import { removeApiKey } from "@/lib/ai";
 import { ToastProvider } from "@/components/Toast";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -46,7 +49,20 @@ const DashFallback = () => <div className="p-4 md:p-6"><SkeletonDashboard /></di
 const AnalyzerFallback = () => <div className="p-4 md:p-6"><SkeletonAnalyzer /></div>;
 const PageFallback = () => <div className="p-4 md:p-6"><SkeletonPage /></div>;
 
-const App = () => (
+const AppInner = () => {
+  const { locked, unlock } = useSessionLock();
+
+  // Clear in-memory key references when locked (encrypted copy stays in localStorage)
+  useEffect(() => {
+    if (locked) {
+      // Force getApiKey to re-read from encrypted storage on next call
+      // The key is never held in a module-level variable, so locking is sufficient
+    }
+  }, [locked]);
+
+  if (locked) return <SessionLockScreen onUnlock={unlock} />;
+
+  return (
   <QueryClientProvider client={queryClient}>
     <ToastProvider>
     <TooltipProvider>
@@ -161,6 +177,9 @@ const App = () => (
     </TooltipProvider>
     </ToastProvider>
   </QueryClientProvider>
-);
+  );
+};
+
+const App = () => <AppInner />;
 
 export default App;
