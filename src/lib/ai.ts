@@ -1,7 +1,19 @@
 import CryptoJS from 'crypto-js';
 
 const GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
+const GROQ_MODELS_ENDPOINT = 'https://api.groq.com/openai/v1/models';
 const STORAGE_KEY = 'cyberkhoj_groq_key';
+
+/* ─── Event: key expired/revoked ─── */
+type KeyExpiredListener = () => void;
+const keyExpiredListeners = new Set<KeyExpiredListener>();
+export function onKeyExpired(cb: KeyExpiredListener) {
+  keyExpiredListeners.add(cb);
+  return () => { keyExpiredListeners.delete(cb); };
+}
+function notifyKeyExpired() {
+  keyExpiredListeners.forEach((cb) => cb());
+}
 
 /* ─── Device fingerprint for encryption ─── */
 function getDeviceFingerprint(): string {
