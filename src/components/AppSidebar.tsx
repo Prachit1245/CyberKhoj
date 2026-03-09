@@ -19,6 +19,7 @@ import {
   Bookmark,
   Trophy,
   Globe,
+  Radar,
   MoreHorizontal,
   X,
 } from "lucide-react";
@@ -40,6 +41,7 @@ const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/analyzer", label: "URL Analyzer", icon: Link2 },
   { to: "/attack", label: "Attack Mode", icon: Swords, tourId: "nav-attack" },
+  { to: "/recon", label: "Recon Dashboard", icon: Radar },
   { to: "/mindmap", label: "Mind Map", icon: Network },
   { to: "/history", label: "History", icon: Clock },
   { to: "/payloads", label: "Payload Library", icon: Code2, tourId: "nav-payloads" },
