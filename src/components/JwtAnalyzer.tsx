@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { INPUT_LIMITS, enforceLimit } from "@/lib/sanitize";
 import { Shield, AlertTriangle, CheckCircle, Clock, Info, Copy, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
