@@ -486,6 +486,10 @@ const Analyzer = () => {
           <kbd className="hidden sm:inline-flex ml-1 px-1.5 py-0.5 rounded border border-border text-[10px] font-mono opacity-50">⌘L</kbd>
         </button>
       </div>
+      {/* RPM counter */}
+      <p className="text-[10px] font-mono text-muted-foreground">
+        {rpm}/{getMaxRPM()} requests this minute
+      </p>
 
       {/* Target Intelligence — instant, no API */}
       {targetIntel && (
