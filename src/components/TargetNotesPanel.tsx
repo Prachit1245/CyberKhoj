@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { StickyNote, X, Maximize2, Minimize2 } from "lucide-react";
 import { getNote, saveNote } from "@/lib/targetNotes";
+import { INPUT_LIMITS, enforceLimit } from "@/lib/sanitize";
 
 interface Props {
   domain: string;
