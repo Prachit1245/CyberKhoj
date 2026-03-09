@@ -253,25 +253,21 @@ export const callGemini = async (prompt: string, _expectJson = false): Promise<s
 /* ─── Validate a Groq API key ─── */
 export async function validateApiKey(apiKey: string): Promise<{ ok: boolean; error?: string }> {
   const normalized = normalizeApiKey(apiKey);
-  if (!isLikelyGroqKey(normalized)) {
-    return { ok: false, error: "Invalid API key format." };
+  const formatCheck = validateKeyFormat(normalized);
+  if (!formatCheck.valid) {
+    return { ok: false, error: formatCheck.error };
   }
 
   try {
-    const res = await fetch(GROQ_ENDPOINT, {
-      method: 'POST',
+    // Use /models endpoint — no chat quota consumed
+    const res = await fetch(GROQ_MODELS_ENDPOINT, {
+      method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': `Bearer ${normalized}`,
       },
-      body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        messages: [{ role: 'user', content: 'Say OK' }],
-        max_tokens: 5,
-      }),
     });
 
-    if (res.status === 401) return { ok: false, error: "Invalid API key." };
+    if (res.status === 401) return { ok: false, error: "Key rejected by Groq — check and retry." };
     if (res.status === 429) return { ok: true }; // Key is valid, just rate limited
     if (!res.ok) return { ok: false, error: `Validation failed (${res.status}).` };
     return { ok: true };
