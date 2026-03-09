@@ -85,13 +85,7 @@ const SocialProof = () => (
               {t.quote}
             </p>
             <div className="flex items-center gap-3 pt-1">
-              <img
-                src={t.avatar}
-                alt={t.name}
-                width={36}
-                height={36}
-                className="rounded-full bg-muted"
-              />
+              <InitialAvatar name={t.name} />
               <div>
                 <p className="text-sm font-heading font-bold text-foreground">{t.name}</p>
                 <p className="text-xs font-mono text-primary">{t.handle}</p>
