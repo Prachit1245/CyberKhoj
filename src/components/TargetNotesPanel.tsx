@@ -98,7 +98,8 @@ export default function TargetNotesPanel({ domain }: Props) {
           {/* Editor */}
           <textarea
             value={content}
-            onChange={(e) => handleChange(e.target.value)}
+            onChange={(e) => handleChange(enforceLimit(e.target.value, INPUT_LIMITS.NOTES))}
+            maxLength={INPUT_LIMITS.NOTES}
             placeholder={`Write notes about ${domain}...\n\n• What you've tested\n• What you found\n• Next steps\n• Random observations\n\nSupports markdown formatting.`}
             className={`w-full bg-transparent px-4 py-3 font-mono text-xs text-foreground placeholder:text-muted-foreground/40 focus:outline-none resize-none ${
               expanded ? "h-[calc(100%-3rem)]" : "h-48"

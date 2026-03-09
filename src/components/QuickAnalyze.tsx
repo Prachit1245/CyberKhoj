@@ -203,7 +203,7 @@ Format as numbered list with markdown.`;
                 <input
                   ref={inputRef}
                   value={target}
-                  onChange={(e) => { setTarget(e.target.value); setError(""); }}
+                  onChange={(e) => { setTarget(enforceLimit(e.target.value, INPUT_LIMITS.URL)); setError(""); }}
                   onKeyDown={(e) => { if (e.key === "Enter" && !loading) handleAnalyze(); }}
                   placeholder="https://example.com/api/users?id=123"
                   className="flex-1 rounded-lg border border-border bg-background px-3 py-2.5 font-mono text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 transition-colors"

@@ -215,7 +215,7 @@ const BatchAnalyzer = () => {
         </div>
         <textarea
           value={input}
-          onChange={(e) => { setInput(e.target.value); setError(""); }}
+          onChange={(e) => { setInput(enforceLimit(e.target.value, INPUT_LIMITS.BATCH_URL_LENGTH * MAX_URLS)); setError(""); }}
           placeholder={`https://example.com/api/users?id=1\nhttps://example.com/admin/dashboard\nhttps://example.com/auth/login\nhttps://example.com/upload`}
           rows={6}
           className="w-full rounded-xl border border-border bg-card px-4 py-3 font-mono text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 transition-colors resize-y"

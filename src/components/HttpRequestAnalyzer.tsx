@@ -329,7 +329,7 @@ User-Agent: Mozilla/5.0`;
         </div>
         <textarea
           value={rawRequest}
-          onChange={(e) => { setRawRequest(e.target.value); setError(""); }}
+          onChange={(e) => { setRawRequest(enforceLimit(e.target.value, INPUT_LIMITS.HTTP_REQUEST)); setError(""); }}
           placeholder={`GET /api/users/123 HTTP/1.1\nHost: example.com\nAuthorization: Bearer eyJ...\nCookie: session=abc123`}
           rows={8}
           className="w-full rounded-xl border border-border bg-card px-4 py-3 font-mono text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 transition-colors resize-y"

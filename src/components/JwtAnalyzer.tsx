@@ -221,7 +221,7 @@ const JwtAnalyzer = () => {
         <label className="text-sm font-mono text-muted-foreground uppercase tracking-widest">Paste JWT Token</label>
         <textarea
           value={token}
-          onChange={(e) => { setToken(e.target.value); setError(""); }}
+          onChange={(e) => { setToken(enforceLimit(e.target.value, INPUT_LIMITS.JWT_TOKEN)); setError(""); }}
           placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0..."
           rows={3}
           className="w-full rounded-xl border border-border bg-card px-4 py-3 font-mono text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 transition-colors resize-y"
