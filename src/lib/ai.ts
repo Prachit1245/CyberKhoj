@@ -224,12 +224,17 @@ export const callGemini = async (prompt: string, _expectJson = false): Promise<s
 
 /* ─── Validate a Groq API key ─── */
 export async function validateApiKey(apiKey: string): Promise<{ ok: boolean; error?: string }> {
+  const normalized = normalizeApiKey(apiKey);
+  if (!isLikelyGroqKey(normalized)) {
+    return { ok: false, error: "Invalid API key format." };
+  }
+
   try {
     const res = await fetch(GROQ_ENDPOINT, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
+        'Authorization': `Bearer ${normalized}`,
       },
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
