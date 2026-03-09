@@ -17,7 +17,7 @@ const SIZES = {
   xl: { icon: 56, text: "text-5xl", tagline: "text-base" },
 };
 
-export default function HackMindLogo({
+export default function CyberKhojLogo({
   size = "md",
   showText = true,
   showTagline = false,
@@ -79,7 +79,7 @@ export default function HackMindLogo({
           </span>
           {showTagline && (
             <span className={`font-mono ${s.tagline} text-muted-foreground mt-0.5`}>
-              Think Like A Hacker
+              Search. Find. Exploit Responsibly.
             </span>
           )}
         </div>
@@ -110,7 +110,7 @@ export function getCyberKhojIconSVG(size: number = 512): string {
 
 export const CYBERKHOJ_BRAND = {
   name: "CyberKhoj",
-  tagline: "Think Like A Hacker",
+  tagline: "Search. Find. Exploit Responsibly.",
   description: "AI-powered vulnerability analysis, attack surface mapping, and recon",
   colors: {
     primary: "#39ff14",
@@ -118,7 +118,14 @@ export const CYBERKHOJ_BRAND = {
     background: "#0a0a0a",
   },
   social: {
-    github: "https://github.com/cyberkhoj-app/cyberkhoj",
+    github: "https://github.com/Prachit1245/cyberkhoj",
     discord: "https://discord.gg/lovable-dev",
   },
 } as const;
+
+// Backward-compatible alias
+export { CyberKhojLogo as HackMindLogo };
+function CyberKhojLogo(...args: Parameters<typeof import("./HackMindLogo").default>) {
+  // This is handled by the default export
+  return null;
+}
