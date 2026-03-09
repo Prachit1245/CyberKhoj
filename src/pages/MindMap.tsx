@@ -611,34 +611,39 @@ function MindMapCanvas() {
 
         <div className="flex-1" />
 
-        {/* Collapse/Expand */}
-        {hasData && (
+        {/* Desktop-only graph controls */}
+        {!isMobile && (
           <>
-            <button onClick={collapseAll} className={btn} title="Collapse All">
-              <ChevronsDownUp className="h-3.5 w-3.5" />
+            {/* Collapse/Expand */}
+            {hasData && (
+              <>
+                <button onClick={collapseAll} className={btn} title="Collapse All">
+                  <ChevronsDownUp className="h-3.5 w-3.5" />
+                </button>
+                <button onClick={expandAll} className={btn} title="Expand All">
+                  <ChevronsUpDown className="h-3.5 w-3.5" />
+                </button>
+              </>
+            )}
+
+            <button onClick={() => zoomIn()} className={btn}>
+              <ZoomIn className="h-3.5 w-3.5" />
             </button>
-            <button onClick={expandAll} className={btn} title="Expand All">
-              <ChevronsUpDown className="h-3.5 w-3.5" />
+            <button onClick={() => zoomOut()} className={btn}>
+              <ZoomOut className="h-3.5 w-3.5" />
+            </button>
+            <button onClick={() => fitView({ padding: 0.15, duration: 600 })} className={btn}>
+              <Maximize className="h-3.5 w-3.5" />
+            </button>
+            <button onClick={toggleDirection} className={btn}>
+              {direction === "LR" ? <TreePine className="h-3.5 w-3.5" /> : <Network className="h-3.5 w-3.5" />}
+              {direction === "LR" ? "Vertical" : "Horizontal"}
+            </button>
+            <button onClick={exportPng} className={btn} disabled={!hasData}>
+              <Image className="h-3.5 w-3.5" /> PNG
             </button>
           </>
         )}
-
-        <button onClick={() => zoomIn()} className={btn}>
-          <ZoomIn className="h-3.5 w-3.5" />
-        </button>
-        <button onClick={() => zoomOut()} className={btn}>
-          <ZoomOut className="h-3.5 w-3.5" />
-        </button>
-        <button onClick={() => fitView({ padding: 0.15, duration: 600 })} className={btn}>
-          <Maximize className="h-3.5 w-3.5" />
-        </button>
-        <button onClick={toggleDirection} className={btn}>
-          {direction === "LR" ? <TreePine className="h-3.5 w-3.5" /> : <Network className="h-3.5 w-3.5" />}
-          {direction === "LR" ? "Vertical" : "Horizontal"}
-        </button>
-        <button onClick={exportPng} className={btn} disabled={!hasData}>
-          <Image className="h-3.5 w-3.5" /> PNG
-        </button>
         <button onClick={exportJson} className={btn} disabled={!hasData}>
           <FileJson className="h-3.5 w-3.5" /> JSON
         </button>
@@ -648,7 +653,7 @@ function MindMapCanvas() {
         <button onClick={saveToHistory} className={btn} disabled={!hasData} aria-label="Save to history">
           <Save className="h-3.5 w-3.5" /> Save
         </button>
-        {hasData && (
+        {hasData && !isMobile && (
           <button
             onClick={() => setShowTextView(!showTextView)}
             className={`${btn} ${showTextView ? "!text-primary !border-primary/40" : ""}`}
