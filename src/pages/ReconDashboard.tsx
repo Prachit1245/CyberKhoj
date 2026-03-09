@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { Radar, Copy, Check, ExternalLink, Download, Globe, Search, Terminal, Cpu, Sparkles, Loader2, History, Settings2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
