@@ -145,14 +145,14 @@ const extractJsonArray = (text: string): unknown[] | null => {
 
 export const parseAnalysisResponse = (raw: string): AttackPath[] => {
   if (!raw || !raw.trim()) {
-    console.error("[parseAnalysisResponse] Empty response from AI");
+    if (import.meta.env.DEV) console.error("[parseAnalysisResponse] Empty response from AI");
     return [sanitizePath({ title: "Analysis returned empty response", severity: "Info", description: "The AI returned an empty response. Try again or adjust your target." }, 0)];
   }
 
   const arr = extractJsonArray(raw);
 
   if (!arr || arr.length === 0) {
-    console.error("[parseAnalysisResponse] Failed to parse JSON from response:", raw.slice(0, 200));
+    if (import.meta.env.DEV) console.error("[parseAnalysisResponse] Failed to parse JSON from response");
     return [sanitizePath({
       title: "Parse Error — Raw Response Available",
       severity: "Info",
@@ -226,7 +226,7 @@ export const parseAttackIdeas = (raw: string): AttackIdea[] => {
   try {
     parsed = JSON.parse(match[0]) as AttackIdea[];
   } catch (e) {
-    console.error("[parseAttackIdeas] JSON.parse failed:", e, "\nRaw excerpt:", match[0].slice(0, 300));
+    if (import.meta.env.DEV) console.error("[parseAttackIdeas] JSON.parse failed:", e);
     throw new Error("AI returned malformed JSON. Please try again.");
   }
   return parsed.map((item, i) => ({
@@ -305,7 +305,7 @@ export const parseMindMapNodes = (raw: string): MindMapNode[] => {
   try {
     parsed = JSON.parse(match[0]);
   } catch (e) {
-    console.error("[parseMindMapNodes] JSON.parse failed:", e, "\nRaw excerpt:", match[0].slice(0, 300));
+    if (import.meta.env.DEV) console.error("[parseMindMapNodes] JSON.parse failed:", e);
     throw new Error("AI returned malformed JSON. Please try again.");
   }
   const nodes: MindMapNode[] = parsed.nodes || [];
