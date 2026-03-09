@@ -27,22 +27,40 @@ function isLikelyGroqKey(value: string): boolean {
 /* ─── Key management (AES-encrypted) ─── */
 
 export function saveApiKey(key: string) {
-  const encrypted = CryptoJS.AES.encrypt(key, getDeviceFingerprint()).toString();
+  const normalized = normalizeApiKey(key);
+  if (!normalized) return;
+  const payload = JSON.stringify({ v: 1, key: normalized });
+  const encrypted = CryptoJS.AES.encrypt(payload, getDeviceFingerprint()).toString();
   localStorage.setItem(STORAGE_KEY, encrypted);
 }
 
 export function getApiKey(): string | null {
   const stored = localStorage.getItem(STORAGE_KEY);
   if (!stored) return null;
+
   try {
     const bytes = CryptoJS.AES.decrypt(stored, getDeviceFingerprint());
     const decrypted = bytes.toString(CryptoJS.enc.Utf8);
     if (!decrypted) {
-      // Decryption failed (different device / corrupted) — clear it
       localStorage.removeItem(STORAGE_KEY);
       return null;
     }
-    return decrypted;
+
+    let candidate = decrypted;
+    try {
+      const parsed = JSON.parse(decrypted) as { key?: string };
+      if (typeof parsed.key === "string") candidate = parsed.key;
+    } catch {
+      // backward compatibility for old encrypted plain-string format
+    }
+
+    const normalized = normalizeApiKey(candidate);
+    if (!isLikelyGroqKey(normalized)) {
+      localStorage.removeItem(STORAGE_KEY);
+      return null;
+    }
+
+    return normalized;
   } catch {
     localStorage.removeItem(STORAGE_KEY);
     return null;
