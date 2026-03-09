@@ -40,15 +40,18 @@ export function useHistory() {
   const refresh = useCallback(() => setHistory(readHistory()), []);
 
   const addToHistory = useCallback((result: AnalysisResult) => {
-    const updated = [result, ...readHistory().filter((r) => r.id !== result.id)].slice(0, MAX_ITEMS);
+    // Redact sensitive params from target before persisting
+    const safeResult = { ...result, target: redactTarget(result.target) };
+    const updated = [safeResult, ...readHistory().filter((r) => r.id !== safeResult.id)].slice(0, MAX_ITEMS);
     writeHistory(updated);
     setHistory(updated);
-    incrementStat("totalAnalyses");
-    incrementStat("attackPaths", result.paths.length);
-    // Award XP based on depth
-    const xpAmount = result.depth === "deep" ? XP_REWARDS.deepAnalysis : XP_REWARDS.analysis;
-    awardXp(xpAmount);
-    toast.success("Analysis saved locally ✓");
+    if (!isPrivateMode()) {
+      incrementStat("totalAnalyses");
+      incrementStat("attackPaths", result.paths.length);
+      const xpAmount = result.depth === "deep" ? XP_REWARDS.deepAnalysis : XP_REWARDS.analysis;
+      awardXp(xpAmount);
+    }
+    toast.success(isPrivateMode() ? "Analysis complete (Private Mode — not saved)" : "Analysis saved locally ✓");
   }, []);
 
   const deleteFromHistory = useCallback((id: string) => {
