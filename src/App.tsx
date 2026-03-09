@@ -76,6 +76,11 @@ const AppInner = () => {
       <BrowserRouter>
         <a href="#main-content" className="skip-to-content">Skip to content</a>
         <PrivateBrowsingBanner />
+        {privateModeOn && (
+          <div className="fixed top-0 left-0 right-0 z-[55] bg-accent/90 text-accent-foreground text-center py-1.5 text-xs font-mono backdrop-blur-sm">
+            🔒 Private Mode ON — nothing is being saved this session
+          </div>
+        )}
         <PWAInstallPrompt />
         <WhatsNewModal />
         <FeedbackTab />
