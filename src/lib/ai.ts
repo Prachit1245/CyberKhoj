@@ -147,7 +147,7 @@ export function safeParseJSON(text: string) {
       .trim();
     return JSON.parse(cleaned);
   } catch (e) {
-    console.error('Failed to parse AI response:', text);
+    if (import.meta.env.DEV) console.error('[safeParseJSON] parse failed');
     throw new Error('AI returned unexpected format. Please try again.');
   }
 }

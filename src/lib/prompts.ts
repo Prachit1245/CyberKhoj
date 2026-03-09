@@ -305,7 +305,7 @@ export const parseMindMapNodes = (raw: string): MindMapNode[] => {
   try {
     parsed = JSON.parse(match[0]);
   } catch (e) {
-    console.error("[parseMindMapNodes] JSON.parse failed:", e, "\nRaw excerpt:", match[0].slice(0, 300));
+    if (import.meta.env.DEV) console.error("[parseMindMapNodes] JSON.parse failed:", e);
     throw new Error("AI returned malformed JSON. Please try again.");
   }
   const nodes: MindMapNode[] = parsed.nodes || [];
