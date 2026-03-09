@@ -177,6 +177,9 @@ const AppInner = () => {
     </TooltipProvider>
     </ToastProvider>
   </QueryClientProvider>
-);
+  );
+};
+
+const App = () => <AppInner />;
 
 export default App;
