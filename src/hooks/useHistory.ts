@@ -3,9 +3,18 @@ import type { AnalysisResult } from "@/types";
 import { toast } from "@/components/Toast";
 import { incrementStat } from "@/lib/store";
 import { awardXp, XP_REWARDS } from "@/lib/xp";
+import { isPrivateMode } from "@/lib/privateMode";
 
 const HISTORY_KEY = "hackmind_history";
 const MAX_ITEMS = 100;
+
+/** Regex matching sensitive URL query parameter values */
+const SENSITIVE_PARAMS_RE = /(token|key|secret|password|passwd|pwd|auth|api_key|apikey|access_token|bearer|client_secret|private_key|session|credential)=([^&\s]+)/gi;
+
+/** Redact sensitive params from a target string before saving */
+function redactTarget(target: string): string {
+  return target.replace(SENSITIVE_PARAMS_RE, (_m, param) => `${param}=[REDACTED]`);
+}
 
 function readHistory(): AnalysisResult[] {
   try {
@@ -17,6 +26,7 @@ function readHistory(): AnalysisResult[] {
 }
 
 function writeHistory(items: AnalysisResult[]) {
+  if (isPrivateMode()) return; // Don't persist in private mode
   localStorage.setItem(HISTORY_KEY, JSON.stringify(items));
 }
 
