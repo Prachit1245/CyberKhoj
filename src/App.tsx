@@ -37,6 +37,7 @@ const VulnCategories = lazy(() => import("./pages/VulnCategories"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Bookmarks = lazy(() => import("./pages/Bookmarks"));
 const Achievements = lazy(() => import("./pages/Achievements"));
+const DorkGenerator = lazy(() => import("./pages/DorkGenerator"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Ethics = lazy(() => import("./pages/Ethics"));
@@ -178,6 +179,7 @@ const AppInner = () => {
                     <Route path="/vuln-categories" element={<Suspense fallback={<PageFallback />}><VulnCategories /></Suspense>} />
                     <Route path="/bookmarks" element={<Suspense fallback={<PageFallback />}><Bookmarks /></Suspense>} />
                     <Route path="/achievements" element={<Suspense fallback={<PageFallback />}><Achievements /></Suspense>} />
+                    <Route path="/dork-generator" element={<Suspense fallback={<PageFallback />}><DorkGenerator /></Suspense>} />
                   </Route>
                   <Route path="*" element={<Suspense fallback={<PageFallback />}><NotFound /></Suspense>} />
                 </Routes>
