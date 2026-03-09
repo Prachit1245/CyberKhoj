@@ -1,5 +1,5 @@
 import { useState, useEffect, type ReactNode } from "react";
-import { Play, X } from "lucide-react";
+import { Play, X, Eye, EyeOff } from "lucide-react";
 import { hasApiKey, saveApiKey, validateApiKey } from "@/lib/ai";
 import { toast } from "@/components/Toast";
 import EthicalDisclaimer from "@/components/EthicalDisclaimer";
@@ -12,6 +12,7 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(false);
   const [successAnim, setSuccessAnim] = useState(false);
   const [showDemo, setShowDemo] = useState(false);
+  const [showKey, setShowKey] = useState(false);
 
   useEffect(() => {
     setUnlocked(hasApiKey());
