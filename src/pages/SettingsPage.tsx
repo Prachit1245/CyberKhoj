@@ -178,6 +178,8 @@ const SettingsPage = () => {
 
   const [prefs, setPrefs] = useState<Prefs>(loadPrefs);
   const [sessionTimeout, setSessionTimeoutState] = useState<TimeoutOption>(getSessionTimeout);
+  const [privateMode, setPrivateModeState] = useState(isPrivateMode);
+  const [storageSizeBytes, setStorageSizeBytes] = useState(getStorageSizeBytes);
 
   /* Confirm dialog */
   const [confirm, setConfirm] = useState<{
