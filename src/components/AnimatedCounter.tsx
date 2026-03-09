@@ -52,14 +52,14 @@ function CounterCard({ icon: Icon, target, suffix, label, active, delay }: {
   const value = useCountUp(target, started);
 
   return (
-    <div className="text-center space-y-3">
-      <div className="inline-flex items-center justify-center rounded-xl bg-primary/10 p-3">
-        <Icon size={28} className="text-primary" />
+    <div className="text-center space-y-2 px-1">
+      <div className="inline-flex items-center justify-center rounded-xl bg-primary/10 p-2.5 md:p-3">
+        <Icon size={24} className="text-primary md:w-7 md:h-7" />
       </div>
-      <p className="text-3xl md:text-5xl font-heading font-extrabold text-foreground tabular-nums">
+      <p className="text-2xl sm:text-3xl md:text-5xl font-heading font-extrabold text-foreground tabular-nums leading-tight">
         {started ? value.toLocaleString() : "0"}{suffix}
       </p>
-      <p className="text-xs md:text-sm font-mono text-muted-foreground">{label}</p>
+      <p className="text-[10px] sm:text-xs md:text-sm font-mono text-muted-foreground leading-snug">{label}</p>
     </div>
   );
 }
