@@ -1,7 +1,8 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useSessionLock } from "@/hooks/useSessionLock";
 import SessionLockScreen from "@/components/SessionLockScreen";
 import { removeApiKey } from "@/lib/ai";
+import { isPrivateMode } from "@/lib/privateMode";
 import { ToastProvider } from "@/components/Toast";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -51,12 +52,18 @@ const PageFallback = () => <div className="p-4 md:p-6"><SkeletonPage /></div>;
 
 const AppInner = () => {
   const { locked, unlock } = useSessionLock();
+  const [privateModeOn, setPrivateModeOn] = useState(isPrivateMode);
+
+  useEffect(() => {
+    const handler = () => setPrivateModeOn(isPrivateMode());
+    window.addEventListener("hackmind:private-mode-changed", handler);
+    return () => window.removeEventListener("hackmind:private-mode-changed", handler);
+  }, []);
 
   // Clear in-memory key references when locked (encrypted copy stays in localStorage)
   useEffect(() => {
     if (locked) {
       // Force getApiKey to re-read from encrypted storage on next call
-      // The key is never held in a module-level variable, so locking is sufficient
     }
   }, [locked]);
 
@@ -69,6 +76,11 @@ const AppInner = () => {
       <BrowserRouter>
         <a href="#main-content" className="skip-to-content">Skip to content</a>
         <PrivateBrowsingBanner />
+        {privateModeOn && (
+          <div className="fixed top-0 left-0 right-0 z-[55] bg-accent/90 text-accent-foreground text-center py-1.5 text-xs font-mono backdrop-blur-sm">
+            🔒 Private Mode ON — nothing is being saved this session
+          </div>
+        )}
         <PWAInstallPrompt />
         <WhatsNewModal />
         <FeedbackTab />
