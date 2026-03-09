@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef, useCallback } from "react";
+import { INPUT_LIMITS, enforceLimit } from "@/lib/sanitize";
 import {
   Search, Copy, Check, ChevronRight, Heart, X, ArrowUpDown,
   Bookmark, BookmarkCheck, Plus, Pencil, Trash2, Download, Upload,
