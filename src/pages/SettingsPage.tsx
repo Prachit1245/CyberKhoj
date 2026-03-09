@@ -257,19 +257,7 @@ const SettingsPage = () => {
   };
 
   /* ── Data Management ── */
-  const storageKeys = [
-    "cyberkhoj_groq_key",
-    "hackmind_history",
-    "hackmind_findings",
-    "hackmind_owasp_coverage",
-    "hackmind_usage",
-    "hackmind_prefs",
-    "hackmind_stats",
-    "hackmind_bookmarked_payloads",
-    "hackmind_bookmarks",
-    "hackmind_monthly_goal",
-    "hackmind_achievements",
-  ];
+  const storageKeys = STORAGE_KEYS_INFO.map(k => k.key);
 
   const ARRAY_KEYS: Record<string, string> = {
     hackmind_history: "id",
@@ -279,24 +267,14 @@ const SettingsPage = () => {
   };
 
   const [importSummary, setImportSummary] = useState<string | null>(null);
+  const [showStorageAudit, setShowStorageAudit] = useState(false);
 
-  const storageSize = useMemo(() => {
-    let total = 0;
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key) {
-        total += key.length + (localStorage.getItem(key)?.length || 0);
-      }
-    }
-    return total;
-  }, []);
+  const STORAGE_LIMIT_BYTES = 5 * 1024 * 1024; // ~5MB
+  const STORAGE_WARN_BYTES = 4 * 1024 * 1024; // warn at 4MB
+  const storagePercent = Math.min((storageSizeBytes / STORAGE_LIMIT_BYTES) * 100, 100);
+  const isStorageWarning = storageSizeBytes >= STORAGE_WARN_BYTES;
 
-  const formatBytes = (chars: number) => {
-    const bytes = chars * 2;
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
-  };
+  const refreshStorageSize = () => setStorageSizeBytes(getStorageSizeBytes());
 
   const exportData = () => {
     const data: Record<string, unknown> = { _version: 1, _exportedAt: new Date().toISOString() };
