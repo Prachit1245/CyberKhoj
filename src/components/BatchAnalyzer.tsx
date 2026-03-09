@@ -122,6 +122,16 @@ const BatchAnalyzer = () => {
       setCurrentIdx(i);
       const url = urls[i];
 
+      // Rate limit check per URL
+      if (!canRequest()) {
+        setError(`Rate limited at URL ${i + 1}. Wait a moment and retry.`);
+        break;
+      }
+      recordRequest();
+
+      // 2s delay between URLs (except first)
+      if (i > 0) await new Promise((r) => setTimeout(r, 2000));
+
       try {
         const prompt = buildQuickPrompt(url);
         const response = await callGemini(prompt);

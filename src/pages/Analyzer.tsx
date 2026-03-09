@@ -276,6 +276,8 @@ const Analyzer = () => {
     } finally {
       stopTypingSound();
       setLoading(false);
+      setCooldown(true);
+      setTimeout(() => setCooldown(false), 3000);
     }
   };
 

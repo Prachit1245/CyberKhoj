@@ -92,7 +92,9 @@ const QuickAnalyze = () => {
   const handleAnalyze = useCallback(async () => {
     const trimmed = target.trim();
     if (!trimmed) { setError("Enter a target URL or endpoint."); return; }
+    if (!canRequest()) { setError("Slow down — max 10 analyses per minute to protect your daily quota"); return; }
 
+    recordRequest();
     setLoading(true);
     setError("");
     setRawResult("");
