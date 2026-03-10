@@ -54,7 +54,17 @@ const Index = () => {
               Start Hacking Free
             </button>
             <button
-              onClick={() => document.getElementById("demo")?.scrollIntoView({ behavior: "smooth" })}
+              onClick={() => {
+                const demoSection = document.getElementById("demo");
+                if (demoSection) {
+                  demoSection.scrollIntoView({ behavior: "smooth" });
+                  // Auto-start the interactive demo after scrolling
+                  setTimeout(() => {
+                    const startBtn = demoSection.querySelector("button");
+                    if (startBtn) startBtn.click();
+                  }, 800);
+                }
+              }}
               className="rounded-lg border border-secondary px-8 py-3.5 font-heading text-base font-bold text-secondary transition-all hover:bg-secondary hover:text-secondary-foreground glow-secondary"
             >
               Watch Demo
