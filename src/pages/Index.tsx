@@ -38,6 +38,10 @@ const Index = () => {
             </h1>
           </div>
 
+          <div className="min-h-[2rem] flex items-center justify-center">
+            <Typewriter />
+          </div>
+
           <p className="text-muted-foreground text-base md:text-lg max-w-xl mx-auto font-mono">
             AI-powered vulnerability analysis, attack surface mapping, and recon — all running locally in your browser. Think like a hacker. Find bugs faster.
           </p>
@@ -50,7 +54,17 @@ const Index = () => {
               Start Hacking Free
             </button>
             <button
-              onClick={() => document.getElementById("demo")?.scrollIntoView({ behavior: "smooth" })}
+              onClick={() => {
+                const demoSection = document.getElementById("demo");
+                if (demoSection) {
+                  demoSection.scrollIntoView({ behavior: "smooth" });
+                  // Auto-start the interactive demo after scrolling
+                  setTimeout(() => {
+                    const startBtn = demoSection.querySelector("button");
+                    if (startBtn) startBtn.click();
+                  }, 800);
+                }
+              }}
               className="rounded-lg border border-secondary px-8 py-3.5 font-heading text-base font-bold text-secondary transition-all hover:bg-secondary hover:text-secondary-foreground glow-secondary"
             >
               Watch Demo
