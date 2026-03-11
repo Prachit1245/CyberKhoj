@@ -144,7 +144,7 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
               onClick={() => setShowDemo(true)}
               className="flex items-center justify-center gap-2 w-full rounded-lg border border-primary/30 bg-primary/5 px-5 py-2.5 font-mono text-sm text-primary transition-all hover:bg-primary/10"
             >
-              <Play size={14} /> Watch Demo
+              <Play size={14} /> How to Get Your Key
             </button>
           </div>
 
