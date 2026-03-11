@@ -226,8 +226,8 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
           className="fixed inset-0 z-[70] flex items-center justify-center bg-background/90 backdrop-blur-sm px-4"
           onClick={(e) => { if (e.target === e.currentTarget) setShowDemo(false); }}
         >
-          <div className="w-full max-w-2xl rounded-xl border border-primary/30 bg-card p-4 animate-scale-in">
-            <div className="flex items-center justify-between mb-3">
+          <div className="w-full max-w-lg rounded-xl border border-primary/30 bg-card p-6 animate-scale-in">
+            <div className="flex items-center justify-between mb-4">
               <h3 className="font-heading font-bold text-foreground text-sm">
                 <Play size={14} className="inline mr-1.5 text-primary" />
                 How to Get Your Free API Key
@@ -236,15 +236,37 @@ const ApiKeyGate = ({ children }: { children: ReactNode }) => {
                 <X size={18} />
               </button>
             </div>
-            <video
-              src="/demo-get-key.mkv"
-              controls
-              autoPlay
-              className="w-full rounded-lg border border-border"
-              style={{ maxHeight: "70vh" }}
-            >
-              Your browser does not support this video format.
-            </video>
+            <ol className="space-y-4 font-mono text-sm text-muted-foreground">
+              <li className="flex gap-3">
+                <span className="text-primary font-bold shrink-0">1.</span>
+                <span>Go to <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" className="text-primary underline">console.groq.com/keys</a></span>
+              </li>
+              <li className="flex gap-3">
+                <span className="text-primary font-bold shrink-0">2.</span>
+                <span>Sign up with Google or GitHub (takes 10 seconds)</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="text-primary font-bold shrink-0">3.</span>
+                <span>Click <strong className="text-foreground">"Create API Key"</strong></span>
+              </li>
+              <li className="flex gap-3">
+                <span className="text-primary font-bold shrink-0">4.</span>
+                <span>Give it any name (e.g. "CyberKhoj")</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="text-primary font-bold shrink-0">5.</span>
+                <span>Copy the key (starts with <code className="text-primary">gsk_</code>)</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="text-primary font-bold shrink-0">6.</span>
+                <span>Paste it here and click <strong className="text-foreground">"Start CyberKhoj"</strong></span>
+              </li>
+            </ol>
+            <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-center">
+              <p className="text-xs text-primary font-mono">
+                ⚡ It's 100% free — Groq gives you 1000 requests per day
+              </p>
+            </div>
           </div>
         </div>
       )}
