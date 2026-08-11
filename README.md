@@ -57,7 +57,7 @@ Visit: [cyberkhoj.prachitregmi.com.np](https://cyberkhoj.prachitregmi.com.np)
 
 ### Use Online (Recommended)
 
-1. Visit [cyberkhoj.lovable.app](https://cyberkhoj.lovable.app)
+1. Visit [cyberkhoj.prachitregmi.com.np](https://cyberkhoj.prachitregmi.com.np)
 2. Get your free Groq API key at [console.groq.com](https://console.groq.com)
 3. Paste your key and start hunting bugs
 
