@@ -153,68 +153,105 @@ export function safeParseJSON(text: string) {
 }
 
 /* ─── Core AI call via Groq ─── */
+
+/** Models tried in order — if one is decommissioned/unavailable we fall through. */
+const GROQ_MODELS = [
+  'llama-3.3-70b-versatile',
+  'llama-3.1-8b-instant',
+  'openai/gpt-oss-120b',
+];
+
+const SYSTEM_PROMPT =
+  'You are an elite bug bounty hunter and security researcher. Always respond with valid JSON only. No markdown. No explanation. No code blocks. Just raw JSON.';
+
+async function requestModel(
+  model: string,
+  safePrompt: string,
+  apiKey: string,
+  signal?: AbortSignal,
+): Promise<Response> {
+  return fetch(GROQ_ENDPOINT, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+    },
+    signal,
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'user', content: safePrompt },
+      ],
+      temperature: 0.8,
+      max_tokens: 2048,
+      response_format: { type: 'json_object' },
+    }),
+  });
+}
+
 async function callAIRaw(prompt: string, apiKey: string, signal?: AbortSignal): Promise<string> {
   const safePrompt = redactPrompt(prompt);
-  let response: Response;
-  try {
-    response = await fetch(GROQ_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-      },
-      signal,
-      body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are an elite bug bounty hunter and security researcher. Always respond with valid JSON only. No markdown. No explanation. No code blocks. Just raw JSON.',
-          },
-          {
-            role: 'user',
-            content: safePrompt,
-          },
-        ],
-        temperature: 0.9,
-        max_tokens: 2048,
-      }),
-    });
-  } catch (err) {
-    if (err instanceof DOMException && err.name === "AbortError") {
-      throw new GeminiError("ABORTED", "Request was cancelled.");
-    }
-    throw new GeminiError("NETWORK_ERROR", "No internet connection. Check your connection and try again.");
-  }
+  let lastError: GeminiError | null = null;
 
-  if (!response.ok) {
-    let errText = "";
+  for (const model of GROQ_MODELS) {
+    let response: Response;
+    try {
+      response = await requestModel(model, safePrompt, apiKey, signal);
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        throw new GeminiError('ABORTED', 'Request was cancelled.');
+      }
+      throw new GeminiError('NETWORK_ERROR', 'Could not reach Groq. Check your connection and try again.');
+    }
+
+    if (response.ok) {
+      const data = await response.json();
+      const text = data.choices?.[0]?.message?.content ?? '';
+      if (!text) {
+        throw new GeminiError('PARSE_ERROR', 'AI returned an empty response. Try again.');
+      }
+      return text;
+    }
+
+    let errText = '';
+    let errCode = '';
     try {
       const errData = await response.json();
       errText = errData.error?.message || JSON.stringify(errData);
+      errCode = errData.error?.code || '';
     } catch {
-      errText = await response.text().catch(() => "");
+      errText = await response.text().catch(() => '');
     }
 
     if (response.status === 401) {
       notifyKeyExpired();
-      throw new GeminiError("INVALID_KEY", "Your API key has expired or been revoked. Please add a new key.", 401);
+      throw new GeminiError('INVALID_KEY', 'Your API key has expired or been revoked. Please add a new key.', 401);
     }
     if (response.status === 403) {
-      throw new GeminiError("FORBIDDEN", "API key is restricted.", 403);
+      throw new GeminiError('FORBIDDEN', 'API key is restricted.', 403);
     }
     if (response.status === 429) {
-      throw new GeminiError("RATE_LIMIT", "Daily limit reached. Groq gives 1000 free requests per day. Resets at midnight.", 429);
+      throw new GeminiError('RATE_LIMIT', 'Rate limit reached on Groq. Wait a moment and try again.', 429);
     }
-    throw new GeminiError("API_ERROR", `Groq API error (${response.status}): ${errText.slice(0, 200)}`, response.status);
+
+    const modelUnavailable =
+      response.status === 404 ||
+      errCode === 'model_not_found' ||
+      errCode === 'model_decommissioned' ||
+      /model|decommission|not.*exist|does not support/i.test(errText);
+
+    lastError = new GeminiError(
+      'API_ERROR',
+      `Groq API error (${response.status}): ${errText.slice(0, 200)}`,
+      response.status,
+    );
+
+    // Try the next model only when this one is unavailable/unsupported.
+    if (!modelUnavailable) throw lastError;
   }
 
-  const data = await response.json();
-  const text = data.choices?.[0]?.message?.content ?? "";
-  if (!text) {
-    throw new GeminiError("PARSE_ERROR", "AI returned an empty response. Try again.");
-  }
-  return text;
+  throw lastError ?? new GeminiError('API_ERROR', 'Groq request failed. Please try again.');
 }
 
 /* ─── Main API call (with usage tracking) ─── */
