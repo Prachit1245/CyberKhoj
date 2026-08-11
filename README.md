@@ -31,7 +31,7 @@ By a developer from Nepal 🇳🇵
 
 ## Live Demo
 
-Visit: [cyberkhoj.lovable.app](https://cyberkhoj.lovable.app)
+Visit: [cyberkhoj.prachitregmi.com.np](https://cyberkhoj.prachitregmi.com.np)
 
 ## Cost
 
