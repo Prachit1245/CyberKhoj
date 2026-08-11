@@ -3,10 +3,10 @@ import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { Users, Crosshair, Globe, TrendingUp } from "lucide-react";
 
 const COUNTERS = [
-  { Icon: Users, target: 2400, label: "Active Hunters" },
-  { Icon: Crosshair, target: 58000, label: "Analyses Run" },
-  { Icon: Globe, target: 80, label: "Countries" },
-  { Icon: TrendingUp, target: 12000000, label: "Attack Paths Generated" },
+  { Icon: Users, target: 500, label: "Active Hunters" },
+  { Icon: Crosshair, target: 10000, label: "Analyses Run" },
+  { Icon: Globe, target: 50, label: "Countries" },
+  { Icon: TrendingUp, target: 25000, label: "Attack Paths Generated" },
 ];
 
 const formatNumber = (n: number, target: number): string => {
