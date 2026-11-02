@@ -17,4 +17,4 @@ Disallow: /settings
 Disallow: /bookmarks
 Disallow: /achievements
 
-Sitemap: https://cyberkhoj.com/sitemap.xml
+Sitemap: https://brain-flash-tool.lovable.app/sitemap.xml
