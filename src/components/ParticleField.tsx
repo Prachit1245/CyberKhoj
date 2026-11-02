@@ -44,18 +44,22 @@ const ParticleField = () => {
       alpha: Math.random() * 0.5 + 0.3,
     }));
 
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const draw = () => {
-      ctx.clearRect(0, 0, w(), h());
+      animId = requestAnimationFrame(draw);
+      if (document.hidden) return;
+      const W = w(), H = h();
+      ctx.clearRect(0, 0, W, H);
 
       for (const p of particles) {
         p.x += p.vx;
         p.y += p.vy;
 
         // Wrap around
-        if (p.x < -10) p.x = w() + 10;
-        if (p.x > w() + 10) p.x = -10;
-        if (p.y < -10) p.y = h() + 10;
-        if (p.y > h() + 10) p.y = -10;
+        if (p.x < -10) p.x = W + 10;
+        if (p.x > W + 10) p.x = -10;
+        if (p.y < -10) p.y = H + 10;
+        if (p.y > H + 10) p.y = -10;
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
@@ -68,11 +72,9 @@ const ParticleField = () => {
         ctx.fillStyle = `rgba(57, 255, 20, ${p.alpha * 0.15})`;
         ctx.fill();
       }
-
-      animId = requestAnimationFrame(draw);
     };
 
-    draw();
+    animId = requestAnimationFrame(draw);
 
     return () => {
       cancelAnimationFrame(animId);

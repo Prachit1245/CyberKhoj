@@ -1,19 +1,21 @@
+import { lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import MatrixRain from "@/components/MatrixRain";
 import ParticleField from "@/components/ParticleField";
 import Typewriter from "@/components/Typewriter";
-import HowItWorks from "@/components/HowItWorks";
-import Features from "@/components/Features";
-import FreeBanner from "@/components/FreeBanner";
-import LandingDemo from "@/components/LandingDemo";
-import SocialProof from "@/components/SocialProof";
-import AnimatedCounter from "@/components/AnimatedCounter";
-import ComparisonTable from "@/components/ComparisonTable";
-import FinalCTA from "@/components/FinalCTA";
-import Footer from "@/components/Footer";
 import EthicalDisclaimer from "@/components/EthicalDisclaimer";
-import WhatIsCyberKhoj from "@/components/WhatIsCyberKhoj";
-import LandingFAQ from "@/components/LandingFAQ";
+
+const HowItWorks = lazy(() => import("@/components/HowItWorks"));
+const Features = lazy(() => import("@/components/Features"));
+const FreeBanner = lazy(() => import("@/components/FreeBanner"));
+const LandingDemo = lazy(() => import("@/components/LandingDemo"));
+const SocialProof = lazy(() => import("@/components/SocialProof"));
+const AnimatedCounter = lazy(() => import("@/components/AnimatedCounter"));
+const ComparisonTable = lazy(() => import("@/components/ComparisonTable"));
+const FinalCTA = lazy(() => import("@/components/FinalCTA"));
+const Footer = lazy(() => import("@/components/Footer"));
+const WhatIsCyberKhoj = lazy(() => import("@/components/WhatIsCyberKhoj"));
+const LandingFAQ = lazy(() => import("@/components/LandingFAQ"));
 
 const TRUST_BADGES = [
   "100% Free Forever",
@@ -106,6 +108,7 @@ const Index = () => {
         <EthicalDisclaimer />
       </section>
 
+      <Suspense fallback={<div className="min-h-screen" />}>
       <WhatIsCyberKhoj />
       <LandingDemo />
       <AnimatedCounter />
@@ -117,6 +120,7 @@ const Index = () => {
       <LandingFAQ />
       <FinalCTA />
       <Footer />
+      </Suspense>
     </div>
   );
 };
