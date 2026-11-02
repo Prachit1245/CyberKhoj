@@ -5,10 +5,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "@/components/Toast";
 import { ENCODERS, runEncoder, type EncoderId } from "@/lib/encoders";
-import usePageTitle from "@/hooks/usePageTitle";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const EncoderTool = () => {
-  usePageTitle("Payload Encoder & Decoder");
+  usePageTitle("Encoder / Decoder — CyberKhoj");
   const [id, setId] = useState<EncoderId>("base64");
   const [mode, setMode] = useState<"encode" | "decode">("encode");
   const [input, setInput] = useState("");
@@ -32,9 +32,9 @@ const EncoderTool = () => {
   const copy = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      toast("Copied to clipboard");
+      toast.success("Copied to clipboard");
     } catch {
-      toast("Copy failed");
+      toast.error("Copy failed");
     }
   };
 

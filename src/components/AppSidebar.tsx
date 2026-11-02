@@ -22,6 +22,7 @@ import {
   Radar,
   MoreHorizontal,
   X,
+  Binary,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -34,7 +35,7 @@ import CommandPalette from "@/components/CommandPalette";
 import ShortcutsModal from "@/components/ShortcutsModal";
 import { getXp, getLevel } from "@/lib/xp";
 
-const OFFLINE_OK = new Set(["/history", "/payloads", "/cheatsheets", "/findings", "/bookmarks"]);
+const OFFLINE_OK = new Set(["/encoder", "/history", "/payloads", "/cheatsheets", "/findings", "/bookmarks"]);
 const NEEDS_AI = new Set(["/analyzer", "/attack", "/mindmap"]);
 
 const NAV_ITEMS = [
@@ -52,6 +53,7 @@ const NAV_ITEMS = [
   { to: "/bookmarks", label: "Bookmarks", icon: Bookmark },
   { to: "/achievements", label: "Achievements", icon: Trophy },
   { to: "/dork-generator", label: "Dork Generator", icon: Globe },
+  { to: "/encoder", label: "Encoder / Decoder", icon: Binary },
   { to: "/settings", label: "Settings", icon: Settings },
 ];
 
