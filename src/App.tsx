@@ -44,6 +44,7 @@ const Privacy = lazy(() => import("./pages/Privacy"));
 const Ethics = lazy(() => import("./pages/Ethics"));
 const SharedView = lazy(() => import("./pages/SharedView"));
 const Changelog = lazy(() => import("./pages/Changelog"));
+const EncoderTool = lazy(() => import("./pages/EncoderTool"));
 
 const queryClient = new QueryClient();
 
@@ -182,6 +183,7 @@ const AppInner = () => {
                     <Route path="/achievements" element={<Suspense fallback={<PageFallback />}><Achievements /></Suspense>} />
                     <Route path="/dork-generator" element={<Suspense fallback={<PageFallback />}><DorkGenerator /></Suspense>} />
                     <Route path="/recon" element={<Suspense fallback={<PageFallback />}><ReconDashboard /></Suspense>} />
+                    <Route path="/encoder" element={<Suspense fallback={<PageFallback />}><EncoderTool /></Suspense>} />
                   </Route>
                   <Route path="*" element={<Suspense fallback={<PageFallback />}><NotFound /></Suspense>} />
                 </Routes>
