@@ -18,8 +18,8 @@ const MatrixRain = () => {
     let drops: number[];
 
     const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      canvas.width = canvas.offsetWidth || window.innerWidth;
+      canvas.height = canvas.offsetHeight || window.innerHeight;
       columns = Math.floor(canvas.width / fontSize);
       drops = Array.from({ length: columns }, () => Math.random() * -100);
     };
@@ -27,7 +27,12 @@ const MatrixRain = () => {
     resize();
     window.addEventListener("resize", resize);
 
-    const draw = () => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let last = 0;
+    const draw = (t = 0) => {
+      animId = requestAnimationFrame(draw);
+      if (document.hidden || t - last < 50) return; // ~20fps, paused when tab hidden
+      last = t;
       ctx.fillStyle = "rgba(10, 10, 10, 0.05)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = "#39ff14";
@@ -42,11 +47,9 @@ const MatrixRain = () => {
         }
         drops[i]++;
       }
-
-      animId = requestAnimationFrame(draw);
     };
 
-    draw();
+    animId = requestAnimationFrame(draw);
 
     return () => {
       cancelAnimationFrame(animId);
